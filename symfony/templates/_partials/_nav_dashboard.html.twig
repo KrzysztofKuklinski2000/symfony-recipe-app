@@ -1,0 +1,39 @@
+<div class="mb-8">
+    <h2 class="text-white font-bold text-xl">Moje Przepisy</h2>
+    <p class="text-sm text-gray-400">Jan Kowalski</p>
+</div>
+
+<nav>
+    <ul class="flex flex-col gap-2">
+        <li>
+            <a href="" class="block py-2 px-3 rounded-lg hover:bg-gray-700">
+                Dashboard
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ path('app_recipe_index')}}" class="block py-2 px-3 rounded-lg hover:bg-gray-700">
+                Moje Przepisy
+            </a>
+        </li>
+
+         <li>
+            <a href="{{ path('app_account_edit')}}" class="block py-2 px-3 rounded-lg hover:bg-gray-700">
+                Moje Dane Użytkownika
+            </a>
+         </li>
+
+        <li>
+            <a href="{{ path('app_home')}}" class="block py-2 px-3 rounded-lg hover:bg-gray-700">
+                Strona Główna
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ path('app_logout')}}" class="block py-2 px-3 rounded-lg hover:bg-gray-700">
+                Wyloguj się
+            </a>
+        </li>
+
+    </ul>
+</nav>

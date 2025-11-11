@@ -1,0 +1,12 @@
+{% extends "base.html.twig" %}
+
+{% import '_macros/icons.html.twig' as icons %}
+
+{% block title %}Przepisy{% endblock %}
+
+{% block body %}
+<h1 class="p-4 text-2xl font-bold tracking-widest flex gap-2 items-center"> {{ icons.list() }} Przepisy</h1>
+{% include "_partials/_recipes_list.html.twig" with {
+        "recipes": recipes
+    } %}
+{% endblock %}

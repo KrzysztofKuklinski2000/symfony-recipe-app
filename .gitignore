@@ -1,0 +1,9 @@
+/data/
+/db-data/
+/mysql-data/
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

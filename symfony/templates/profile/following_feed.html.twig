@@ -1,0 +1,25 @@
+{% extends "base.html.twig" %}
+
+{% import '_macros/icons.html.twig' as icons %}
+
+{% block title %}Obserwujacy{% endblock %}
+
+{% block body %}
+    <h1 class="font-bold text-2xl px-4 pt-4">Obserwujesz: </h1>
+    <div class="flex gap-2 items-center p-4">
+        {% for user in users %}
+            <a class="flex items-center gap-2 hover:font-bold underline"
+                href="{{ path('app_profile_show', {'id': user.id}) }}">
+                {{icons.user()}} {{ user.email }}
+            </a>
+        {% else %}
+            <p class="text-gray-600 italic">Nie obserwujesz żadnych użytkowników</p>
+        {% endfor %}
+    </div>
+
+    <h1 class="font-bold text-2xl px-4 pt-4">Przepisy Obserwujacych: </h1>
+    {% include "_partials/_recipes_list.html.twig" with {
+        "recipes": recipes
+    } %}
+
+{% endblock %}

@@ -1,0 +1,41 @@
+{% import '_macros/icons.html.twig' as icons %}
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
+    {% for recipe in recipes %}
+    <div class="flex flex-col shadow-xl">
+        <a href="{{ path('app_show', {'id': recipe.id}) }}">
+            {% if recipe.imageFilename %}
+            <img class="w-full h-64 object-cover" src="{{ asset('/uploads/recipes/'~ recipe.imageFilename) }}"
+                alt="{{ recipe.title  }} obrazek">
+            {% else %}
+            <img class="w-full h-64 object-cover" src="{{ asset('/uploads/recipes/default.png') }}"
+                alt="{{ recipe.title  }} obrazek">
+            {% endif %}
+        </a>
+
+
+        <div class="p-2 bg-[#222831] text-white">
+            <div class="flex justify-between">
+                <h3 class="font-bold text-lg">{{ recipe.title|title }}</h3>
+                {% include "_partials/_favorite_btn.html.twig" with {
+                    "recipe": recipe
+                }
+                %}
+            </div>
+            <p class="text-sm">Czas przygotowania: {{ recipe.preparationTime }} godzin</p>
+            <p class="flex gap-2 items-center">
+                <a class="flex gap-2 items-center hover:font-bold underline"
+                    href="{{ path('app_profile_show', {'id': recipe.author.id}) }}">
+                    {{icons.user()}}
+                    {% include "_partials/_username.html.twig" with {
+                        "user": recipe.author
+                    } %}
+                </a>
+            </p>
+
+        </div>
+    </div>
+    {% else %}
+        <p class="text-gray-600 italic">Nie znaleziono żadnych przepisów</p>
+    {% endfor %}
+</div>

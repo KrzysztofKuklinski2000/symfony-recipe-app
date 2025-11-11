@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% import '_macros/icons.html.twig' as icons %}
+
+{% block title %}Profil {{user.email}}{% endblock %}
+
+{% block body %}
+    <div class="flex flex-col items-center justify-center pt-4">
+        {% if user.imageFilename %}
+            <img class="w-32 h-32 rounded-full object-cover shadow cursor-pointer"
+                src="{{ asset('/uploads/users/'~ user.imageFilename) }}" alt="Zdjęcie użytkownika">
+        {% else %}
+            <img class="w-32 h-32 rounded-full object-cover shadow cursor-pointer"
+                src="{{ asset('/uploads/users/default.jpg') }}" alt="Zdjęcie użytkownika">
+        {% endif %}
+
+        <div class="flex gap-2 items-center p-1">
+            <h1 class="font-bold text-2xl">
+                {% include "_partials/_username.html.twig" with {
+                    "user": user
+                } %}
+            </h1>
+
+            <div>
+                {% if app.user and app.user != user %}
+                    {% if app.user.isFollowing(user) %}
+                        <form action="{{ path('app_profile_unfollow', {'id': user.id }) }}" method="POST">
+                            <input type="hidden" name="_token" value="{{ csrf_token('unfollow' ~ user.id) }}">
+                            <button type="submit"
+                                class="bg-[#222831] text-white p-1 font-semibold shadow rounded cursor-pointer">
+                                    Przestań obserwować
+                                </button>
+                        </form>
+                    {% else %}
+                        <form action="{{ path('app_profile_follow', {'id': user.id }) }}" method="POST">
+                            <input type="hidden" name="_token" value="{{ csrf_token('follow' ~ user.id) }}">
+                            <button type="submit"
+                                class="bg-[#222831] text-white p-1 font-semibold shadow rounded cursor-pointer">
+                                    Obserwuj
+                                </button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="flex gap-4 text-[#222831]">
+            <span>
+                <strong>
+                    {{ user.following.count }}
+                </strong> Obserwowanych
+            </span>
+
+            <span>
+                <strong>
+                    {{ user.followers.count }}
+                </strong> Obserwujących
+            </span>
+        </div>
+    </div>
+
+    <div class="mt-16">
+        <h1 class="font-bold text-2xl px-4 pt-4">
+        Przepisy użytkownika
+        {% include "_partials/_username.html.twig" with {
+                "user": user
+            } %}:
+        </h1>
+        {% include "_partials/_recipes_list.html.twig" with {
+            "recipes": user.recipes
+        } %}
+    </div>
+{% endblock %}

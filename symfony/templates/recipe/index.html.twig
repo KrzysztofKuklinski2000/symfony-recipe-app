@@ -1,0 +1,56 @@
+{% extends 'dashboard_base.html.twig' %}
+
+{% import '_macros/icons.html.twig' as icons %}
+
+{% block title %}Lista Przepisów{% endblock %}
+
+{% block body %}
+    <h1 class="text-2xl font-bold mb-4 text-[#222831]">Lista Przepisów</h1>
+    <table border="1" class="w-full text-center mb-5">
+        <thead class="bg-[#222831] text-white uppercase text-sm">
+            <tr>
+                <th scope="col" class="px-6 py-3">Lp.</th>
+                <th scope="col" class="px-6 py-3">Zdjęcie</th>
+                <th scope="col" class="px-6 py-3">Tytuł</th>
+                <th scope="col" class="px-6 py-3">Akcje</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+            {% for recipe in recipes %}
+            <tr class="hover:bg-gray-100">
+                <td class="px-6 py-4">{{ loop.index }}</td>
+                <td class="px-6 py-4 justify-center flex">
+                    {% if recipe.imageFilename %}
+                    <img class="w-16 shadow rounded" src="{{ asset('/uploads/recipes/'~ recipe.imageFilename) }}"
+                        alt="{{ recipe.title  }} obrazek">
+                    {% else %}
+                        <p>Brak zdjęcia</p>
+                    {% endif %}
+                </td>
+                <td class="px-6 py-4">{{ recipe.title }}</td>
+                <td class="px-6 py-4 flex gap-2 justify-center">
+                    {% if is_granted('RECIPE_EDIT', recipe) %}
+                        <a
+                            href="{{ path('app_recipe_edit', {'id': recipe.id}) }}"
+                            class="bg-amber-300 text-white text-xs p-2 rounded font-bold"
+                        >{{ icons.edit() }}</a>
+                    {% endif %}
+                    <a
+                        href="{{ path('app_recipe_show', {'id': recipe.id}) }}"
+                        class="bg-blue-600 text-white text-xs p-2 rounded font-bold"
+                    >{{  icons.details() }}</a>
+                </td>
+            </tr>
+            {% else %}
+                <tr class="text-center">
+                    <td colspan="3" class="italic">Nie znaleziono żadnych przepisów</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a
+        href="{{ path('app_recipe_new') }}"
+        class="inline-flex gap-1 bg-blue-600 text-white text-md py-2 px-4 rounded font-bold mt-2"
+    >{{ icons.add() }} <span>Stwórz Nowy Przepis</span></a>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% import '_macros/icons.html.twig' as icons %}
+<div>
+    {% if app.user and is_granted('RECIPE_FAVORITE', recipe) %}
+        {% if app.user.hasFavorited(recipe) %}
+            <form action="{{ path('app_favorite_remove', {'id': recipe.id }) }}" method="POST">
+                <input type="hidden" name="_token" value="{{ csrf_token('unfavorite' ~ recipe.id) }}">
+                <button type="submit" class="bg-white text-[#222831] font-semibold shadow p-2 rounded cursor-pointer">
+                    {{ icons.unfavorite() }}
+                </button>
+            </form>
+        {% else %}
+            <form action="{{ path('app_favorite_add', {'id': recipe.id }) }}" method="POST">
+                <input type="hidden" name="_token" value="{{ csrf_token('favorite' ~ recipe.id) }}">
+                <button type="submit" class="bg-white text-[#222831] font-semibold shadow p-2 rounded cursor-pointer">
+                    {{ icons.favorite() }}
+                </button>
+            </form>
+        {% endif %}
+    {% endif %}
+</div>

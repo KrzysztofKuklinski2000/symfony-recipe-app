@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ulubione przepisy{% endblock %}
+
+{% block body %}
+    <h1 class="font-bold text-2xl px-4 pt-4">Ulubione przepisy </h1>
+
+    {% include "_partials/_recipes_list.html.twig" with {
+            "recipes": recipes
+        } %}
+{% endblock %}

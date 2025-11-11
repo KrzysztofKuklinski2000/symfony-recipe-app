@@ -1,0 +1,117 @@
+{% import "_macros/icons.html.twig" as icons %}
+{{ form_start(form, {'attr': {'class': 'space-y-4'}}) }}
+
+{{ form_row(form.title, {
+    'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'},
+    'attr': {
+        'class': 'w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500',
+        }
+    })
+}}
+
+{{ form_row(form.instructions, {
+    'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'},
+    'attr': {
+        'class': 'w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500',
+        }
+    })
+}}
+
+{{ form_row(form.preparationTime, {
+    'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'},
+    'attr': {
+        'class': 'w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500',
+        }
+    })
+}}
+
+{{ form_row(form.imageFile, {
+    'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'},
+    'attr': {
+        'class': 'w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 hover:cursor-pointer',
+        }
+    })
+}}
+
+{% if recipe.imageFilename %}
+    <div class="my-4 p-4 border-gray-700 rounded-lg bg-gray-50">
+        <p class="block text-sm font-medium text-gray-700 mb-2">Obecny obrazek:</p>
+        <img src="{{ asset('/uploads/recipes/'~ recipe.imageFilename) }}" alt="{{ recipe.title  }} obrazek"
+            class="w-64 h-64 shadow-md rounded-lg object-cover">
+    </div>
+{% endif %}
+
+<fieldset class="mb-1">
+    <legend class="block text-lg font-medium text-gray-700 mb-2">{{ form_label(form.recipeIngredients) }}</legend>
+
+    {% set prototype_html %}
+        {{ form_row(form.recipeIngredients.vars.prototype.name, {
+            'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'},
+            'attr': {
+                'class': 'w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 hover:cursor-pointer',
+                }
+            })
+        }}
+        {{ form_row(form.recipeIngredients.vars.prototype.quantity, {
+            'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'},
+            'attr': {
+                'class': 'w-full mb-2 p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 hover:cursor-pointer',
+                }
+            })
+        }}
+    {% endset %}
+
+
+    <ul
+        id="ingredients-list"
+        class="flex flex-col gap-4"
+        data-index="{{ form.recipeIngredients|length > 0 ? form.recipeIngredients|last.vars.name + 1 : 0 }}"
+        data-prototype="{{ prototype_html|e('html_attr') }}"
+        data-delete-icon = {{ icons.delete()|e('html_attr') }}
+    >
+    {%  for ingredientForm in form.recipeIngredients %}
+        <li class="shadow p-2 bg-gray-50 rounded">
+            {{ form_row(ingredientForm.name, {
+                'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'},
+                'attr': {
+                    'class': 'w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 hover:cursor-pointer',
+                    }
+                })
+            }}
+            {{ form_row(ingredientForm.quantity, {
+                'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'},
+                'attr': {
+                    'class': 'w-full mb-2 p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 hover:cursor-pointer',
+                    }
+                })
+            }}
+        </li>
+    {% endfor %}
+    </ul>
+
+    <button id="add-ingredient" type="button"
+        class="flex gap-1 mt-2 p-2 rounded text-white bg-blue-500 hover:bg-blue-600 hover:cursor-pointer">
+        {{ icons.add() }}
+        <span>Dodaj składnik</span>
+    </button>
+</fieldset>
+
+<hr class="border-gray-400">
+
+<button type="submit" class="flex gap-1 mt-5 bg-green-500 p-2 text-white rounded font-bold hover:cursor-pointer hover:bg-green-600 ">
+    {% if recipe.id %}
+        {{ icons.edit() }}
+        <span>Zapisz</span>
+
+    {% else %}
+        {{ icons.add() }}
+        <span>Dodaj</span>
+    {% endif %}
+
+</button>
+
+{{ form_widget(form._token) }}
+{% do form.recipeIngredients.setRendered %}
+</form>
+
+<a href="{{ path('app_recipe_index') }}" class="text-gray-700 italic font-medium hover:underline hover:cursor-pointer">Powrót do listy</a>

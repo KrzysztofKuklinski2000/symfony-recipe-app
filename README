@@ -1,0 +1,110 @@
+# Aplikacja z Przepisami (Symfony Recipe App)
+
+[EN] A modern web application built with Symfony and Tailwind CSS, allowing users to register, share recipes, and interact with other users' content through follow and favorite systems.
+
+[PL] Nowoczesna aplikacja internetowa zbudowana na Symfony i Tailwind CSS, pozwalająca użytkownikom na rejestrację, dzielenie się przepisami oraz interakcję z treściami innych użytkowników poprzez systemy obserwowania i ulubionych.
+---
+
+## Funkcjonalności (Features)
+
+### 🇬🇧 English
+
+* **Authentication:** Full user registration (`/register`) and login (`/login`) system.
+* **Recipe Management (Private Dashboard):**
+    * Authenticated users have a private dashboard (`/recipe`) to manage their *own* recipes.
+    * Full **CRUD** (Create, Read, Update, Delete) functionality for recipes.
+    * **Image Uploads:** Users can upload images for their recipes (`FileUploader` service).
+    * **Dynamic Collections:** Add/Remove recipe ingredients dynamically using JavaScript prototypes.
+* **Account Management:**
+    * Users can edit their own profile (`/account/edit`).
+    * Profile features include updating `username` and uploading a profile picture (`imageFilename`).
+* **Public Site:**
+    * Homepage (`/`) displays all public recipes.
+    * Public recipe view page (`/{id}`).
+    * Public user profiles (`/profile/{id}`).
+* **Social Features:**
+    * **Follow System:** Users can follow and unfollow other users.
+    * **Favorite System:** Users can add/remove any recipe (except their own) to a "favorites" list.
+    * **Feeds:** Dedicated pages for logged-in users to view recipes from users they follow (`/profile`) and their own favorites list (`/favorites`).
+* **Security:**
+    * All private routes secured with `#[IsGranted]`.
+    * Object-level security (e.g., "can only edit own recipe") is handled by a custom `RecipeVoter`.
+    * All sensitive actions (`POST` requests like delete, follow, favorite) are protected by **CSRF tokens**.
+* **Frontend:**
+    * Styled with **Tailwind CSS** (using `TailwindBundle`).
+    * Responsive design (dashboard, forms, grid layouts).
+    * Reusable UI components built with **Twig Macros** (icons) and **Partials** (navigation, recipe grid).
+
+---
+
+### 🇵🇱 Polski
+
+* **Uwierzytelnianie:** Pełny system rejestracji (`/register`) i logowania (`/login`).
+* **Zarządzanie Przepisami (Prywatny Dashboard):**
+    * Zalogowani użytkownicy posiadają prywatny dashboard (`/recipe`) do zarządzania *własnymi* przepisami.
+    * Pełna funkcjonalność **CRUD** (Tworzenie, Czytanie, Aktualizacja, Usuwanie) dla przepisów.
+    * **Przesyłanie Obrazów:** Użytkownicy mogą przesyłać zdjęcia do swoich przepisów (serwis `FileUploader`).
+    * **Dynamiczne Kolekcje:** Dynamiczne dodawanie/usuwanie składników przepisu przy użyciu prototypów JavaScript.
+* **Zarządzanie Kontem:**
+    * Użytkownicy mogą edytować własny profil (`/account/edit`).
+    * Funkcje profilu obejmują aktualizację `username` i przesyłanie zdjęcia profilowego (`imageFilename`).
+* **Strona Publiczna:**
+    * Strona główna (`/`) wyświetla wszystkie publiczne przepisy.
+    * Publiczna strona przepisu (`//{id}`).
+    * Publiczne profile użytkowników (`/profile/{id}`).
+* **Funkcje Społecznościowe:**
+    * **System Obserwowania:** Użytkownicy mogą obserwować i przestać obserwować innych.
+    * **System Ulubionych:** Użytkownicy mogą dodawać/usuwać dowolne przepisy (poza własnymi) do listy "ulubionych".
+    * **Strumienie:** Dedykowane strony dla zalogowanych użytkowników do przeglądania przepisów obserwowanych osób (`/profile/`) oraz własnej listy ulubionych (`/favorites`).
+* **Bezpieczeństwo:**
+    * Wszystkie prywatne trasy są zabezpieczone przez `#[IsGranted]`.
+    * Bezpieczeństwo na poziomie obiektów (np. "można edytować tylko własny przepis") jest obsługiwane przez `RecipeVoter`.
+    * Wszystkie wrażliwe akcje (żądania `POST` jak usuwanie, obserwowanie, ulubione) są chronione **tokenami CSRF**.
+* **Frontend:**
+    * Stylowanie za pomocą **Tailwind CSS** (poprzez `TailwindBundle`).
+    * Responsywny design (dashboard, formularze, siatki).
+    * Komponenty UI wielokrotnego użytku zbudowane przy użyciu **Makr Twig** (ikony) i **Plików Częściowych** (nawigacja, siatka przepisów).
+
+## Uruchomienie Projektu (Project Setup)
+
+Projekt jest w pełni skonteneryzowany przy użyciu Docker & Docker Compose.
+
+1.  **Sklonuj repozytorium:**
+    ```bash
+    git clone https://github.com/KrzysztofKuklinski2000/symfony-recipe-app.git
+    ```
+
+2.  **Skonfiguruj plik `.env`:**
+    * Przejdź do folderu `symfony/`.
+    * Skopiuj `.env` do `.env.local`: `cp .env .env.local`
+    * Edytuj `symfony/.env` i upewnij się, że zmienna `DATABASE_URL` pasuje do danych z `docker-compose.yml` (np. `DATABASE_URL="mysql://root:password@mysql_db:3306/book_recpies?serverVersion=8.0&charset=utf8mb4"`).
+
+3.  **Uruchom kontenery Docker:**
+    ```bash
+    docker-compose up -d --build
+    ```
+
+4.  **Zainstaluj zależności i uruchom migracje:**
+    * Wejdź do kontenera PHP: `docker exec -it symfony_app bash`
+    * Będąc w kontenerze, przejdź do folderu aplikacji: `cd symfony`
+    * Zainstaluj zależności Composera: `composer install`
+    * Uruchom migracje bazy danych: `php bin/console doctrine:migrations:migrate`
+
+5.  **Uruchom kompilator Tailwind:**
+    * W tym samym terminalu (wewnątrz kontenera, w `symfony/`):
+    ```bash
+    php bin/console tailwind:build --watch
+    ```
+
+6.  **Gotowe!**
+    * Twoja aplikacja jest dostępna pod adresem: [http://localhost:8080](http://localhost:8080)
+    * phpMyAdmin jest dostępny pod adresem: [http://localhost:8081](http://localhost:8081)
+
+## Główne Technologie (Tech Stack)
+
+* **Backend:** Symfony 7
+* **Frontend:** Tailwind CSS (przez `TailwindBundle`)
+* **Baza Danych:** MySQL 8
+* **Środowisko:** Docker / Docker Compose (Obraz PHP 8.2-Apache)
+* **ORM:** Doctrine
+* **Szablony:** Twig

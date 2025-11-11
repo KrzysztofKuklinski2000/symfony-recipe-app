@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    container_name: symfony_app
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - /var/www/html/symfony/var/cache
+      - /var/www/html/symfony/var/log
+      - /var/www/html/symfony/vendor
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: book_recpies
+      MYSQL_USER: symfony_user
+      MYSQL_PASSWORD: symfony_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "8081:80"
+
+volumes:
+  db_data:

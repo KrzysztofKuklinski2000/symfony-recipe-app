@@ -1,0 +1,67 @@
+{% import "_macros/icons.html.twig" as icons %}
+<nav class="w-full h-32 flex items-center justify-center">
+   <div class="w-4/5 h-16 bg-white rounded-xl shadow-xl flex gap-8 items-center justify-around">
+     <ul class="flex gap-16 h-full">
+         <li>
+             <a href="{{ path('app_home') }}"
+                 class="h-full flex items-center font-semibold p-2 border-b-4 border-transparent hover:border-[#222831]
+                cursor-pointer gap-2">
+                {{ icons.home() }} Start
+             </a>
+         </li>
+         <li>
+             <a href="{{ path('app_recipe_dashboard') }}"
+                 class="h-full flex gap-2 items-center font-semibold p-2 border-b-4 border-transparent
+                 hover:border-[#222831] cursor-pointer">
+                {{ icons.dashboard() }} Dashboards
+             </a>
+         </li>
+         <li>
+            <a href="{{ path('app_profile_index') }}"
+                class="h-full flex gap-2 items-center font-semibold p-2 border-b-4 border-transparent
+                hover:border-[#222831] cursor-pointer">
+                {{ icons.followers() }} Obserwujący
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_favorite_index') }}"
+                class="h-full flex gap-2 items-center font-semibold p-2 border-b-4 border-transparent
+                hover:border-[#222831] cursor-pointer">
+                {{ icons.unfavorite() }} Ulubione
+            </a>
+        </li>
+     </ul>
+
+     <div class="flex gap-4 h-full items-center">
+        {% if app.user %}
+            <a class="flex gap-2 items-center font-semibold p-2 border-b-4 border-transparent hover:border-[#222831] cursor-pointer"
+                href="{{ path('app_logout') }}">
+                {{ icons.logout() }} Wyloguj się
+            </a>
+            {% if app.user.imageFilename %}
+                <a href="{{ path('app_profile_show', {'id': app.user.id}) }}">
+                    <img class="w-10 h-10 rounded-full object-cover shadow cursor-pointer"
+                        src="{{ asset('/uploads/users/'~ app.user.imageFilename) }}" alt="Zdjęcie użytkownika">
+                </a>
+            {% else %}
+                <a href="{{ path('app_profile_show', {'id': app.user.id}) }}">
+                    <img class="w-10 h-10 rounded-full object-cover shadow cursor-pointer"
+                        src="{{ asset('/uploads/users/default.jpg') }}" alt="Zdjęcie użytkownika">
+                </a>
+            {% endif %}
+        {% else %}
+            <a
+                class="flex gap-2 items-center font-semibold p-2 border-b-4 border-transparent hover:border-[#222831]
+                cursor-pointer" href="{{ path('app_login') }}">
+                {{ icons.user() }} Zaloguj się
+            </a>
+            <a
+                class="flex gap-2 items-center font-semibold p-2 border-b-4 border-transparent hover:border-[#222831]
+                cursor-pointer" href="{{ path('app_register') }}">
+                {{ icons.register() }} Zarejestruj się
+            </a>
+         {% endif %}
+
+     </div>
+   </div>
+</nav>
