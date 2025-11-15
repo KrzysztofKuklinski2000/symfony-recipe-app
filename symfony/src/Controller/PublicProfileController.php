@@ -15,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[Route('/profile')]
 final class PublicProfileController extends AbstractController
 {
-    #[Route('/', name: 'app_profile_index')]
+    #[Route('/following', name: 'app_profile_index')]
     #[IsGranted('ROLE_USER')]
     public function followingFeed(RecipeRepository $recipeRepository): Response {
         /** @var User $currentUser*/
