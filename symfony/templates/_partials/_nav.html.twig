@@ -1,22 +1,22 @@
 {% import "_macros/icons.html.twig" as icons %}
-<nav class="w-full h-32 flex items-center justify-center">
+<nav class="w-full h-32 flex items-center justify-center relative">
    <div class="w-4/5 h-16 bg-white rounded-xl shadow-xl flex gap-8 items-center justify-around">
-     <ul class="flex gap-16 h-full">
-         <li>
-             <a href="{{ path('app_home') }}"
-                 class="h-full flex items-center font-semibold p-2 border-b-4 border-transparent hover:border-[#222831]
+    <ul class="hidden md:flex gap-8 h-full ">
+        <li>
+            <a href="{{ path('app_home') }}"
+                class="h-full flex items-center font-semibold p-2 border-b-4 border-transparent hover:border-[#222831]
                 cursor-pointer gap-2">
                 {{ icons.home() }} Start
-             </a>
-         </li>
-         <li>
-             <a href="{{ path('app_recipe_dashboard') }}"
-                 class="h-full flex gap-2 items-center font-semibold p-2 border-b-4 border-transparent
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_recipe_dashboard') }}"
+                class="h-full flex gap-2 items-center font-semibold p-2 border-b-4 border-transparent
                  hover:border-[#222831] cursor-pointer">
                 {{ icons.dashboard() }} Dashboards
-             </a>
-         </li>
-         <li>
+            </a>
+        </li>
+        <li>
             <a href="{{ path('app_profile_index') }}"
                 class="h-full flex gap-2 items-center font-semibold p-2 border-b-4 border-transparent
                 hover:border-[#222831] cursor-pointer">
@@ -32,7 +32,11 @@
         </li>
      </ul>
 
-     <div class="flex gap-4 h-full items-center">
+    <div class="block md:hidden cursor-pointer" id="mobile-menu-button">
+        {{ icons.menu() }}
+    </div>
+
+     <div class="hidden md:flex gap-4 h-full items-center">
         {% if app.user %}
             <a class="flex gap-2 items-center font-semibold p-2 border-b-4 border-transparent hover:border-[#222831] cursor-pointer"
                 href="{{ path('app_logout') }}">
@@ -61,7 +65,50 @@
                 {{ icons.register() }} Zarejestruj się
             </a>
          {% endif %}
-
      </div>
+   </div>
+   <div id="mobile-menu" class="hidden md:hidden absolute top-32 left-0 w-full bg-white shadow-lg p-4 z-50">
+        <ul class="flex flex-col gap-4">
+            <li>
+                <a href="{{ path('app_home') }}"
+                    class="flex items-center gap-2 font-semibold p-2">
+                    {{ icons.home() }} Start
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_recipe_dashboard') }}"
+                    class="flex items-center gap-2 font-semibold p-2">
+                    {{ icons.dashboard() }} Dashboards
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_profile_index') }}"
+                    class="flex items-center gap-2 font-semibold p-2">
+                    {{ icons.followers() }} Obserwujący
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_favorite_index') }}"
+                    class="flex items-center gap-2 font-semibold p-2">
+                    {{ icons.unfavorite() }} Ulubione
+                </a>
+            </li>
+        </ul>
+        <hr class="my-4 border-gray-200">
+
+        <div class="flex flex-col gap-4">
+            {% if app.user %}
+                <a href="{{ path('app_logout') }}"
+                    class="flex items-center gap-2 font-semibold p-2">{{ icons.logout() }} Wyloguj się</a>
+                <a href="{{ path('app_profile_show', {'id': app.user.id}) }}">
+                    Mój profil
+                </a>
+            {% else %}
+            <a href="{{ path('app_login') }}" class="flex items-center gap-2 font-semibold p-2">{{ icons.user() }}
+                Zaloguj się</a>
+            <a href="{{ path('app_register') }}"
+                class="flex items-center gap-2 font-semibold p-2">{{ icons.register() }} Zarejestruj się</a>
+            {% endif %}
+        </div>
    </div>
 </nav>
