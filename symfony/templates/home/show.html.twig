@@ -107,36 +107,9 @@
                          <span class="font-light text-sm">
                              {{ comment.content|nl2br }}
                          </span>
-                         {% if not app.user or is_granted('COMMENT_VOTE', comment) %}
-                         {% set userVote = app.user ? app.user.getVoteForComment(comment) : null %}
-                         {% set score = comment.getVoteScore() %}
-
-                         <div class="flex gap-4 text-[#222831]">
-                             <form action="{{ path('app_comment_like', {'id': comment.id}) }}" method="post">
-                                 <input type="hidden" name="_token" value="{{ csrf_token('vote' ~ comment.id) }}">
-                                 <input type="hidden" name='vote' value='1'>
-                                 <button type="submit" class="cursor-pointer flex gap-1 items-center
-                                    {% if userVote and userVote.value == 1%}
-                                        text-green-500
-                                    {% endif %}
-                                 ">
-                                     {{ icons.like() }} <span class="text-sm">({{ score.like }})</span>
-                                 </button>
-                             </form>
-
-                             <form action="{{ path('app_comment_like', {'id': comment.id}) }}" method="post">
-                                 <input type="hidden" name="_token" value="{{ csrf_token('vote' ~ comment.id) }}">
-                                 <input type="hidden" name='vote' value='-1'>
-                                 <button type="submit" class="cursor-pointer flex gap-1 items-center
-                                    {% if userVote and userVote.value == -1%}
-                                        text-red-500
-                                    {% endif %}
-                                 ">
-                                     {{ icons.unlike() }} <span class="text-sm">({{ score.dislike }})</span>
-                                 </button>
-                             </form>
-                         </div>
-                         {% endif %}
+                           {% include "_partials/_comment_vote.html.twig" with {
+                               "comment": comment
+                           }%}
                      </div>
                    </div>
                 </li>

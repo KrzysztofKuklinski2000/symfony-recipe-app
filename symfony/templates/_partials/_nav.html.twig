@@ -39,7 +39,7 @@
      <div class="hidden md:flex gap-4 h-full items-center">
         {% if app.user %}
             <a class="flex gap-2 items-center font-semibold p-2 border-b-4 border-transparent hover:border-[#222831] cursor-pointer"
-                href="{{ path('app_logout') }}">
+                href="{{ path('app_logout') }}" data-turbo="false">
                 {{ icons.logout() }} Wyloguj się
             </a>
             {% if app.user.imageFilename %}
@@ -61,7 +61,7 @@
             </a>
             <a
                 class="flex gap-2 items-center font-semibold p-2 border-b-4 border-transparent hover:border-[#222831]
-                cursor-pointer" href="{{ path('app_register') }}">
+                cursor-pointer" href="{{ path('app_register') }}" >
                 {{ icons.register() }} Zarejestruj się
             </a>
          {% endif %}
