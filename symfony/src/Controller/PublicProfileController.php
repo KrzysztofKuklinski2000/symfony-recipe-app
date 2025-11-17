@@ -49,8 +49,6 @@ final class PublicProfileController extends AbstractController
             $currentUser->addFollowing($userToFollow);
             $em->flush();
 
-        }else {
-            $this->addFlash('error', 'Nieprawidłowy token CSRF');
         }
 
         return $this->redirectToRoute('app_profile_show', ['id' => $userToFollow->getId()]);
@@ -65,8 +63,6 @@ final class PublicProfileController extends AbstractController
         if ($this->isCsrfTokenValid('unfollow' . $userToUnfollow->getId(), $request->request->get('_token'))){
             $currentUser->removeFollowing($userToUnfollow);
             $em->flush();
-        }else {
-            $this->addFlash('error', 'Nieprawidłowy token CSRF');
         }
 
 

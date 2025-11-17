@@ -35,7 +35,6 @@ final class CommentVoteController extends AbstractController
 
 
         if(!$this->isCsrfTokenValid('vote'.$comment->getId(), $token) || !in_array($vote, [1, -1])){
-            $this->addFlash('error', 'Nieprawidłowy token CSRF');
             return $this->redirectToRoute('app_show', ['id' => $comment->getRecipe()->getId()]);
         }
 

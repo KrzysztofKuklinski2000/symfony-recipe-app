@@ -1,0 +1,9 @@
+{% import '_macros/icons.html.twig' as icons%}
+{% for message in app.flashes('success') %}
+    <div class="w-full mb-4" id="flash-message">
+        <div class="text-white bg-green-500 px-4 py-2 rounded-2xl flex items-center justify-between">
+            <h3>{{ message }}</h3>
+            <span class="cursor-pointer" id="close-flash-message">{{ icons.close() }}</span>
+        </div>
+    </div>
+{% endfor %}

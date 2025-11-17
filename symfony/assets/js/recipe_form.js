@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const addIgredientButton = document.getElementById('add-ingredient');
     const ingredientsList = document.getElementById('ingredients-list');
 
+    if(!addIgredientButton) return;
 
     let ingredientCounter = ingredientsList.dataset.index;
     const ingredientPrototype = ingredientsList.dataset.prototype;

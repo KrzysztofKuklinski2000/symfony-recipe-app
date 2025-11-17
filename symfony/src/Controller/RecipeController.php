@@ -84,6 +84,8 @@ final class RecipeController extends AbstractController
             $this->handleImageUpload($form, $recipe, $fileUploader);
 
             $em->flush();
+
+            $this->addFlash('success', 'Uaktualniono przepis!');
             return $this->redirectToRoute('app_recipe_show', ['id' => $recipe->getId()]);
         }
 
@@ -95,12 +97,6 @@ final class RecipeController extends AbstractController
 
     #[Route('/delete/{id}', name: 'app_recipe_delete', methods: ['POST'])]
     public function delete(Request $request, Recipe $recipe, EntityManagerInterface $em): Response {
-
-        // if($recipe->getAuthor() !== $this->getUser()) {
-        //     $this->addFlash('error', 'Nie masz uprawnień do usuwania tego przepisu !!!');
-        //     return $this->redirectToRoute('app_recipe_index');
-        // }
-
         $this->denyAccessUnlessGranted(RecipeVoter::DELETE, $recipe);
 
 
@@ -111,8 +107,6 @@ final class RecipeController extends AbstractController
             $em->flush();
             $this->addFlash('success', 'Przepis został usunięty!');
             return $this->redirectToRoute('app_recipe_index');
-        }else {
-            $this->addFlash('error', 'Nieprawidłowy token CSRF');
         }
 
         return $this->redirectToRoute('app_recipe_index');

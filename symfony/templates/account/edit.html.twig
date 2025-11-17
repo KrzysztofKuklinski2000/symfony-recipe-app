@@ -5,7 +5,7 @@
 {% block title %}Edytuj dane użytkownika{% endblock %}
 
 {% block body %}
-
+    {% include "_partials/_flash_messages.html.twig" %}
     <h1 class="text-xl font-bold text-center text-gray-700">Edytujesz dane użytkownika </h1>
 
     {{ form_start(form, {'attr': {'class': 'space-y-4'}} )}}

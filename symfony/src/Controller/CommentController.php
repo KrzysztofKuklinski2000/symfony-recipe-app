@@ -30,10 +30,6 @@ final class CommentController extends AbstractController
 
             $em->persist($comment);
             $em->flush();
-
-            $this->addFlash('success', 'Komentarz został dodany!');
-        }else {
-            $this->addFlash('error', 'Komentarz nie został dodany!');
         }
 
 
@@ -50,9 +46,6 @@ final class CommentController extends AbstractController
         if($this->isCsrfTokenValid('delete'.$comment->getId(), $token)){
             $em->remove($comment);
             $em->flush();
-            $this->addFlash('success', 'Komentarz został usunięty!');
-        }else {
-            $this->addFlash('error', 'Nieprawidłowy token CSRF');
         }
 
         return $this->redirectToRoute('app_show', ['id' => $comment->getRecipe()->getId(), '_fragment'=>'comments']);

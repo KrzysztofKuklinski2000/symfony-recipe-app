@@ -38,8 +38,6 @@ final class FavoriteController extends AbstractController
 
             $currentUser->addFavorite($recipe);
             $em->flush();
-        } else {
-            $this->addFlash('error', 'Nieprawidłowy token CSRF');
         }
 
         return $this->redirect($request->headers->get('referer', $this->generateUrl('app_home')));
@@ -55,9 +53,6 @@ final class FavoriteController extends AbstractController
             $currentUser = $this->getUser();
             $currentUser->removeFavorite($recipe);
             $em->flush();
-
-        } else {
-            $this->addFlash('error', 'Nieprawidłowy token CSRF');
         }
 
         return $this->redirect($request->headers->get('referer', $this->generateUrl('app_home')));
