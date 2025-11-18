@@ -1,0 +1,44 @@
+{% import '_macros/icons.html.twig' as icons %}
+
+<li class="flex flex-col border-b border-gray-100 pb-2" id="comment_{{ comment.id }}">
+    <div class="flex gap-4 items-center ">
+        {% if comment.author.imageFilename %}
+        <img class="w-10 h-10 rounded-full object-cover shadow cursor-pointer"
+            src="{{ asset('/uploads/users/'~ comment.author.imageFilename) }}" alt="Avatar">
+        {% else %}
+        <img class="w-10 h-10 rounded-full object-cover shadow cursor-pointer"
+            src="{{ asset('/uploads/users/default.jpg') }}" alt="Avatar">
+        {% endif %}
+        <div class="flex flex-col gap-1">
+            <span class="text-xs flex gap-1 items-center">
+                <p class="font-semibold">
+                    {% include "_partials/_username.html.twig" with {"user": comment.author} %}
+                </p>
+                <p class="underline">{{ comment.createdAt|date("m-d-Y") }}</p>
+                {% if is_granted('COMMENT_DELETE', comment) %}
+                <form
+                    action="{{ path('app_comment_delete', {'id': comment.id}) }}"
+                    method="post"
+                    data-turbo="true"
+                    data-turbo-stream="true"
+                    data-turbo-method="delete"
+                    onsubmit="return confirm('Czy na pewno chcesz usunąć ten przepis?');"
+                    {% if not app.user %}data-turbo-frame="_top" {% endif %}
+                >
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comment.id) }}">
+                    <input type="hidden" name="_method" value="DELETE">
+
+                    <button type="submit"
+                        class="text-[#222831] font-semibold p-2 focus:outline-none hover:cursor-pointer hover:text-red-500">
+                        {{ icons.delete(4) }}
+                    </button>
+                </form>
+                {% endif %}
+            </span>
+            <span class="font-light text-sm">
+                {{ comment.content|nl2br }}
+            </span>
+            {% include "_partials/_comment_vote.html.twig" with {"comment": comment}%}
+        </div>
+    </div>
+</li>

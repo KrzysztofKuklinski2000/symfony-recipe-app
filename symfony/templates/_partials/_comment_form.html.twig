@@ -1,0 +1,32 @@
+{% import '_macros/icons.html.twig' as icons %}
+
+{% set htmlAttr = {} %}
+{% if not app.user %}
+    {% set htmlAttr = htmlAttr|merge({'data-turbo-frame': '_top'}) %}
+{% endif %}
+
+<turbo-frame id="comment_frame_{{ recipe.id }}">
+    <h2 id="comment_counter_{{ recipe.id }}" class="font-semibold text-xl py-2">Komentarze ({{ recipe.comments.count }}) </h2>
+    {{ form_start(commentForm, {
+                'action': path('app_comment_add', {'id': recipe.id}),
+                'attr': {
+                    'data-turbo': 'true',
+                    'data-turbo-stream': 'true'
+                }|merge(htmlAttr)
+            }) }}
+
+    {{ form_row(commentForm.content, {
+                    'attr': {
+                        'class': 'w-full p-2 max-h-32 min-h-16 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500',
+                        }
+                    })
+                }}
+
+    <button type="submit"
+        class="flex gap-1 bg-green-500 p-2 text-white rounded font-bold hover:cursor-pointer hover:bg-green-600 ">
+        {{icons.send()}}
+    </button>
+
+
+    {{ form_end(commentForm) }}
+</turbo-frame>

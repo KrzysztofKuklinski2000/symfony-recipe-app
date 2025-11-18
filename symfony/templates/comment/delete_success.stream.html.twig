@@ -1,0 +1,21 @@
+<turbo-stream action="replace" target="comment_list_{{ comment.recipe.id }}">
+    <template>
+        {% include "_partials/_comment_list.html.twig" with { recipe: comment.recipe } %}
+    </template>
+</turbo-stream>
+
+<turbo-stream action="update" target="comment_counter_{{ recipe.id }}">
+    <template>
+        Komentarze ({{ recipe.comments.count }})
+    </template>
+</turbo-stream>
+
+{% if recipe.comments|length == 0 %}
+    <turbo-stream action="append" target="comment_list_{{ recipe.id }}">
+        <template>
+            <li id="no-comments-message" class="text-gray-500 italic">Brak komentarzy</li>
+        </template>
+    </turbo-stream>
+{% else %}
+    <turbo-stream action="remove" target="no-comments-message"></turbo-stream>
+{% endif %}

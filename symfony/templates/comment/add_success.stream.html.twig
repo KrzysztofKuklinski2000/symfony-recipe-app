@@ -1,0 +1,17 @@
+
+<turbo-stream action="prepend" target="comment_list_{{ recipe.id }}">
+    <template>
+        {% include "_partials/_comment_item.html.twig" with {"comment": comment} %}
+    </template>
+</turbo-stream>
+
+<turbo-stream action="remove" target="no-comments-message"></turbo-stream>
+
+<turbo-stream action="replace" target="comment_frame_{{ recipe.id }}">
+    <template>
+        {% include "_partials/_comment_form.html.twig" with {
+            'commentForm': commentForm,
+            'recipe': recipe
+        } %}
+    </template>
+</turbo-stream>
