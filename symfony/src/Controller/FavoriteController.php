@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\UX\Turbo\TurboBundle;
 
 #[Route('/favorite')]
 #[IsGranted('ROLE_USER')]
@@ -40,7 +41,21 @@ final class FavoriteController extends AbstractController
             $em->flush();
         }
 
-        return $this->redirect($request->headers->get('referer', $this->generateUrl('app_home')));
+        if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+            $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+            $isFavoritePage = $request->get('_route') === 'app_favorite_index';
+
+            return $this->render('favorite/add_success.stream.html.twig', [
+                'recipe' => $recipe,
+                'is_favorite_page' => $isFavoritePage,
+            ]);
+        }
+
+
+        return $this->render('_partials/_favorite_btn.html.twig', [
+            'recipe' => $recipe,
+        ]);
     }
 
     #[Route('/remove/{id}', name: 'app_favorite_remove', methods: ['POST'])]
@@ -53,8 +68,20 @@ final class FavoriteController extends AbstractController
             $currentUser = $this->getUser();
             $currentUser->removeFavorite($recipe);
             $em->flush();
+
+            $isOnFavoritePage = $request->request->has('remove_from_list');
+
+            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+                return $this->render('favorite/delete_success.stream.html.twig', [
+                    'recipe' => $recipe,
+                    'is_favorite_page' => $isOnFavoritePage,
+                ]);
+            }
         }
 
-        return $this->redirect($request->headers->get('referer', $this->generateUrl('app_home')));
+        return $this->render('_partials/_favorite_btn.html.twig', [
+            'recipe' => $recipe,
+        ]);
     }
 }

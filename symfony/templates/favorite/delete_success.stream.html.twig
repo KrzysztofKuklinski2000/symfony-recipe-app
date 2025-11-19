@@ -1,0 +1,12 @@
+{% if is_favorite_page %}
+    <turbo-stream action="remove" target="recipes_{{ recipe.id }}"></turbo-stream>
+{% else %}
+    <turbo-stream action="update" target="favorite-btn-{{ recipe.id }}">
+        <template>
+            {% include "_partials/_favorite_btn.html.twig" with {
+                recipe: recipe,
+                }
+            %}
+        </template>
+    </turbo-stream>
+{% endif %}

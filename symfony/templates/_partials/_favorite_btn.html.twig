@@ -1,18 +1,24 @@
 {% import '_macros/icons.html.twig' as icons %}
-<div>
+<div id="favorite-btn-{{ recipe.id }}">
     {% if app.user and app.user.hasFavorited(recipe) %}
-    {# Użytkownik jest zalogowany i ma w ulubionych #}
-
-        <form action="{{ path('app_favorite_remove', {'id': recipe.id }) }}" method="POST">
+        {# Użytkownik jest zalogowany i ma w ulubionych #}
+        <form
+            action="{{ path('app_favorite_remove', {'id': recipe.id }) }}"
+            method="POST"
+            data-turbo-stream="true"
+            data-turbo-method="post"
+        >
             <input type="hidden" name="_token" value="{{ csrf_token('unfavorite' ~ recipe.id) }}">
+            {% if is_favorite_page|default(false) %}
+                <input type="hidden" name="remove_from_list" value="1">
+            {% endif %}
             <button type="submit" class="bg-white text-[#222831] font-semibold shadow p-2 rounded cursor-pointer">
                 {{ icons.unfavorite() }}
             </button>
         </form>
     {% elseif not app.user or is_granted('RECIPE_FAVORITE', recipe) %}
         {# Użytkownik nie jest zalogowany lub nie jest właścicielem przepisu #}
-
-        <form action="{{ path('app_favorite_add', {'id': recipe.id }) }}" method="POST">
+        <form action="{{ path('app_favorite_add', {'id': recipe.id }) }}" method="POST" data-turbo-stream="true">
             <input type="hidden" name="_token" value="{{ csrf_token('favorite' ~ recipe.id) }}">
             <button type="submit" class="bg-white text-[#222831] font-semibold shadow p-2 rounded cursor-pointer">
                 {{ icons.favorite() }}
