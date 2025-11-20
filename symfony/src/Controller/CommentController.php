@@ -61,8 +61,6 @@ final class CommentController extends AbstractController
         $this->denyAccessUnlessGranted(CommentVoter::DELETE, $comment);
 
         $token = $request->request->get('_token');
-        $recipeId = $comment->getRecipe()->getId();
-
 
         if($this->isCsrfTokenValid('delete'.$comment->getId(), $token)){
             $em->remove($comment);

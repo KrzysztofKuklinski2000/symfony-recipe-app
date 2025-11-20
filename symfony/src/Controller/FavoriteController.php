@@ -29,7 +29,7 @@ final class FavoriteController extends AbstractController
     }
 
     #[Route('/add/{id}', name: 'app_favorite_add', methods: ['POST'])]
-    public function favorite(Recipe $recipe, EntityManagerInterface $em, Request $request): Response
+    public function add(Recipe $recipe, EntityManagerInterface $em, Request $request): Response
     {
         $this->denyAccessUnlessGranted(RecipeVoter::FAVORITE, $recipe);
 
@@ -44,7 +44,7 @@ final class FavoriteController extends AbstractController
         if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
             $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-            $isFavoritePage = $request->get('_route') === 'app_favorite_index';
+            $isFavoritePage = $request->request->get('is_favorite_page');
 
             return $this->render('favorite/add_success.stream.html.twig', [
                 'recipe' => $recipe,
@@ -59,7 +59,7 @@ final class FavoriteController extends AbstractController
     }
 
     #[Route('/remove/{id}', name: 'app_favorite_remove', methods: ['POST'])]
-    public function unfavorite(Recipe $recipe, EntityManagerInterface $em, Request $request): Response
+    public function remove(Recipe $recipe, EntityManagerInterface $em, Request $request): Response
     {
         $this->denyAccessUnlessGranted(RecipeVoter::FAVORITE, $recipe);
 
@@ -69,7 +69,7 @@ final class FavoriteController extends AbstractController
             $currentUser->removeFavorite($recipe);
             $em->flush();
 
-            $isOnFavoritePage = $request->request->has('remove_from_list');
+            $isOnFavoritePage = $request->request->get('remove_from_list');
 
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
