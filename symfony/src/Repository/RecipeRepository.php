@@ -35,7 +35,12 @@ class RecipeRepository extends ServiceEntityRepository
 
     public function findPublicRecipesExcludingUser(?User $user): array{
         $query =  $this->createQueryBuilder('r')
-                    ->orderBy('r.id', 'DESC');
+                    ->leftJoin('r.favoritedBy', 'f')
+                    ->addSelect('COUNT(f) AS HIDDEN totalFavorites')
+                    ->groupBy('r.id')
+                    ->orderBy('totalFavorites', 'DESC')
+                    ;
+
         if($user) {
             $query->andWhere('r.author != :user');
             $query->setParameter('user', $user);

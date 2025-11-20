@@ -3,3 +3,9 @@
         {% include "_partials/_favorite_btn.html.twig" with { recipe: recipe } %}
     </template>
 </turbo-stream>
+
+<turbo-stream action="update" target="favorite-count-{{ recipe.id }}">
+    <template>
+        {{ recipe.favoritedBy|length }}
+    </template>
+</turbo-stream>
