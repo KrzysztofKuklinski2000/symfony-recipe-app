@@ -32,4 +32,15 @@ class RecipeRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findPublicRecipesExcludingUser(?User $user): array{
+        $query =  $this->createQueryBuilder('r')
+                    ->orderBy('r.id', 'DESC');
+        if($user) {
+            $query->andWhere('r.author != :user');
+            $query->setParameter('user', $user);
+        }
+
+        return $query->getQuery()->getResult();
+    }
 }
