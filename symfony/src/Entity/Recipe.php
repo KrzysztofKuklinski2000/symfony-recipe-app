@@ -1,12 +1,11 @@
 <?php
 
 namespace App\Entity;
-
-use App\Repository\RecipeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\RecipeRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
 class Recipe
@@ -56,11 +55,18 @@ class Recipe
     #[ORM\OrderBy(['createdAt' => 'DESC'])]
     private Collection $comments;
 
+    /**
+     * @var Collection<int, Category>
+     */
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'recipes', cascade: ['persist'])]
+    private Collection $categories;
+
     public function __construct()
     {
         $this->recipeIngredients = new ArrayCollection();
         $this->favoritedBy = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -210,6 +216,33 @@ class Recipe
             if ($comment->getRecipe() === $this) {
                 $comment->setRecipe(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Category>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): static
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+            $category->addRecipe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): static
+    {
+        if ($this->categories->removeElement($category)) {
+            $category->removeRecipe($this);
         }
 
         return $this;

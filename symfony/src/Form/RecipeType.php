@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Recipe;
+use App\Form\DataTransformer\CategoriesToCollectionTransformer;
 use App\Form\RecipeIngredientType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -16,6 +17,10 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 class RecipeType extends AbstractType
 {
+    public function __construct(private CategoriesToCollectionTransformer $transformer )
+    {
+
+    }
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -48,7 +53,16 @@ class RecipeType extends AbstractType
                 'allow_delete' => true,
                 'by_reference' => false,
             ])
+            ->add('categories', TextType::class, [
+                'label' => 'Kategorie (oddziel przecinkami):',
+                'attr' => [
+                    'placeholder' => 'np. Śniadanie, Zdrowe, Włoskie',
+                ],
+                'required' => false,
+                'invalid_message' => 'Błąd w formacie kategorii.'
+            ])
         ;
+        $builder->get('categories')->addModelTransformer($this->transformer);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
