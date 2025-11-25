@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('turbo:load', () => {
     const addIgredientButton = document.getElementById('add-ingredient');
     const ingredientsList = document.getElementById('ingredients-list');
 

@@ -1,5 +1,5 @@
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('turbo:load', () => {
     const menuButton = document.querySelector('#mobile-menu-button')
 
     if(!menuButton) return;

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use App\Entity\Recipe;
+use App\Entity\Category;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
@@ -33,7 +34,7 @@ class RecipeRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findPublicRecipesExcludingUser(?User $user): array{
+    public function findPublicRecipesExcludingUser(?User $user, ?Category $category): array{
         $query =  $this->createQueryBuilder('r')
                     ->leftJoin('r.favoritedBy', 'f')
                     ->addSelect('COUNT(f) AS HIDDEN totalFavorites')
@@ -44,6 +45,12 @@ class RecipeRepository extends ServiceEntityRepository
         if($user) {
             $query->andWhere('r.author != :user');
             $query->setParameter('user', $user);
+        }
+
+        if($category) {
+            $query->innerJoin('r.categories', 'c')
+                ->andWhere('c = :category')
+                ->setParameter('category', $category);
         }
 
         return $query->getQuery()->getResult();

@@ -1,5 +1,5 @@
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('turbo:load', () => {
     const closeFlashMessageButton = document.querySelector('#close-flash-message')
 
     if(!closeFlashMessageButton) return;

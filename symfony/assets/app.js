@@ -10,5 +10,6 @@ import './styles/app.css';
 import './js/recipe_form.js'
 import './js/menu.js'
 import './js/close_flash.js'
+import './js/category.js'
 
 

@@ -2,10 +2,39 @@
 
 {% import '_macros/icons.html.twig' as icons %}
 
-{% block title %}Przepisy{% endblock %}
+{% block title %}
+{{ currentCategory ? 'Kategoria: ' ~ currentCategory.name : "Przepisy"}}
+{% endblock %}
 
 {% block body %}
-<h1 class="p-4 text-2xl font-bold tracking-widest flex gap-2 items-center"> {{ icons.list() }} Przepisy</h1>
+<div class="flex items-center justify-between p-4">
+    <h1 class="text-2xl font-bold flex gap-2 items-center">
+        {{ icons.list() }}
+        {% if currentCategory %}
+            Kategoria: {{ currentCategory.name }}
+            <a class="text-xs text-gray-500 hover:underline" href="{{ path('app_home') }}">
+                Wyczyść
+            </a>
+        {% else %}
+            Wszystkie Przepisy
+        {% endif %}
+    </h1>
+    <div class="relative">
+        <div class="flex items-center gap-2 hover:cursor-pointer" id='category-button'>
+            <h3>Filtruj</h3>
+            {{ icons.filter() }}
+        </div>
+
+        <ul class="hidden absolute w-32 top-7 -left-10 bg-white shadow rounded h-32 overflow-auto" id="category-list">
+            {% for category in categories %}
+                <a href="{{ path('app_home_category', {'slug': category.slug }) }}">
+                    <li class="w-full hover:bg-gray-100 p-2 text-center">{{category.name}}</li>
+                </a>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
 {% include "_partials/_recipes_list.html.twig" with {
         "recipes": recipes
     } %}
