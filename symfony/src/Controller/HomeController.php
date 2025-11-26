@@ -6,8 +6,9 @@ use App\Entity\Recipe;
 use App\Entity\Comment;
 use App\Entity\Category;
 use App\Form\CommentType;
-use App\Repository\CategoryRepository;
 use App\Repository\RecipeRepository;
+use App\Repository\CategoryRepository;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -21,11 +22,13 @@ final class HomeController extends AbstractController
         RecipeRepository $recipeRepository,
         CategoryRepository $categoryRepository,
         #[MapEntity(mapping: ['slug' => 'slug'])]
-        ?Category $category = null
+        ?Category $category = null,
+        Request $request
     ): Response
     {
-        // dd($category);
-        $recipes = $recipeRepository->findPublicRecipesExcludingUser($this->getUser(), $category);
+        $phrase = $request->query->get('phrase') ?? null;
+
+        $recipes = $recipeRepository->findPublicRecipesExcludingUser($this->getUser(), $category, $phrase);
         $categories = $categoryRepository->findAll();
 
         return $this->render('home/index.html.twig', [

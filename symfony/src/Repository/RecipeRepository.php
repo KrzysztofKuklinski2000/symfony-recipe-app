@@ -34,7 +34,7 @@ class RecipeRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findPublicRecipesExcludingUser(?User $user, ?Category $category): array{
+    public function findPublicRecipesExcludingUser(?User $user, ?Category $category, ?string $phrase): array{
         $query =  $this->createQueryBuilder('r')
                     ->leftJoin('r.favoritedBy', 'f')
                     ->addSelect('COUNT(f) AS HIDDEN totalFavorites')
@@ -51,6 +51,11 @@ class RecipeRepository extends ServiceEntityRepository
             $query->innerJoin('r.categories', 'c')
                 ->andWhere('c = :category')
                 ->setParameter('category', $category);
+        }
+
+        if($phrase) {
+            $query->andWhere('r.title LIKE :phrase ')
+                ->setParameter('phrase', "%".$phrase."%");
         }
 
         return $query->getQuery()->getResult();

@@ -1,0 +1,27 @@
+{% import "_macros/icons.html.twig" as icons %}
+
+{% set activeCategory = currentCategory|default(null) %}
+
+{% if activeCategory %}
+    {% set searchAction = path('app_home_category', {'slug': activeCategory.slug}) %}
+    {% set placeholder = 'Szukaj w ' ~ activeCategory.name ~ '...' %}
+
+{% else %}
+    {% set searchAction = path('app_home') %}
+    {% set placeholder = 'Szukaj przepisów ' %}
+{% endif %}
+
+<div class="w-lg bg-white mx-auto rounded-xl flex items-center justify-center">
+    <form action="{{ searchAction }}" method="GET" class="w-full flex justify-center items-center">
+        <input
+            type="search"
+            name="phrase"
+            class="w-4/5 p-4 outline-0 font-semibold text-gray-600"
+            placeholder="{{ placeholder }}"
+        >
+
+        <button type="submit" class="w-1/5 p-4 flex items-center justify-center cursor-pointer border-l border-l-gray-200 rounded-xl hover:bg-gray-50">
+            {{ icons.search() }}
+        </button>
+    </form>
+</div>
