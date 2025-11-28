@@ -22,7 +22,7 @@
             </h1>
 
             <div>
-                {% if app.user and app.user != user %}
+                {% if app.user and app.user != user and is_granted('IS_EMAIL_VERIFIED')%}
                     {% if app.user.isFollowing(user) %}
                         <form action="{{ path('app_profile_unfollow', {'id': user.id }) }}" method="POST">
                             <input type="hidden" name="_token" value="{{ csrf_token('unfollow' ~ user.id) }}">

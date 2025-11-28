@@ -14,6 +14,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[IsGranted('ROLE_USER')]
+#[IsGranted('IS_EMAIL_VERIFIED')]
 final class CommentVoteController extends AbstractController
 {
     #[Route('/comment/like/{id}', name: 'app_comment_like', methods: ['POST'])]

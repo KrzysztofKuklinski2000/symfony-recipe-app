@@ -40,6 +40,7 @@ final class PublicProfileController extends AbstractController
 
     #[Route('/follow/{id}', name: 'app_profile_follow', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
+    #[IsGranted('IS_EMAIL_VERIFIED')]
     public function follow(User $userToFollow, EntityManagerInterface $em, Request $request): Response {
 
         if($this->isCsrfTokenValid('follow'.$userToFollow->getId(), $request->request->get('_token'))) {
@@ -56,6 +57,7 @@ final class PublicProfileController extends AbstractController
 
     #[Route('/unfollow/{id}', name: 'app_profile_unfollow', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
+    #[IsGranted('IS_EMAIL_VERIFIED')]
     public function unfollow(User $userToUnfollow, EntityManagerInterface $em, Request $request): Response{
         /** @var User $currentUser*/
         $currentUser = $this->getUser();

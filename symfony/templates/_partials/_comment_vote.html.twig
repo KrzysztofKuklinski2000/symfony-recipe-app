@@ -1,6 +1,6 @@
 {% import '_macros/icons.html.twig' as icons %}
 <turbo-frame id="comment_vote_frame_{{ comment.id }}">
-    {% if not app.user or is_granted('COMMENT_VOTE', comment) %}
+    {% if not app.user or is_granted('COMMENT_VOTE', comment) and is_granted('IS_EMAIL_VERIFIED') %}
         {% set userVote = app.user ? app.user.getVoteForComment(comment) : null %}
         {% set score = comment.getVoteScore() %}
         <div class="flex gap-4 text-[#222831]">

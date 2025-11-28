@@ -29,6 +29,7 @@ final class FavoriteController extends AbstractController
     }
 
     #[Route('/add/{id}', name: 'app_favorite_add', methods: ['POST'])]
+    #[IsGranted('IS_EMAIL_VERIFIED')]
     public function add(Recipe $recipe, EntityManagerInterface $em, Request $request): Response
     {
         $this->denyAccessUnlessGranted(RecipeVoter::FAVORITE, $recipe);
@@ -59,6 +60,7 @@ final class FavoriteController extends AbstractController
     }
 
     #[Route('/remove/{id}', name: 'app_favorite_remove', methods: ['POST'])]
+    #[IsGranted('IS_EMAIL_VERIFIED')]
     public function remove(Recipe $recipe, EntityManagerInterface $em, Request $request): Response
     {
         $this->denyAccessUnlessGranted(RecipeVoter::FAVORITE, $recipe);

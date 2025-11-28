@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/account')]
 #[IsGranted('ROLE_USER')]
+#[IsGranted('IS_EMAIL_VERIFIED')]
 final class AccountController extends AbstractController
 {
     #[Route('/edit', name: 'app_account_edit', methods: ['POST', 'GET'])]

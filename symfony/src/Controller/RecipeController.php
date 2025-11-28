@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 
 #[Route('/recipe')]
+#[IsGranted('IS_EMAIL_VERIFIED')]
 final class RecipeController extends AbstractController
 {
     #[Route('/', name: 'app_recipe_index')]

@@ -18,6 +18,7 @@
         "symfony/flex": "^2",
         "symfony/form": "7.3.*",
         "symfony/framework-bundle": "7.3.*",
+        "symfony/mailer": "7.3.*",
         "symfony/mime": "7.3.*",
         "symfony/runtime": "7.3.*",
         "symfony/security-bundle": "7.3.*",
@@ -25,7 +26,9 @@
         "symfony/ux-turbo": "^2.31",
         "symfony/validator": "7.3.*",
         "symfony/yaml": "7.3.*",
-        "symfonycasts/tailwind-bundle": "^0.11.1"
+        "symfonycasts/reset-password-bundle": "^1.23",
+        "symfonycasts/tailwind-bundle": "^0.11.1",
+        "symfonycasts/verify-email-bundle": "^1.17"
     },
     "config": {
         "allow-plugins": {

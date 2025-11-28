@@ -17,6 +17,7 @@ use Symfony\UX\Turbo\TurboBundle;
 
 #[Route('/comment')]
 #[IsGranted('ROLE_USER')]
+#[IsGranted('IS_EMAIL_VERIFIED')]
 final class CommentController extends AbstractController
 {
     #[Route('/add/{id}', name: 'app_comment_add', methods: ['POST'])]

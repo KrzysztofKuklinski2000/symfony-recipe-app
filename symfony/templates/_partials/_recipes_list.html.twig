@@ -18,11 +18,13 @@
             <div class="flex justify-between">
                 <h3 class="font-bold text-lg">{{ recipe.title|title }}</h3>
                 <div id="favorite-btn-{{ recipe.id }}">
+                {% if is_granted('IS_EMAIL_VERIFIED') %}
                     {% include "_partials/_favorite_btn.html.twig" with {
                         "recipe": recipe,
                         "is_favorite_page": is_favorite_page ?? false
                     }
                     %}
+                {% endif %}
                 </div>
             </div>
             <p class="text-sm">Czas przygotowania: {{ recipe.preparationTime }} godzin</p>

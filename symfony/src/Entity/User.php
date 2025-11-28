@@ -78,6 +78,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: CommentVote::class, mappedBy: 'author', orphanRemoval: true)]
     private Collection $commentVotes;
 
+    #[ORM\Column]
+    private bool $isVerified = false;
+
     public function __construct()
     {
         $this->recipes = new ArrayCollection();
@@ -384,5 +387,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             }
         }
         return null;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
     }
 }
