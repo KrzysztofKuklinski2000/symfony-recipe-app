@@ -1,0 +1,21 @@
+<turbo-frame id="load-more-button">
+    {% if hasNextPage %}
+        {% set nextParams = {'page': page + 1} %}
+        {% if phrase %}
+            {% set nextParams = nextParams|merge({'phrase': phrase}) %}
+        {% endif %}
+
+        {% set routeParams = category ? {'slug': category.slug}|merge(nextParams) : nextParams %}
+        {% set routeName = category ? 'app_home_category' : 'app_home' %}
+
+        <div class="flex justify-center mt-8">
+            <a
+                href=" {{ path(routeName, routeParams) }} "
+                class="bg-gray-200 text-gray-700 font-bold py-2 px-6 rounded-full hover:bg-gray-300 transition"
+                data-turbo-stream="true"
+            >
+            Załaduj więcej
+            </a>
+        </div>
+    {% endif %}
+</turbo-frame>

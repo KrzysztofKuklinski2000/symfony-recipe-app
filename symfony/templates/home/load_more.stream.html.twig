@@ -1,0 +1,17 @@
+<turbo-stream action="append" target="recipes-grid-container">
+    <template>
+        {% for recipe in recipes %}
+            {% include "_partials/_recipe_card.html.twig" with {'recipe': recipe} %}
+        {% endfor %}
+    </template>
+</turbo-stream>
+<turbo-stream action="replace" target="load-more-button">
+    <template>
+        {% include "_partials/_load_more_btn.html.twig" with {
+            'hasNextPage': hasNextPage,
+            'page': page,
+            'category': category,
+            'phrase': phrase
+        } %}
+    </template>
+<turbo-stream>

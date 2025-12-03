@@ -34,12 +34,20 @@ class RecipeRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findPublicRecipesExcludingUser(?User $user, ?Category $category, ?string $phrase): array{
+    public function findPublicRecipesExcludingUser(
+        ?User $user,
+        ?Category $category,
+        ?string $phrase,
+        int $page = 1,
+        int $limit = 12,
+        ): array{
         $query =  $this->createQueryBuilder('r')
                     ->leftJoin('r.favoritedBy', 'f')
                     ->addSelect('COUNT(f) AS HIDDEN totalFavorites')
                     ->groupBy('r.id')
                     ->orderBy('totalFavorites', 'DESC')
+                    ->setFirstResult(($page - 1) * $limit)
+                    ->setMaxResults($limit + 1);
                     ;
 
         if($user) {

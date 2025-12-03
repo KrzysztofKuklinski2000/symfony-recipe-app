@@ -35,7 +35,17 @@
     </div>
 </div>
 
-{% include "_partials/_recipes_list.html.twig" with {
-        "recipes": recipes
-    } %}
+<div>
+    {% include "_partials/_recipes_list.html.twig" with {
+            "recipes": recipes
+        } %}
+</div>
+
+{% include "_partials/_load_more_btn.html.twig" with {
+    'hasNextPage': hasNextPage,
+    'page': page,
+    'category': currentCategory|default(null),
+    'phrase': app.request.query.get('phrase')
+} %}
+
 {% endblock %}
