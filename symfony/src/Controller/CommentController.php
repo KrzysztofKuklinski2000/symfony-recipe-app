@@ -14,6 +14,9 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\UX\Turbo\TurboBundle;
+use App\Notifier\CommentNotification;
+use Symfony\Component\Notifier\NotifierInterface;
+use Symfony\Component\Notifier\Recipient\Recipient;
 
 #[Route('/comment')]
 #[IsGranted('ROLE_USER')]
@@ -21,7 +24,7 @@ use Symfony\UX\Turbo\TurboBundle;
 final class CommentController extends AbstractController
 {
     #[Route('/add/{id}', name: 'app_comment_add', methods: ['POST'])]
-    public function add(Recipe $recipe, EntityManagerInterface $em, Request $request): Response
+    public function add(Recipe $recipe, EntityManagerInterface $em, Request $request, NotifierInterface $notifer): Response
     {
         $comment = new Comment();
         $form = $this->createForm(CommentType::class, $comment);
@@ -33,6 +36,17 @@ final class CommentController extends AbstractController
 
             $em->persist($comment);
             $em->flush();
+
+            if($recipe->getAuthor() !== $this->getUser()){
+                $recipient = new Recipient($recipe->getAuthor()->getEmail());
+
+                $notifer->send(
+                    new CommentNotification($comment, $recipe),
+                    $recipient
+                );
+            }
+
+
 
             $newEmptyForm = $this->createForm(CommentType::class, new Comment());
 

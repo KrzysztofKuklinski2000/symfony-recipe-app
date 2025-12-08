@@ -1,0 +1,14 @@
+<h1>Hej {{ recipe.author.username ? recipe.author.username : recipe.author.email }}</h1>
+
+<p>
+    Użytkownik <strong>{{ commenter.username }}</strong> dodał komentarz do twojego przepisu
+    "<a href="{{ url('app_show', {'id': recipe.id}) }}">{{ recipe.title }}</a>"
+</p>
+
+<div style="background-color: #f3f4f6; padding: 15px; border-left: 4px solid #2563eb; margin: 20px 0;">
+    {{ comment.content|nl2br }}
+</div>
+
+<p>
+    <a href="{{ url('app_show', {id: recipe.id}) }}">Kliknij tutaj, aby odpowiedzieć</a>
+</p>
