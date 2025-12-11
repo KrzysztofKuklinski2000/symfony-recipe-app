@@ -4,3 +4,15 @@
 * {
     font-family: "Lato", sans-serif;
 }
+
+.disappear-after-time
+{
+    animation: disappear .3s ease-in-out .3s forwards;
+}
+
+@keyframes disappear {
+    to {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+}

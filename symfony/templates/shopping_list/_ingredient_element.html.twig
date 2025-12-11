@@ -1,0 +1,18 @@
+{% import "_macros/icons.html.twig" as icons %}
+<li id="ingredient-{{ item.id }}" class="py-1 flex gap-2 items-center {{ item.isChecked ? 'opacity-50' : '' }}">
+    <form action="{{ path('app_shopping_toggle', {'id':item.id}) }}" method="POST"
+        class="flex items-center gap-2">
+        <input type="hidden" name="_token" value="{{ csrf_token('shoppingItem' ~ item.id) }}">
+        <input type="checkbox" {{ item.isChecked ? 'checked' : ''}} id="item-{{ item.id }}"
+            onchange="this.form.requestSubmit()">
+        <label for="item-{{ item.id }}">
+            {{ item.name }} ({{ item.quantity }})
+        </label>
+    </form>
+    <form action="{{ path('app_shopping_delete', {'id': item.id}) }}" method="POST">
+        <input type="hidden" name="_token" value="{{ csrf_token('shoppingItem' ~ item.id) }}">
+        <button type="submit" class="hover:cursor-pointer hover:text-red-500">
+            {{ icons.delete(4) }}
+        </button>
+    </form>
+</li>

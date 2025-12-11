@@ -1,7 +1,7 @@
 {% import "_macros/icons.html.twig" as icons %}
 <nav class="w-full h-32 flex items-center justify-center relative">
    <div class="w-4/5 h-16 bg-white rounded-xl shadow-xl flex gap-8 items-center justify-around">
-    <ul class="hidden md:flex gap-8 h-full ">
+    <ul class="hidden md:flex gap-4 h-full ">
         <li>
             <a href="{{ path('app_home') }}"
                 class="h-full flex items-center font-semibold p-2 border-b-4 border-transparent hover:border-[#222831]
@@ -28,6 +28,13 @@
                 class="h-full flex gap-2 items-center font-semibold p-2 border-b-4 border-transparent
                 hover:border-[#222831] cursor-pointer">
                 {{ icons.unfavorite() }} Ulubione
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_shopping_list') }}"
+                class="h-full flex gap-2 items-center font-semibold p-2 border-b-4 border-transparent
+                hover:border-[#222831] cursor-pointer">
+                {{ icons.shoppingList() }} Lista Zakupów
             </a>
         </li>
      </ul>
@@ -93,6 +100,12 @@
                     {{ icons.unfavorite() }} Ulubione
                 </a>
             </li>
+           <li>
+               <a href="{{ path('app_shopping_list') }}"
+                class="flex items-center gap-2 font-semibold p-2">
+                   {{ icons.shoppingList() }} Lista Zakupów
+               </a>
+           </li>
         </ul>
         <hr class="my-4 border-gray-200">
 

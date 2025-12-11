@@ -1,0 +1,7 @@
+<turbo-stream action="replace" target="ingredient-{{ item.id }}">
+    <template>
+        {% include 'shopping_list/_ingredient_element.html.twig' with {'item': item} %}
+    </template>
+</turbo-stream>
+
+

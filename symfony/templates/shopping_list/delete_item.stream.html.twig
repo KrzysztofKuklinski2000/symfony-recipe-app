@@ -1,0 +1,13 @@
+<turbo-stream action="remove" target="ingredient-{{itemId}}">
+</turbo-stream>
+
+<turbo-stream action="update" target="{{ counterId }}">
+    <template>
+        ({{ remainingCount }} składników)
+    </template>
+</turbo-stream>
+
+{% if remainingCount == 0 %}
+    <turbo-stream action="remove" target="ingredient-group-{{ recipe.id ?? 'loose' }}">
+    </turbo-stream>
+{% endif %}

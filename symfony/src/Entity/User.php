@@ -81,6 +81,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
+    /**
+     * @var Collection<int, ShoppingListItem>
+     */
+    #[ORM\OneToMany(targetEntity: ShoppingListItem::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $shoppingListItems;
+
     public function __construct()
     {
         $this->recipes = new ArrayCollection();
@@ -90,6 +96,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->favorites = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->commentVotes = new ArrayCollection();
+        $this->shoppingListItems = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -397,6 +404,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ShoppingListItem>
+     */
+    public function getShoppingListItems(): Collection
+    {
+        return $this->shoppingListItems;
+    }
+
+    public function addshoppingListItems(ShoppingListItem $shoppingListItem): static
+    {
+        if (!$this->shoppingListItems->contains($shoppingListItem)) {
+            $this->shoppingListItems->add($shoppingListItem);
+            $shoppingListItem->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeshoppingListItems(ShoppingListItem $shoppingListItem): static
+    {
+        if ($this->shoppingListItems->removeElement($shoppingListItem)) {
+            // set the owning side to null (unless already changed)
+            if ($shoppingListItem->getUser() === $this) {
+                $shoppingListItem->setUser(null);
+            }
+        }
 
         return $this;
     }
