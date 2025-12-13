@@ -6,6 +6,7 @@ use App\Entity\Recipe;
 use App\Entity\RecipeIngredient;
 use App\Entity\ShoppingListItem;
 use App\Security\Voter\ShoppingListVoter;
+use App\Service\ShoppingListService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,6 +18,9 @@ use Symfony\UX\Turbo\TurboBundle;
 #[IsGranted('ROLE_USER')]
 final class ShoppingListController extends AbstractController
 {
+
+    public function __construct(private ShoppingListService $shoppingListService){}
+
     #[Route('/shopping/list', name: 'app_shopping_list')]
     public function index(): Response
     {
@@ -25,21 +29,7 @@ final class ShoppingListController extends AbstractController
 
         $shoppingListItems = $user->getShoppingListItems();
 
-        $groupedItems = [];
-
-        foreach($shoppingListItems as $item) {
-            $key = $item->getRecipe() ?  $item->getRecipe()->getId() : 'loose';
-
-            if(!isset($groupedItems[$key])) {
-                $groupedItems[$key] = [
-                    'recipe' => $item->getRecipe(),
-                    'items' => []
-                ];
-            }
-
-            $groupedItems[$key]['items'][] = $item;
-
-        }
+        $groupedItems = $this->shoppingListService->groupItemsByRecipe($shoppingListItems);
 
 
         return $this->render('shopping_list/index.html.twig', [
@@ -48,42 +38,29 @@ final class ShoppingListController extends AbstractController
     }
 
     #[Route('/shopping/add/{id}', name: 'app_shopping_add', methods:['POST'])]
-    public function add(Recipe $recipe, Request $request, EntityManagerInterface $em): Response
+    public function add(Recipe $recipe, Request $request): Response
     {
         if ($this->isCsrfTokenValid('shoppingList' . $recipe->getId(), $request->request->get('_token'))) {
             $recipeItems = $recipe->getRecipeIngredients();
             $user = $this->getUser();
 
             foreach($recipeItems as $recipeItem) {
-                $newRecipeItem = new ShoppingListItem();
-                $newRecipeItem->setUser($user);
-                $newRecipeItem->setRecipe($recipe);
-                $newRecipeItem->setName($recipeItem->getName());
-                $newRecipeItem->setQuantity($recipeItem->getQuantity());
-                $newRecipeItem->setIsChecked(false);
-                $em->persist($newRecipeItem);
+                $this->shoppingListService->addIngredientToShoppingList($user, $recipeItem, $recipe);
             }
-            $em->flush();
+            $this->shoppingListService->save();
             $this->addFlash('success', 'Dodano produkty do listy zakupów');
         }
         return $this->redirectToRoute('app_show', ['id' => $recipe->getId()]);
     }
 
     #[Route('/shopping/add-item/{id}', name: 'app_shopping_add_item', methods: ['POST'])]
-    public function addItem(RecipeIngredient $ingredient, Request $request, EntityManagerInterface $em): Response
+    public function addItem(RecipeIngredient $ingredient, Request $request): Response
     {
         if ($this->isCsrfTokenValid('add_item' . $ingredient->getId(), $request->request->get('_token'))) {
             $user = $this->getUser();
 
-            $newItem = new ShoppingListItem();
-            $newItem->setUser($user);
-            $newItem->setRecipe(null);
-            $newItem->setName($ingredient->getName());
-            $newItem->setQuantity($ingredient->getQuantity());
-            $newItem->setIsChecked(false);
-
-            $em->persist($newItem);
-            $em->flush();
+            $this->shoppingListService->addIngredientToShoppingList($user, $ingredient);
+            $this->shoppingListService->save();
 
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -98,14 +75,13 @@ final class ShoppingListController extends AbstractController
     }
 
     #[Route('/shopping/toggle/{id}', name: 'app_shopping_toggle', methods: ['POST'])]
-    public function toggle(ShoppingListItem $item, Request $request, EntityManagerInterface $em): Response
+    public function toggle(ShoppingListItem $item, Request $request): Response
     {
         $this->denyAccessUnlessGranted(ShoppingListVoter::TOGGLE, $item);
 
         if ($this->isCsrfTokenValid('shoppingItem' . $item->getId(), $request->request->get('_token'))) {
-            $item->setIsChecked(!$item->isChecked());
-            $em->persist($item);
-            $em->flush();
+            $this->shoppingListService->toggleItem($item);
+            $this->shoppingListService->save();
 
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -118,7 +94,7 @@ final class ShoppingListController extends AbstractController
     }
 
     #[Route('/shopping/delete/{id}', name: 'app_shopping_delete', methods: ['POST'])]
-    public function delete(ShoppingListItem $item, Request $request, EntityManagerInterface $em): Response
+    public function delete(ShoppingListItem $item, Request $request): Response
     {
         $this->denyAccessUnlessGranted(ShoppingListVoter::DELETE, $item);
 
@@ -128,10 +104,10 @@ final class ShoppingListController extends AbstractController
 
             $counterId = $recipe ? 'ingredient-counter-' . $recipe->getId() : 'ingredient-counter-loose';
 
-            $em->remove($item);
-            $em->flush();
-            $remainingCount = $em->getRepository(ShoppingListItem::class)
-                ->count(['user' => $this->getUser(), 'recipe' => $recipe]);
+            $this->shoppingListService->deleteItem($item);
+            $this->shoppingListService->save();
+
+            $remainingCount = $this->shoppingListService->countRemainingItems($this->getUser(), $recipe);
 
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
