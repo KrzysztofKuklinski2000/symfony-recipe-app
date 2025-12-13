@@ -1,6 +1,6 @@
 <turbo-stream action="replace" target="comment_list_{{ comment.recipe.id }}">
     <template>
-        {% include "_partials/_comment_list.html.twig" with { recipe: comment.recipe } %}
+        {% include "comment/_list.html.twig" with { recipe: comment.recipe } %}
     </template>
 </turbo-stream>
 

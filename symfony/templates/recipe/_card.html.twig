@@ -16,7 +16,7 @@
             <h3 class="font-bold text-lg">{{ recipe.title|title }}</h3>
             <div id="favorite-btn-{{ recipe.id }}">
                 {% if is_granted('IS_EMAIL_VERIFIED') %}
-                {% include "_partials/_favorite_btn.html.twig" with {
+                {% include "favorite/_btn.html.twig" with {
                     "recipe": recipe,
                     "is_favorite_page": is_favorite_page ?? false
                 }

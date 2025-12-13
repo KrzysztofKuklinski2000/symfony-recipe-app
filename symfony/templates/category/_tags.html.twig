@@ -1,12 +1,15 @@
 <div>
     <h2 class="font-semibold text-xl py-2">Kategorie: </h2>
-    <ul class="flex flex-col gap-2 md:flex-row md:gap-4  text-gray-300 text-sm font-semibold">
-        {% for category in recipe.categories %}
+
+    <ul class="flex flex-col gap-2 md:flex-row md:gap-4 text-gray-300 text-sm font-semibold">
+        {% for category in categories %}
+        <li>
             <a class="hover:underline" href="{{ path('app_home_category', {'slug': category.slug}) }}">
-                <li>#{{ category.name|capitalize }}</li>
+                #{{ category.name|capitalize }}
             </a>
+        </li>
         {% else %}
-            <li>Brak kategorii</li>
+        <li>Brak kategorii</li>
         {% endfor %}
     </ul>
 </div>

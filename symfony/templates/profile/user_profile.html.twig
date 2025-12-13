@@ -66,7 +66,7 @@
                 "user": user
             } %}:
         </h1>
-        {% include "_partials/_recipes_list.html.twig" with {
+        {% include "recipe/_list.html.twig" with {
             "recipes": user.recipes
         } %}
     </div>

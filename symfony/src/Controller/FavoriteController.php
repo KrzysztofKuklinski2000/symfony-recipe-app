@@ -54,7 +54,7 @@ final class FavoriteController extends AbstractController
         }
 
 
-        return $this->render('_partials/_favorite_btn.html.twig', [
+        return $this->render('favorite/_btn.html.twig', [
             'recipe' => $recipe,
         ]);
     }
@@ -82,7 +82,7 @@ final class FavoriteController extends AbstractController
             }
         }
 
-        return $this->render('_partials/_favorite_btn.html.twig', [
+        return $this->render('favorite/_btn.html.twig', [
             'recipe' => $recipe,
         ]);
     }

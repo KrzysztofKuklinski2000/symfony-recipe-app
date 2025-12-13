@@ -31,7 +31,7 @@
                 <li>{{ ingredient.name|capitalize }} ({{ ingredient.quantity }}) </li>
             {% endfor %}
         </ul>
-        {% include "_partials/_display_categories.html.twig" %}
+        {% include "category/_tags.html.twig" with {"categories": recipe.categories} %}
     </div>
 
     {% if recipe.imageFilename %}

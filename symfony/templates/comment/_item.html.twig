@@ -38,7 +38,7 @@
             <span class="font-light text-sm">
                 {{ comment.content|nl2br }}
             </span>
-            {% include "_partials/_comment_vote.html.twig" with {"comment": comment}%}
+            {% include "comment/_vote_form.html.twig" with {"comment": comment}%}
         </div>
     </div>
 </li>

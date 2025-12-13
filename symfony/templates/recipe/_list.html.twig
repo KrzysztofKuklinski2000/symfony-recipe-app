@@ -1,7 +1,7 @@
 {% import '_macros/icons.html.twig' as icons %}
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4" id="recipes-grid-container">
     {% for recipe in recipes %}
-        {% include "_partials/_recipe_card.html.twig" with {
+        {% include "recipe/_card.html.twig" with {
             "recipe": recipe,
             "is_favorite_page": is_favorite_page ?? false
         } %}

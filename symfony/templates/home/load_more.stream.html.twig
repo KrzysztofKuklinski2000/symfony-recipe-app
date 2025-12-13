@@ -1,7 +1,7 @@
 <turbo-stream action="append" target="recipes-grid-container">
     <template>
         {% for recipe in recipes %}
-            {% include "_partials/_recipe_card.html.twig" with {'recipe': recipe} %}
+            {% include "recipe/_card.html.twig" with {'recipe': recipe} %}
         {% endfor %}
     </template>
 </turbo-stream>

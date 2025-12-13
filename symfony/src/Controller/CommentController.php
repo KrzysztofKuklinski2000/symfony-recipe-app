@@ -64,7 +64,7 @@ final class CommentController extends AbstractController
             return $this->redirectToRoute('app_show', ['id' => $recipe->getId()]);
         }
 
-        return $this->render('_partials/_comment_form.html.twig', [
+        return $this->render('comment/_form.html.twig', [
             'commentForm' => $form->createView(),
             'recipe' => $recipe,
         ]);

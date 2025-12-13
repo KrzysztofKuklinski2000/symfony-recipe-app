@@ -2,7 +2,7 @@
 
 <ul class="mb-10 flex flex-col gap-4" id="comment_list_{{ recipe.id }}">
     {% for comment in recipe.comments %}
-        {% include "_partials/_comment_item.html.twig" with {"comment": comment}%}
+        {% include "comment/_item.html.twig" with {"comment": comment}%}
     {% else %}
         <li id="no-comments-message" class="text-gray-500 italic">Brak komentarzy</li>
     {% endfor %}

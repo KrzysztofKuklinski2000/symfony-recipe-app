@@ -11,7 +11,7 @@
                 {{ recipe.title|upper }}
             </h1>
             {% if is_granted('IS_EMAIL_VERIFIED') %}
-                {% include "_partials/_favorite_btn.html.twig" with {
+                {% include "favorite/_btn.html.twig" with {
                     "recipe": recipe
                     }
                 %}
@@ -47,7 +47,7 @@
 
     <div class="flex flex-col md:justify-around p-4 md:flex-row">
         <div class="p-4 md:max-w-2/3">
-            {% include "_partials/_display_categories.html.twig" %}
+            {% include "category/_tags.html.twig" with {"categories": recipe.categories} %}
 
             <div>
                 <h2 class="font-semibold text-xl py-2">Instrukcje: </h2>
@@ -76,7 +76,7 @@
     </div>
     <div class="p-4 md:max-w-2/3">
     {% if is_granted('IS_EMAIL_VERIFIED') %}
-        {% include "_partials/_comment_form.html.twig" with {
+        {% include "comment/_form.html.twig" with {
             "commentForm": commentForm,
         }%}
     {% else %}
@@ -87,7 +87,7 @@
     </div>
 
     <div class="p-4 md:max-w-2/3">
-        {% include "_partials/_comment_list.html.twig" with {"recipe": recipe}%}
+        {% include "comment/_list.html.twig" with {"recipe": recipe}%}
     </div>
 
 {% endblock %}
