@@ -13,7 +13,7 @@ class ShoppingListItem
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'name')]
+    #[ORM\ManyToOne(inversedBy: 'shoppingListItems')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
