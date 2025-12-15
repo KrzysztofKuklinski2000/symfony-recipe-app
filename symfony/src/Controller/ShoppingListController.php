@@ -47,7 +47,15 @@ final class ShoppingListController extends AbstractController
             foreach($recipeItems as $recipeItem) {
                 $this->shoppingListService->addIngredientToShoppingList($user, $recipeItem, $recipe);
             }
+
             $this->shoppingListService->save();
+
+            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+                return $this->render('shopping_list/add_recipe_ingredients.stream.html.twig', [
+                    'recipe' => $recipe,
+                ]);
+            }
             $this->addFlash('success', 'Dodano produkty do listy zakupów');
         }
         return $this->redirectToRoute('app_show', ['id' => $recipe->getId()]);

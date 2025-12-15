@@ -38,10 +38,6 @@
                 {{icons.user()}} {{ recipe.author.email }}
             </a>
             <p>Czas przygotowania: <strong>{{ recipe.preparationTime }} godzin </strong> </p>
-            <form action="{{ path('app_shopping_add', {'id': recipe.id}) }}" method="POST">
-                <input type="hidden" name="_token" value="{{ csrf_token('shoppingList' ~ recipe.id) }}">
-                <button class="hover:cursor-pointer" type="submit">Dodaj do listy zakupów</button>
-            </form>
         </div>
     </div>
 
@@ -56,7 +52,14 @@
         </div>
 
         <div class="p-4">
-            <h2 class="font-semibold text-xl py-2">Składniki: </h2>
+            <div class="flex justify-between items-center">
+                <h2 class="font-semibold text-xl py-2">Składniki </h2>
+                <form action="{{ path('app_shopping_add', {'id': recipe.id}) }}" method="POST"
+                    id="recipe-ingredients-{{ recipe.id }}" class="flex gap-2">
+                    <input type="hidden" name="_token" value="{{ csrf_token('shoppingList' ~ recipe.id) }}">
+                    <button class="text-sm hover:cursor-pointer p-2 rounded bg-indigo-50 flex gap-2 justify-between items-center" type="submit">{{ icons.add(4) }}Dodaj</button>
+                </form>
+            </div>
             <ul class="space-y-2 list-disc list-inside">
                 {% for ingredient in recipe.recipeIngredients %}
                     <li class="flex gap-2" id="add-ingriedient-{{ ingredient.id }}">
