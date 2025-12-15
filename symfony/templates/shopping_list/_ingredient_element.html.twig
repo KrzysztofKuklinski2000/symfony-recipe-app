@@ -5,8 +5,12 @@
         <input type="hidden" name="_token" value="{{ csrf_token('shoppingItem' ~ item.id) }}">
         <input type="checkbox" {{ item.isChecked ? 'checked' : ''}} id="item-{{ item.id }}"
             onchange="this.form.requestSubmit()">
-        <label for="item-{{ item.id }}">
-            {{ item.name }} ({{ item.quantity }})
+        <label for="item-{{ item.id }}" class="cursor-pointer">
+            <span class="{{ item.isChecked ? 'line-through' : '' }}">{{ item.name }} ({{ item.quantity }}</span>)
+
+            <span class="ml-1 text-sm font-bold text-indiego-500 bg-indigo-50 px-2 py-0.5 rounded-full no-underline">
+                x{{ item.count }}
+            </span>
         </label>
     </form>
     <form action="{{ path('app_shopping_delete', {'id': item.id}) }}" method="POST">

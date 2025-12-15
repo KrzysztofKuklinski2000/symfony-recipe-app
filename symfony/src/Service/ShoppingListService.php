@@ -20,13 +20,27 @@ class ShoppingListService
         ?Recipe $recipe = null
     ): void
     {
-        $newRecipeItem = new ShoppingListItem();
-        $newRecipeItem->setUser($user);
-        $newRecipeItem->setRecipe($recipe);
-        $newRecipeItem->setName($ingredient->getName());
-        $newRecipeItem->setQuantity($ingredient->getQuantity());
-        $newRecipeItem->setIsChecked(false);
-        $this->em->persist($newRecipeItem);
+        $existingItem = $this->repository->findOneBy([
+            'user' => $user,
+            'name' => $ingredient->getName(),
+            'recipe' => $recipe
+        ]);
+
+        if($existingItem){
+            $existingItem->increnentCount();
+            $existingItem->setIsChecked(false);
+        }else {
+            $newRecipeItem = new ShoppingListItem();
+            $newRecipeItem->setUser($user);
+            $newRecipeItem->setRecipe($recipe);
+            $newRecipeItem->setName($ingredient->getName());
+            $newRecipeItem->setQuantity($ingredient->getQuantity());
+            $newRecipeItem->setIsChecked(false);
+
+            $this->em->persist($newRecipeItem);
+
+            $this->save();
+        }
     }
 
     public function groupItemsByRecipe(iterable $shoppingListItems): array

@@ -29,6 +29,9 @@ class ShoppingListItem
     #[ORM\ManyToOne(inversedBy: 'shoppingListItems')]
     private ?Recipe $recipe = null;
 
+    #[ORM\Column(options: ['default' => 1])]
+    private int $count = 1;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -92,5 +95,19 @@ class ShoppingListItem
         $this->recipe = $recipe;
 
         return $this;
+    }
+
+    public function getCount(): int {
+        return $this->count;
+    }
+
+    public function setCount(int $count): static {
+        $this->count = $count;
+
+        return $this;
+    }
+
+    public function increnentCount(): void {
+        $this->count++;
     }
 }
