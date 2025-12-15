@@ -62,9 +62,8 @@ final class CommentVoteController extends AbstractController
         }
         $em->flush();
 
-        return $this->render('_partials/_comment_vote.html.twig', [
+        return $this->render('comment/_vote_form.html.twig', [
             'comment' => $comment,
         ]);
-        // return $this->redirectToRoute('app_show', ['id' => $comment->getRecipe()->getId()]);
     }
 }
