@@ -8,14 +8,15 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
 {
     public function index(): Response
     {
-
-        return parent::index();
+        $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
+        return $this->redirect($adminUrlGenerator->setController(RecipeCrudController::class)->generateUrl());
     }
 
     public function configureDashboard(): Dashboard
@@ -32,7 +33,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud("Przepisy", 'fas fa-utensils', Recipe::class);
 
         yield MenuItem::section('Aplikacja');
-        yield MenuItem::linkToCrud('Wróć do strony', 'fas fa-arrow-left', Recipe::class)
-            ->setRoute('app_home', []);
+        yield MenuItem::linkToRoute('Wróć do strony', 'fas fa-arrow-left', 'app_home');
     }
 }

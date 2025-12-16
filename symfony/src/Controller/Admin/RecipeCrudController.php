@@ -3,10 +3,16 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Recipe;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use App\Form\Type\CategoryTagsType;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
 class RecipeCrudController extends AbstractCrudController
 {
@@ -17,21 +23,25 @@ class RecipeCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        return [
-            IdField::new('id')->hideOnForm(),
-            TextField::new('title', 'Tytuł'),
-            TextEditorField::new('description', 'Opis'),
+        yield IdField::new('id')->hideOnForm();
+        yield TextField::new('title', 'Tytuł');
+        yield TextEditorField::new('instructions', 'Instrukcje przygotowania');
 
-            TextField::new('image', 'Nazwa pliku zdjęcia'),
+        yield TextField::new('image_filename', 'Nazwa pliku zdjęcia');
 
-            IntegerField::new('cookingTime', 'Czas gotowania (min)'),
-            IntegerField::new('servings', 'Porcje'),
+        yield IntegerField::new('preparation_time', 'Czas przygotowania (h)');
 
-            AssociationField::new('categories', 'Kategorie')
-                ->autocomplete(),
+        yield AssociationField::new('categories', 'Kategorie')
+            ->onlyOnIndex();
 
-            CollectionField::new('recipeIngredients', 'Składniki')
-                ->useEntryCrudForm(RecipeIngredientCrudController::class)
-        ];
+        yield Field::new('tagsInput', 'Kategorie')
+            ->setFormType(CategoryTagsType::class)
+            ->setFormTypeOptions(['property_path' => 'categories'])
+            ->onlyOnForms();
+
+        yield CollectionField::new('recipeIngredients', 'Składniki')
+            ->setEntryIsComplex(true)
+            ->useEntryCrudForm(RecipeIngredientCrudController::class);
+
     }
 }
