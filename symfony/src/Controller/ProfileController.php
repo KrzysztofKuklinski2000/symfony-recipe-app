@@ -13,7 +13,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/profile')]
-final class PublicProfileController extends AbstractController
+final class ProfileController extends AbstractController
 {
     #[Route('/following', name: 'app_profile_index')]
     #[IsGranted('ROLE_USER')]
