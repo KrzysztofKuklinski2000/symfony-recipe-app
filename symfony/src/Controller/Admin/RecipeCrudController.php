@@ -27,7 +27,11 @@ class RecipeCrudController extends AbstractCrudController
         yield TextField::new('title', 'Tytuł');
         yield TextEditorField::new('instructions', 'Instrukcje przygotowania');
 
-        yield TextField::new('image_filename', 'Nazwa pliku zdjęcia');
+        yield ImageField::new('image_filename', 'Nazwa pliku zdjęcia')
+            ->setBasePath('/uploads/recipes/')
+            ->setUploadDir('public/uploads/recipes/')
+            ->setUploadedFileNamePattern('[randomhash].[extension]')
+            ->setRequired(false);
 
         yield IntegerField::new('preparation_time', 'Czas przygotowania (h)');
 
