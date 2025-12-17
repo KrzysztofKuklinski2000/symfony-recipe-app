@@ -22,6 +22,15 @@
                             justify-center items-center text-indigo-600 font-semibold">
                             {{ icons.edit(4) }}</a>
                     {% endif %}
+                    {% if is_granted('RECIPE_DELETE', recipe) %}
+                        <form action="{{ path('app_recipe_delete', {'id': recipe.id}) }}" method="post"
+                            onsubmit="return confirm('Czy na pewno chcesz usunąć ten przepis?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ recipe.id) }}">
+                            <button type="submit" class="bg-indigo-50 p-1 rounded shadow hover:bg-indigo-100  hover: cursor-pointer transition flex flex-col justify-center items-center text-indigo-600 font-semibold
+                            ">{{ icons.delete(4) }}
+                            </button>
+                        </form>
+                    {% endif %}
                 </div>
             </div>
             <div id="favorite-btn-{{ recipe.id }}">
