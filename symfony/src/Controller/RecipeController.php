@@ -19,25 +19,6 @@ use Symfony\Component\Form\FormInterface;
 #[IsGranted('IS_EMAIL_VERIFIED')]
 final class RecipeController extends AbstractController
 {
-    #[Route('/', name: 'app_recipe_index')]
-    #[IsGranted('ROLE_USER')]
-    public function index(RecipeRepository $recipeRepository): Response
-    {
-        $currentUser = $this->getUser();
-        $recipes = $recipeRepository->findBy(['author' => $currentUser]);
-
-
-        return $this->render('recipe/index.html.twig', [
-            'recipes' => $recipes,
-        ]);
-    }
-
-    #[Route('/dashboard', name: 'app_recipe_dashboard')]
-    #[IsGranted('ROLE_USER')]
-    public function dashboard(): Response {
-        return $this->render('recipe/dashboard.html.twig');
-    }
-
     #[Route('/new', name: 'app_recipe_new', methods: ['GET', 'POST'])]
     #[IsGranted(RecipeVoter::CREATE)]
     public function new(Request $request, EntityManagerInterface $em, FileUploader $fileUploader): Response {
@@ -55,20 +36,11 @@ final class RecipeController extends AbstractController
             $em->flush();
 
             $this->addFlash('success', 'Przepis został dodany!');
-            return $this->redirectToRoute('app_recipe_index');
+            return $this->redirectToRoute('app_profile_show', ['id' => $this->getUser()->getId()]);
         }
 
         return $this->render('recipe/new.html.twig', [
             'form' => $form->createView(),
-            'recipe' => $recipe,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_recipe_show', requirements: ['id' => '\d+']) ]
-    public function show(Recipe $recipe): Response {
-        $this->denyAccessUnlessGranted(RecipeVoter::VIEW, $recipe);
-
-        return $this->render('recipe/show.html.twig', [
             'recipe' => $recipe,
         ]);
     }
@@ -87,7 +59,7 @@ final class RecipeController extends AbstractController
             $em->flush();
 
             $this->addFlash('success', 'Uaktualniono przepis!');
-            return $this->redirectToRoute('app_recipe_show', ['id' => $recipe->getId()]);
+            return $this->redirectToRoute('app_show', ['id' => $recipe->getId()]);
         }
 
         return $this->render('recipe/edit.html.twig', [
@@ -102,15 +74,16 @@ final class RecipeController extends AbstractController
 
 
         $token = $request->request->get('_token');
+        $userId = $this->getUser()->getId();
 
         if($this->isCsrfTokenValid('delete'.$recipe->getId(), $token)) {
             $em->remove($recipe);
             $em->flush();
             $this->addFlash('success', 'Przepis został usunięty!');
-            return $this->redirectToRoute('app_recipe_index');
+            return $this->redirectToRoute('app_profile_show', ['id' => $userId]);
         }
 
-        return $this->redirectToRoute('app_recipe_index');
+        return $this->redirectToRoute('app_profile_show', ['id' => $userId]);
     }
 
     private function handleImageUpload(FormInterface $form, Recipe $recipe, FileUploader $fileUploader): void {

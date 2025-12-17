@@ -122,4 +122,5 @@
 {% do form.recipeIngredients.setRendered %}
 </form>
 
-<a href="{{ path('app_recipe_index') }}" class="text-gray-700 italic font-medium hover:underline hover:cursor-pointer">Powrót do listy</a>
+<a href="{{ path('app_profile_show', {'id': app.user.id}) }}"
+    class="text-gray-700 italic font-medium hover:underline hover:cursor-pointer">Powrót do listy</a>
