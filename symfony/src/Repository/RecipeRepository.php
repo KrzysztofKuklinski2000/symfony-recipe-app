@@ -48,7 +48,6 @@ class RecipeRepository extends ServiceEntityRepository
                     ->orderBy('totalFavorites', 'DESC')
                     ->setFirstResult(($page - 1) * $limit)
                     ->setMaxResults($limit + 1);
-                    ;
 
         if($user) {
             $query->andWhere('r.author != :user');

@@ -14,12 +14,21 @@
                 src="{{ asset('/uploads/users/default.jpg') }}" alt="Zdjęcie użytkownika">
         {% endif %}
 
-        <div class="flex gap-2 items-center p-1">
+        <div class="flex gap-2 items-center p-1 mt-2">
             <h1 class="font-bold text-2xl">
                 {% include "_partials/_username.html.twig" with {
                     "user": user
                 } %}
             </h1>
+
+            <div>
+                {% if app.user and app.user == user and is_granted('IS_EMAIL_VERIFIED')%}
+                    <a href="{{ path('app_account_edit') }}"
+                        class="bg-[#222831] text-white p-2 font-semibold shadow rounded cursor-pointer">
+                            Edytuj profil
+                    </a>
+                {% endif %}
+            </div>
 
             <div>
                 {% if app.user and app.user != user and is_granted('IS_EMAIL_VERIFIED')%}
