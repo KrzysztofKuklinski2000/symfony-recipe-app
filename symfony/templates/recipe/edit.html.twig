@@ -1,11 +1,11 @@
-{% extends 'dashboard_base.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Edytuj Przepis{% endblock %}
 
 {% block body %}
+    <div class="w-4/5 mx-auto mt-8 p-6">
+        <h1 class="text-xl font-bold text-center text-gray-700">Edytujesz Przepis </h1>
 
-    <h1 class="text-xl font-bold text-center text-gray-700">Edytujesz Przepis </h1>
-
-    {% include 'recipe/_form.html.twig' %}
-
+        {% include 'recipe/_form.html.twig' %}
+    </div>
 {% endblock %}
