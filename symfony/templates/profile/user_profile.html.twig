@@ -66,8 +66,16 @@
                 "user": user
             } %}:
         </h1>
-        {% include "recipe/_list.html.twig" with {
-            "recipes": user.recipes
-        } %}
+
+        <div class="flex gap-4 justify-center items-center">
+            {% if app.user and app.user == user %}
+                <a href="{{ path('app_recipe_new') }}" class="bg-indigo-50 p-8 rounded ml-4 shadow hover:bg-indigo-100 transition flex flex-col justify-center items-center text-indigo-600 font-semibold">
+                    {{ icons.add() }}
+                </a>
+            {% endif %}
+            {% include "recipe/_list.html.twig" with {
+                "recipes": user.recipes
+            } %}
+        </div>
     </div>
 {% endblock %}
