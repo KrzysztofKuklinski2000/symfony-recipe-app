@@ -1,0 +1,13 @@
+<turbo-stream action="update" target="followers-counter">
+    <template>
+        {{ user.followers.count }}
+    </template>
+</turbo-stream>
+
+<turbo-stream action="update" target="follow-button">
+    <template>
+        {% include "follow/_btn.html.twig" with {
+            "user": user
+        } %}
+    </template>
+</turbo-stream>

@@ -30,26 +30,10 @@
                 {% endif %}
             </div>
 
-            <div>
-                {% if app.user and app.user != user and is_granted('IS_EMAIL_VERIFIED')%}
-                    {% if app.user.isFollowing(user) %}
-                        <form action="{{ path('app_unfollow', {'id': user.id }) }}" method="POST">
-                            <input type="hidden" name="_token" value="{{ csrf_token('unfollow' ~ user.id) }}">
-                            <button type="submit"
-                                class="bg-[#222831] text-white p-1 font-semibold shadow rounded cursor-pointer">
-                                    Przestań obserwować
-                                </button>
-                        </form>
-                    {% else %}
-                        <form action="{{ path('app_follow', {'id': user.id }) }}" method="POST">
-                            <input type="hidden" name="_token" value="{{ csrf_token('follow' ~ user.id) }}">
-                            <button type="submit"
-                                class="bg-[#222831] text-white p-1 font-semibold shadow rounded cursor-pointer">
-                                    Obserwuj
-                                </button>
-                        </form>
-                    {% endif %}
-                {% endif %}
+            <div id="follow-button">
+                {% include "follow/_btn.html.twig" with {
+                    "user": user
+                } %}
             </div>
         </div>
 
@@ -61,7 +45,7 @@
             </span>
 
             <span>
-                <strong>
+                <strong id="followers-counter">
                     {{ user.followers.count }}
                 </strong> Obserwujących
             </span>

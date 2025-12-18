@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\UX\Turbo\TurboBundle;
 
 #[Route('/follow')]
 #[IsGranted('ROLE_USER')]
@@ -25,6 +26,14 @@ final class FollowController extends AbstractController
             $currentUser->addFollowing($userToFollow);
             $em->flush();
 
+            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+                return $this->render('follow/action.stream.html.twig', [
+                    'user' => $userToFollow,
+                ]);
+            }
+
         }
 
         return $this->redirectToRoute('app_profile_show', ['id' => $userToFollow->getId()]);
@@ -38,6 +47,14 @@ final class FollowController extends AbstractController
         if ($this->isCsrfTokenValid('unfollow' . $userToUnfollow->getId(), $request->request->get('_token'))){
             $currentUser->removeFollowing($userToUnfollow);
             $em->flush();
+
+            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+                return $this->render('follow/action.stream.html.twig', [
+                    'user' => $userToUnfollow,
+                ]);
+            }
         }
 
 
