@@ -37,40 +37,4 @@ final class ProfileController extends AbstractController
             'user' => $user,
         ]);
     }
-
-    #[Route('/follow/{id}', name: 'app_profile_follow', methods: ['POST'])]
-    #[IsGranted('ROLE_USER')]
-    #[IsGranted('IS_EMAIL_VERIFIED')]
-    public function follow(User $userToFollow, EntityManagerInterface $em, Request $request): Response {
-
-        if($this->isCsrfTokenValid('follow'.$userToFollow->getId(), $request->request->get('_token'))) {
-            /** @var User $currentUser*/
-            $currentUser = $this->getUser();
-
-            $currentUser->addFollowing($userToFollow);
-            $em->flush();
-
-        }
-
-        return $this->redirectToRoute('app_profile_show', ['id' => $userToFollow->getId()]);
-    }
-
-    #[Route('/unfollow/{id}', name: 'app_profile_unfollow', methods: ['POST'])]
-    #[IsGranted('ROLE_USER')]
-    #[IsGranted('IS_EMAIL_VERIFIED')]
-    public function unfollow(User $userToUnfollow, EntityManagerInterface $em, Request $request): Response{
-        /** @var User $currentUser*/
-        $currentUser = $this->getUser();
-
-        if ($this->isCsrfTokenValid('unfollow' . $userToUnfollow->getId(), $request->request->get('_token'))){
-            $currentUser->removeFollowing($userToUnfollow);
-            $em->flush();
-        }
-
-
-
-        return $this->redirectToRoute('app_profile_show', ['id' => $userToUnfollow->getId()]);
-    }
-
-
 }
