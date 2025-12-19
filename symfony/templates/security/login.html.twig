@@ -31,12 +31,20 @@
 
         <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
 
-        <div class="flex items-center">
-            <input id="remember_me" type="checkbox" name="_remember_me"
-                class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-1">
-            <label for="remember_me" class="text-sm text-gray-700 font-medium">
-                Zapamiętaj mnie
-            </label>
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <input id="remember_me" type="checkbox" name="_remember_me"
+                    class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-1">
+                <label for="remember_me" class="text-sm text-gray-700 font-medium">
+                    Zapamiętaj mnie
+                </label>
+            </div>
+
+            <a href="{{ path('app_forgot_password_request') }}"
+                class="text-sm font-medium text-blue-600 hover:text-blue-500 hover:underline">
+                Zapomniałeś hasła?
+            </a>
+
         </div>
 
         <button class="p-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-600 hover:cursor-pointer"

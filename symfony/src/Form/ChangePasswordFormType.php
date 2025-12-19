@@ -27,23 +27,34 @@ class ChangePasswordFormType extends AbstractType
                 'first_options' => [
                     'constraints' => [
                         new NotBlank([
-                            'message' => 'Please enter a password',
+                            'message' => 'Proszę wpisać hasło',
                         ]),
                         new Length([
-                            'min' => 12,
-                            'minMessage' => 'Your password should be at least {{ limit }} characters',
-                            // max length allowed by Symfony for security reasons
+                            'min' => 8,
+                            'minMessage' => 'Hasło musi mieć co najmniej {{ limit }} znaków',
                             'max' => 4096,
                         ]),
-                        new PasswordStrength(),
-                        new NotCompromisedPassword(),
+                        // new PasswordStrength([
+                        //     'minScore' => PasswordStrength::STRENGTH_WEAK,
+                        //     'message' => 'Hasło jest zbyt słabe. Dodaj cyfry lub znaki specjalne.',
+                        // ]),
                     ],
-                    'label' => 'New password',
+                    'attr'=> [
+                        'class' => 'w-full mb-2 p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500',
+                        'placeholder' => 'Wpisz nowe hasło'
+                    ],
+                    'label' => 'Nowe Hasło',
+                    'label_attr' => ['class' => 'block text-sm font-medium text-gray-700 mb-1']
                 ],
                 'second_options' => [
-                    'label' => 'Repeat Password',
+                    'label' => 'Powtórz hasło',
+                    'attr'=> [
+                        'class' => 'w-full mb-2 p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500',
+                        'placeholder' => 'Powtórz hasło'
+                    ],
+                    'label_attr' => ['class' => 'block text-sm font-medium text-gray-700 mb-1']
                 ],
-                'invalid_message' => 'The password fields must match.',
+                'invalid_message' => 'Hasła nie są takie same.',
                 // Instead of being set onto the object directly,
                 // this is read and encoded in the controller
                 'mapped' => false,
