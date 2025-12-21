@@ -87,6 +87,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: ShoppingListItem::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $shoppingListItems;
 
+    private ?string $plainPassword = null;
+
     public function __construct()
     {
         $this->recipes = new ArrayCollection();
@@ -177,7 +179,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[\Deprecated]
     public function eraseCredentials(): void
     {
-        // @deprecated, to be removed when upgrading to Symfony 8
+        $this->plainPassword = null;
     }
 
     /**
@@ -434,6 +436,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $shoppingListItem->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
 
         return $this;
     }
