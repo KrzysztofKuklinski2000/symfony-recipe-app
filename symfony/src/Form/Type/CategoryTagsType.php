@@ -17,14 +17,6 @@ class CategoryTagsType extends AbstractType {
         $builder->addModelTransformer($this->transformer);
     }
 
-    public function configureOptions(OptionsResolver $resolver): void {
-        $resolver->setDefaults([
-            'class' => null,
-            'multiple' => true,
-            'query_builder' => null,
-        ]);
-    }
-
     public function getParent(): string {
         return TextType::class;
     }

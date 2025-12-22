@@ -8,6 +8,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
@@ -35,7 +36,7 @@ class RecipeCrudController extends AbstractCrudController
 
         yield IntegerField::new('preparation_time', 'Czas przygotowania (h)');
 
-        yield AssociationField::new('categories', 'Kategorie')
+        yield ArrayField::new('categories', 'Kategorie')
             ->onlyOnIndex();
 
         yield Field::new('tagsInput', 'Kategorie')
