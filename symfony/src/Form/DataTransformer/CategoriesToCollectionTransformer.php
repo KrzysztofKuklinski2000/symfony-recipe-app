@@ -12,7 +12,6 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class CategoriesToCollectionTransformer implements DataTransformerInterface {
     public function __construct(
         private EntityManagerInterface $em,
-        private SluggerInterface $slugger,
     )
     {
     }
@@ -46,7 +45,7 @@ class CategoriesToCollectionTransformer implements DataTransformerInterface {
             if(!$category) {
                 $category = new Category();
                 $category->setName($name);
-                $category->setSlug($this->slugger->slug($name)->lower());
+                // $category->setSlug($this->slugger->slug($name)->lower());
             }
 
             //Dodajemy tylko unikaty

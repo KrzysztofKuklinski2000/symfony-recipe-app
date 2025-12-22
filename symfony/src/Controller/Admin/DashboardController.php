@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\User;
 use App\Entity\Recipe;
+use App\Entity\Category;
 use Symfony\Component\HttpFoundation\Response;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -35,6 +36,7 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('Zarządzanie przepisami');
         yield MenuItem::linkToCrud("Przepisy", 'fas fa-utensils', Recipe::class);
+        yield MenuItem::linkToCrud('Kategorie', 'fas fa-tags', Category::class);
 
         yield MenuItem::section('Aplikacja');
         yield MenuItem::linkToRoute('Wróć do strony', 'fas fa-arrow-left', 'app_home');
