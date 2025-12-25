@@ -6,6 +6,11 @@ use App\Entity\User;
 use App\Entity\Recipe;
 use App\Entity\Comment;
 use App\Entity\Category;
+use App\Repository\UserRepository;
+use App\Repository\RecipeRepository;
+use App\Repository\CommentRepository;
+use App\Repository\CategoryRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -18,10 +23,18 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
 {
+    public function __construct(private RecipeRepository $recipeRepository, private CommentRepository $commentRepository, private CategoryRepository $categoryRepository, private UserRepository $userRepository)
+    {
+
+    }
     public function index(): Response
     {
-        $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
-        return $this->redirect($adminUrlGenerator->setController(RecipeCrudController::class)->generateUrl());
+       return $this->render('admin/dashboard.html.twig', [
+            'users_count' => $this->userRepository->count(),
+            'recipes_count' => $this->recipeRepository->count(),
+            'comments_count' => $this->commentRepository->count(),
+            'categories_count' => $this->categoryRepository->count(),
+       ]);
     }
 
     public function configureDashboard(): Dashboard
