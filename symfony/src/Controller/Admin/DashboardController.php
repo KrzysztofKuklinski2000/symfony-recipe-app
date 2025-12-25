@@ -18,23 +18,46 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 
 #[IsGranted('ROLE_ADMIN')]
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
 {
-    public function __construct(private RecipeRepository $recipeRepository, private CommentRepository $commentRepository, private CategoryRepository $categoryRepository, private UserRepository $userRepository)
+    public function __construct(
+        private RecipeRepository $recipeRepository,
+        private CommentRepository $commentRepository,
+        private CategoryRepository $categoryRepository,
+        private UserRepository $userRepository,
+        private AdminUrlGenerator $urlGenerator,
+        )
     {
 
     }
     public function index(): Response
     {
-       return $this->render('admin/dashboard.html.twig', [
+        $commentsUrl = $this->urlGenerator
+            ->setController(CommentCrudController::class)
+            ->setAction(Action::INDEX)
+            ->generateUrl();
+
+        $usersUrl = $this->urlGenerator
+            ->setController(UserCrudController::class)
+            ->setAction(Action::INDEX)
+            ->generateUrl();
+
+        return $this->render('admin/dashboard.html.twig', [
             'users_count' => $this->userRepository->count(),
             'recipes_count' => $this->recipeRepository->count(),
             'comments_count' => $this->commentRepository->count(),
             'categories_count' => $this->categoryRepository->count(),
-       ]);
+
+            'latest_comments' => $this->commentRepository->findBy([], ['createdAt' => 'DESC'], 5),
+            'latest_users' => $this->userRepository->findBy([], ['id' => 'DESC'], 5),
+
+            'comments_url' => $commentsUrl,
+            'users_url' => $usersUrl,
+        ]);
     }
 
     public function configureDashboard(): Dashboard

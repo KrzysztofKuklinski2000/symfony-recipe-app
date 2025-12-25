@@ -49,4 +49,92 @@
 
     </div>
 </div>
+<div class="row mt-4">
+
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white fw-bold">
+                <i class="fas fa-comments text-warning me-2"></i> Ostatnie komentarze
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped mb-0 table-hover">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Autor</th>
+                            <th>Treść</th>
+                            <th class="text-end">Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for comment in latest_comments %}
+                        <tr>
+                            <td>
+                                <small class="fw-bold d-block text-truncate" style="max-width: 100px;">
+                                    {{ comment.author }}
+                                </small>
+                            </td>
+                            <td>
+                                <span class="d-block text-truncate" style="max-width: 200px;">
+                                    {{ comment.content }}
+                                </span>
+                                <small class="text-muted">w: {{ comment.recipe }}</small>
+                            </td>
+                            <td class="text-end text-muted small">
+                                {{ comment.createdAt|date('d.m H:i') }}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center p-3">Brak komentarzy</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer bg-white text-center">
+                <a href="{{ comments_url }}"
+                    class="text-decoration-none small">
+                    Zobacz wszystkie <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white fw-bold">
+                <i class="fas fa-user-plus text-primary me-2"></i> Nowi Użytkownicy
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped mb-0 table-hover">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Email</th>
+                            <th>Nazwa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in latest_users %}
+                        <tr>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.username ?? 'Brak nazwy' }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center p-3">Brak użytkowników</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer bg-white text-center">
+                <a href="{{ users_url }}"
+                    class="text-decoration-none small">
+                    Zarządzaj użytkownikami <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
 {% endblock %}
