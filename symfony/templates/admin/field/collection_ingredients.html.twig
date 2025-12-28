@@ -1,0 +1,11 @@
+{% set count = field.value|length %}
+
+{% if count == 0 %}
+    <span class="badge badge-secondary">Brak Składników</span>
+{% else %}
+    <u style="padding-left: 20px; margin: 0;">>
+        {% for item in field.value %}
+            <li>{{ item }}</li>
+        {% endfor %}
+    </u>
+{% endif %}

@@ -36,29 +36,7 @@ class CategoryCrudController extends AbstractCrudController
 
         yield CollectionField::new('recipes', 'Lista Przepisów')
             ->onlyOnDetail()
-            ->formatValue(function ($collection){
-                $count = count($collection);
-
-                if($count === 0) return 'Brak przepisów';
-
-                $html = '<ul style="padding-left: 20px; margin: 0;">';
-                $limit = 1;
-                $i = 0;
-
-
-                foreach($collection as $recipe){
-                    $i++;
-                    if($i > $limit) {
-                        $remaining = $count - $limit;
-                        $html .= '<li style="color: grey; font-style: italic;">... i ' . $remaining . ' innych.</li>';
-                        break;
-                    }
-                    $html .= '<li>' . (string) $recipe . '</li>';
-                }
-                $html .= '</ul>';
-
-                return $html;
-            });
+            ->setTemplatePath('admin/field/collection_limit.html.twig');
     }
 
 

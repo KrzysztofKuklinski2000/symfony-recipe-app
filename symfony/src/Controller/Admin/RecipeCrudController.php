@@ -57,18 +57,7 @@ class RecipeCrudController extends AbstractCrudController
 
         yield CollectionField::new('recipeIngredients', 'Lista Składników')
             ->onlyOnDetail()
-            ->formatValue(function ($value, $entity){
-                if(count($value) === 0 ) return 'Brak składników';
-
-                $html = '<ul style="padding-left: 20px; margin: 0;">';
-
-                foreach($value as $ingredient){
-                    $html .= '<li>' . (string) $ingredient . '</li>';
-                }
-                $html .= '</ul>';
-
-                return $html;
-            });
+            ->setTemplatePath('admin/field/collection_ingredients.html.twig');
     }
 
     public function configureCrud(Crud $crud): Crud {
