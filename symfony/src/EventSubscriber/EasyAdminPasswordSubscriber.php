@@ -9,7 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Event\BeforeEntityPersistedEvent;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 
-class EasyAdminSubscriber implements EventSubscriberInterface
+class EasyAdminPasswordSubscriber implements EventSubscriberInterface
 {
     public function __construct(private UserPasswordHasherInterface $passwordHasher)
     {}
@@ -21,7 +21,7 @@ class EasyAdminSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function hashPassword(mixed $event): void {
+    public function hashPassword(BeforeEntityPersistedEvent|BeforeEntityUpdatedEvent $event): void {
         $entity = $event->getEntityInstance();
 
         if(!($entity instanceof User)) {
