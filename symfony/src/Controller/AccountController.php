@@ -30,8 +30,14 @@ final class AccountController extends AbstractController
             $imageFile = $form->get('imageFile')->getData();
 
             if ($imageFile) {
+                $oldFilename = $user->getImageFilename();
+
                 $imageFilename = $fileUploader->upload($imageFile, 'users');
                 $user->setImageFilename($imageFilename);
+
+                if($oldFilename) {
+                    $fileUploader->remove($oldFilename, 'users');
+                }
             }
 
             $em->flush();
