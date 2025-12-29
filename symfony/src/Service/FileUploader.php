@@ -27,6 +27,16 @@ class FileUploader {
         return $newFilename;
     }
 
+    public function remove(string $filename, string $subDirectory): void {
+        if(!$filename) return;
+
+        $fullPath = $this->getTargetDirectory().'/'.$subDirectory.'/'.$filename;
+
+        if(file_exists($fullPath)) {
+            unlink($fullPath);
+        }
+    }
+
     public function getTargetDirectory(): string {
         return $this->targetDirectory;
     }

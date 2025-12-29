@@ -77,8 +77,15 @@ final class RecipeController extends AbstractController
         $userId = $this->getUser()->getId();
 
         if($this->isCsrfTokenValid('delete'.$recipe->getId(), $token)) {
+            $filename = $recipe->getImageFilename();
+
             $em->remove($recipe);
             $em->flush();
+
+            if($filename) {
+                $fileUploader->remove($filename, 'recipes');
+            }
+
             $this->addFlash('success', 'Przepis został usunięty!');
             return $this->redirectToRoute('app_profile_show', ['id' => $userId]);
         }
@@ -90,8 +97,15 @@ final class RecipeController extends AbstractController
         $imageFile = $form->get('imageFile')->getData();
 
         if ($imageFile) {
+
+            $oldFilename = $recipe->getImageFilename();
+
             $imageFilename = $fileUploader->upload($imageFile, 'recipes');
             $recipe->setImageFilename($imageFilename);
+
+            if($oldFilename) {
+                $fileUploader->remove($oldFilename, 'recipes');
+            }
         }
     }
 }
