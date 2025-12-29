@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\UX\Turbo\TurboBundle;
 
 #[IsGranted('ROLE_USER')]
+#[IsGranted('IS_EMAIL_VERIFIED')]
 final class ShoppingListController extends AbstractController
 {
 

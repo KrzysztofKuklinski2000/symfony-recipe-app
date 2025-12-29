@@ -54,23 +54,27 @@
         <div class="p-4">
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl py-2">Składniki </h2>
-                <form action="{{ path('app_shopping_add', {'id': recipe.id}) }}" method="POST"
-                    id="recipe-ingredients-{{ recipe.id }}" class="flex gap-2">
-                    <input type="hidden" name="_token" value="{{ csrf_token('shoppingList' ~ recipe.id) }}">
-                    <button class="text-sm hover:cursor-pointer p-2 rounded bg-indigo-50 flex gap-2 justify-between items-center" type="submit">{{ icons.add(4) }}Dodaj</button>
-                </form>
+                {% if is_granted('IS_EMAIL_VERIFIED') %}
+                    <form action="{{ path('app_shopping_add', {'id': recipe.id}) }}" method="POST"
+                        id="recipe-ingredients-{{ recipe.id }}" class="flex gap-2">
+                        <input type="hidden" name="_token" value="{{ csrf_token('shoppingList' ~ recipe.id) }}">
+                        <button class="text-sm hover:cursor-pointer p-2 rounded bg-indigo-50 flex gap-2 justify-between items-center" type="submit">{{ icons.add(4) }}Dodaj</button>
+                    </form>
+                {% endif %}
             </div>
             <ul class="space-y-2 list-disc list-inside">
                 {% for ingredient in recipe.recipeIngredients %}
                     <li class="flex gap-2" id="add-ingriedient-{{ ingredient.id }}">
                         <span>{{ ingredient.name|capitalize }} ( <strong>{{ ingredient.quantity }} </strong>)</span>
-                        <form action="{{ path('app_shopping_add_item', {'id': ingredient.id}) }}"
-                            method="POST" >
-                            <input type="hidden" name="_token" value="{{ csrf_token('add_item' ~ ingredient.id) }}">
-                            <button type="submit" class="hover:cursor-pointer hover:text-blue-500">
-                                {{ icons.add(4) }}
-                            </button>
-                        </form>
+                        {% if is_granted('IS_EMAIL_VERIFIED') %}
+                            <form action="{{ path('app_shopping_add_item', {'id': ingredient.id}) }}"
+                                method="POST" >
+                                <input type="hidden" name="_token" value="{{ csrf_token('add_item' ~ ingredient.id) }}">
+                                <button type="submit" class="hover:cursor-pointer hover:text-blue-500">
+                                    {{ icons.add(4) }}
+                                </button>
+                            </form>
+                        {% endif %}
                     </li>
                 {% endfor %}
             </ul>
