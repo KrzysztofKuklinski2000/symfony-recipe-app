@@ -32,12 +32,15 @@
             <img class="w-full mx-auto md:max-w-[500px] h-64 object-cover" src="{{ asset('/uploads/recipes/default.png') }}"
                 alt="{{ recipe.title  }} obrazek">
         {% endif %}
-        <div class="flex justify-center gap-4">
+        <div class="flex justify-center gap-4 mt-2">
             <a class="flex items-center gap-2 hover:font-bold underline"
                 href="{{ path('app_profile_show', {'id': recipe.author.id}) }}">
                 {{icons.user()}} {{ recipe.author.email }}
             </a>
-            <p>Czas przygotowania: <strong>{{ recipe.preparationTime }} godzin </strong> </p>
+            {% if recipe.difficulty %}
+                <span>📊 {{ recipe.difficulty.getLabel() }}</span>
+            {% endif %}
+            <span >⏱️ {{ recipe.preparationTime }} godz</span>
         </div>
     </div>
 

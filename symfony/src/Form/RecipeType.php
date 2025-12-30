@@ -3,17 +3,19 @@
 namespace App\Form;
 
 use App\Entity\Recipe;
-use App\Form\DataTransformer\CategoriesToCollectionTransformer;
+use App\Enum\Difficulty;
 use App\Form\RecipeIngredientType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use App\Form\DataTransformer\CategoriesToCollectionTransformer;
 
 class RecipeType extends AbstractType
 {
@@ -60,6 +62,13 @@ class RecipeType extends AbstractType
                 ],
                 'required' => false,
                 'invalid_message' => 'Błąd w formacie kategorii.'
+            ])
+            ->add('difficulty', EnumType::class, [
+                'label' => 'Wybierz poziom trudności',
+                'class' => Difficulty::class,
+                'choice_label' => fn($difficulty) => $difficulty->getLabel(),
+                'placeholder' => '--- Wybierz (opcjonalnie) ---',
+                'required' => false,
             ])
         ;
         $builder->get('categories')->addModelTransformer($this->transformer);

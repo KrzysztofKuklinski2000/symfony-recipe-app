@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Entity;
+use App\Enum\Difficulty;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RecipeRepository;
@@ -66,6 +67,9 @@ class Recipe
      */
     #[ORM\OneToMany(targetEntity: ShoppingListItem::class, mappedBy: 'recipe')]
     private Collection $shoppingListItems;
+
+    #[ORM\Column(length: 255, nullable: true, enumType: Difficulty::class)]
+    private ?Difficulty $difficulty = null;
 
     public function __construct()
     {
@@ -287,5 +291,17 @@ class Recipe
 
     public function __toString(): string {
         return $this->title;
+    }
+
+    public function getDifficulty(): ?Difficulty
+    {
+        return $this->difficulty;
+    }
+
+    public function setDifficulty(?Difficulty $difficulty): static
+    {
+        $this->difficulty = $difficulty;
+
+        return $this;
     }
 }
