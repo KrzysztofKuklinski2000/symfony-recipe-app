@@ -47,7 +47,18 @@
     <div class="flex flex-col md:justify-around p-4 md:flex-row">
         <div class="p-4 md:max-w-2/3">
             {% include "category/_tags.html.twig" with {"categories": recipe.categories} %}
-
+            <div>
+               {% if recipe.dietaryTags %}
+                    <h2 class="font-semibold text-xl py-2">Tagi: </h2>
+                    <ul class="flex flex-col gap-2 md:flex-row md:gap-4 text-gray-300 text-sm font-semibold">
+                        {% for tag in recipe.dietaryTags %}
+                            <li>
+                                #{{ tag.getLabel()|capitalize }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+               {% endif %}
+            </div>
             <div>
                 <h2 class="font-semibold text-xl py-2">Instrukcje: </h2>
                 {{ recipe.instructions|nl2br }}

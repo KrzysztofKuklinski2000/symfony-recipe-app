@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Recipe;
+use App\Enum\DietaryTag;
 use App\Enum\Difficulty;
 use App\Form\RecipeIngredientType;
 use Symfony\Component\Form\AbstractType;
@@ -68,6 +69,14 @@ class RecipeType extends AbstractType
                 'class' => Difficulty::class,
                 'choice_label' => fn($difficulty) => $difficulty->getLabel(),
                 'placeholder' => '--- Wybierz (opcjonalnie) ---',
+                'required' => false,
+            ])
+            ->add('dietaryTags', EnumType::class, [
+                'label' => 'Wybierz preferencje diety',
+                'class' => DietaryTag::class,
+                'choice_label' => fn($difficulty) => $difficulty->getLabel(),
+                'multiple' => true,
+                'expanded' => true,
                 'required' => false,
             ])
         ;

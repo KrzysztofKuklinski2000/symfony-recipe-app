@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 use App\Enum\Difficulty;
+use App\Enum\DietaryTag;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RecipeRepository;
@@ -70,6 +71,9 @@ class Recipe
 
     #[ORM\Column(length: 255, nullable: true, enumType: Difficulty::class)]
     private ?Difficulty $difficulty = null;
+
+    #[ORM\Column(nullable: true, type:'json')]
+    private ?array $dietaryTags = null;
 
     public function __construct()
     {
@@ -301,6 +305,24 @@ class Recipe
     public function setDifficulty(?Difficulty $difficulty): static
     {
         $this->difficulty = $difficulty;
+
+        return $this;
+    }
+
+    public function getDietaryTags(): ?array
+    {
+        $tags = $this->dietaryTags ?? [];
+        return array_map(fn($tag) => $tag instanceof DietaryTag ? $tag : DietaryTag::tryFrom($tag), $tags);
+    }
+
+    public function setDietaryTags(?array $dietaryTags): static
+    {
+        if(!$dietaryTags) {
+            $this->dietaryTags = [];
+            return $this;
+        }
+
+        $this->dietaryTags = array_map(fn($tag) => $tag instanceof DietaryTag ? $tag->value : $tag, $dietaryTags);
 
         return $this;
     }
