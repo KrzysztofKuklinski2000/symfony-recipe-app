@@ -4,6 +4,9 @@ namespace App\Controller\Admin;
 
 use App\Entity\Recipe;
 use App\Form\Type\CategoryTagsType;
+use App\Enum\Difficulty;
+use App\Enum\DietaryTag;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -27,6 +30,17 @@ class RecipeCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
+        $difficultyChoices = [];
+        foreach(Difficulty::cases() as $difficulty) {
+            $difficultyChoices[$difficulty->getLabel()] = $difficulty;
+        }
+
+        $dietaryTagChoices = [];
+        foreach(DietaryTag::cases() as $dietaryTag) {
+            $dietaryTagChoices[$dietaryTag->getLabel()] = $dietaryTag;
+        }
+
+
         yield IdField::new('id')->hideOnForm();
         yield TextField::new('title', 'Tytuł');
         yield AssociationField::new('author')->hideOnForm();
@@ -58,6 +72,15 @@ class RecipeCrudController extends AbstractCrudController
         yield CollectionField::new('recipeIngredients', 'Lista Składników')
             ->onlyOnDetail()
             ->setTemplatePath('admin/field/collection_ingredients.html.twig');
+
+        yield ChoiceField::new('difficulty', 'Poziom trudności')
+            ->setChoices($difficultyChoices)
+            ->renderAsBadges();
+
+        yield ChoiceField::new('dietaryTags', 'Tagi diety')
+            ->setChoices($dietaryTagChoices)
+            ->allowMultipleChoices()
+            ->renderAsBadges();
     }
 
     public function configureCrud(Crud $crud): Crud {
