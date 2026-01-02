@@ -81,6 +81,8 @@ class RecipeCrudController extends AbstractCrudController
             ->setChoices($dietaryTagChoices)
             ->allowMultipleChoices()
             ->renderAsBadges();
+
+        yield IntegerField::new('servings', 'Ilość porcji');
     }
 
     public function configureCrud(Crud $crud): Crud {

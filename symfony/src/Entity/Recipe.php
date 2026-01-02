@@ -75,6 +75,9 @@ class Recipe
     #[ORM\Column(nullable: true, type:'json')]
     private ?array $dietaryTags = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $servings = null;
+
     public function __construct()
     {
         $this->recipeIngredients = new ArrayCollection();
@@ -323,6 +326,18 @@ class Recipe
         }
 
         $this->dietaryTags = array_map(fn($tag) => $tag instanceof DietaryTag ? $tag->value : $tag, $dietaryTags);
+
+        return $this;
+    }
+
+    public function getServings(): ?int
+    {
+        return $this->servings;
+    }
+
+    public function setServings(?int $servings): static
+    {
+        $this->servings = $servings;
 
         return $this;
     }

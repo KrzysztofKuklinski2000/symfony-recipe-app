@@ -18,7 +18,8 @@ class RecipeIngredientCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         yield TextField::new('name', 'Nazwa składnika');
-        yield TextField::new('quantity', 'Ilość');
+        yield NumberField::new('quantity', 'Ilość');
+        yield TextField::new('unit', 'Jednostka');
         yield AssociationField::new('recipe')->hideOnForm();
     }
 }

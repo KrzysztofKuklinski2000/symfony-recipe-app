@@ -79,7 +79,13 @@ class RecipeType extends AbstractType
                 'expanded' => true,
                 'required' => false,
             ])
-        ;
+            ->add('servings', IntegerType::class, [
+                'label' => 'Liczba porcji',
+                'required' => false,
+                'attr' => [
+                    'min' => 1,
+                ],
+            ]);
         $builder->get('categories')->addModelTransformer($this->transformer);
     }
 

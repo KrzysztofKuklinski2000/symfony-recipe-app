@@ -16,12 +16,15 @@ class RecipeIngredient
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $quantity = null;
+    #[ORM\Column(nullable: true)]
+    private ?float $quantity = null;
 
     #[ORM\ManyToOne(inversedBy: 'recipeIngredients')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Recipe $recipe = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $unit = null;
 
     public function getId(): ?int
     {
@@ -40,12 +43,12 @@ class RecipeIngredient
         return $this;
     }
 
-    public function getQuantity(): ?string
+    public function getQuantity(): ?float
     {
         return $this->quantity;
     }
 
-    public function setQuantity(string $quantity): static
+    public function setQuantity(?float $quantity): static
     {
         $this->quantity = $quantity;
 
@@ -65,6 +68,18 @@ class RecipeIngredient
     }
 
     public function __toString(): string {
-        return $this->name . ' ' . $this->quantity;
+        return $this->name . ' ' . $this->quantity . ($this->unit ? ' ' . $this->unit : '');
+    }
+
+    public function getUnit(): ?string
+    {
+        return $this->unit;
+    }
+
+    public function setUnit(?string $unit): static
+    {
+        $this->unit = $unit;
+
+        return $this;
     }
 }

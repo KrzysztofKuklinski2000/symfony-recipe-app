@@ -67,7 +67,19 @@
 
         <div class="p-4">
             <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl py-2">Składniki </h2>
+                <div class="flex items-center gap-2">
+                    <h2 class="font-semibold text-xl py-2">Składniki </h2>
+                    {% if recipe.servings %}
+                        <div class="flex items-center gap-2">
+                            <button class="hover:cursor-pointer" id="btn-decrease">-</button>
+                                <p id="servings-display" data-base-servings="{{ recipe.servings }}">
+                                    ({{ recipe.servings }}porcji )
+                                </p>
+                            <button class="hover:cursor-pointer" id="btn-increase">+</button>
+                        </div>
+                    {% endif %}
+                </div>
+
                 {% if is_granted('IS_EMAIL_VERIFIED') %}
                     <form action="{{ path('app_shopping_add', {'id': recipe.id}) }}" method="POST"
                         id="recipe-ingredients-{{ recipe.id }}" class="flex gap-2">
@@ -79,7 +91,18 @@
             <ul class="space-y-2 list-disc list-inside">
                 {% for ingredient in recipe.recipeIngredients %}
                     <li class="flex gap-2" id="add-ingriedient-{{ ingredient.id }}">
-                        <span>{{ ingredient.name|capitalize }} ( <strong>{{ ingredient.quantity }} </strong>)</span>
+                        <span>
+                            {{ ingredient.name|capitalize }}
+                            ( <strong
+                                class="ingredient-amount"
+                                data-original-amount="{{ ingredient.quantity }}"
+                                data-unit="{{ ingredient.unit|default('')|lower }}"
+                            >
+                                {{ ingredient.quantity }}
+                            </strong>
+                            {{ ingredient.unit }}
+                            )
+                        </span>
                         {% if is_granted('IS_EMAIL_VERIFIED') %}
                             <form action="{{ path('app_shopping_add_item', {'id': ingredient.id}) }}"
                                 method="POST" >
@@ -111,4 +134,62 @@
         {% include "comment/_list.html.twig" with {"recipe": recipe}%}
     </div>
 
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        document.addEventListener('turbo:load', () => {
+            const decreaseBtn = document.getElementById('btn-decrease');
+            const increaseBtn = document.getElementById('btn-increase');
+            const servingsDisplay = document.getElementById('servings-display');
+            const ingredientElements = document.querySelectorAll('.ingredient-amount');
+
+            const baseServings = parseInt(servingsDisplay.dataset.baseServings) || 1;
+            let currentServings = baseServings;
+
+            function updateServings() {
+                let label = 'porcji';
+                if (currentServings === 1) label = 'porcja';
+                else if(currentServings > 1 && currentServings < 5) label = 'porcje';
+
+                servingsDisplay.textContent = `(${currentServings} ${label})`;
+
+                const ratio = currentServings / baseServings;
+
+                ingredientElements.forEach(igredientElement => {
+                    const originalAmount = parseFloat(igredientElement.dataset.originalAmount);
+                    const unit = (igredientElement.dataset.unit || '').trim().toLowerCase().replace('.', '');
+
+                    if(!isNaN(originalAmount)) {
+                        let newAmount = originalAmount * ratio;
+
+                        if (['szt', 'sztuka', 'opakowanie', 'puszka'].includes(unit)) {
+                            newAmount = Math.round(newAmount * 2) / 2;
+                        }
+                        else {
+                            newAmount = parseFloat(newAmount.toFixed(1));
+                        }
+
+
+                        igredientElement.innerText = newAmount;
+
+                    }
+                })
+            }
+
+            increaseBtn.addEventListener('click', () => {
+                currentServings++;
+                updateServings();
+            });
+
+            decreaseBtn.addEventListener('click', () => {
+                if (currentServings > 1) {
+                    currentServings--;
+                    updateServings();
+                }
+            });
+        })
+    </script>
 {% endblock %}

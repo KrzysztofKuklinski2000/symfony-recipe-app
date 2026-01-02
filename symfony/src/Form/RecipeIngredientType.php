@@ -7,6 +7,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class RecipeIngredientType extends AbstractType
 {
@@ -19,12 +20,17 @@ class RecipeIngredientType extends AbstractType
                     'placeholder' => 'np. Mąka'
                 ]
             ])
-            ->add('quantity', TextType::class, [
+            ->add('quantity', NumberType::class, [
                 'label' => 'Ilość',
+                'html5' => true,
                 'attr' => [
-                    'placeholder' => 'np. 100g, 2szt'
+                    'step' => 'any'
                 ]
             ])
+            ->add('unit', TextType::class, [
+                'label' => 'Jednostka (np. kg, ml, łyżki)',
+                'required' => false,
+            ]);
         ;
     }
 
