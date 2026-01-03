@@ -17,7 +17,8 @@ class ShoppingListService
     public function addIngredientToShoppingList(
         User $user,
         RecipeIngredient $ingredient,
-        ?Recipe $recipe = null
+        ?Recipe $recipe = null,
+        float $scaleFactor = 1,
     ): void
     {
         $existingItem = $this->repository->findOneBy([
@@ -34,7 +35,20 @@ class ShoppingListService
             $newRecipeItem->setUser($user);
             $newRecipeItem->setRecipe($recipe);
             $newRecipeItem->setName($ingredient->getName());
-            $newRecipeItem->setQuantity($ingredient->getQuantity());
+            if($ingredient->getQuantity()) {
+                $scaledQuantity = $ingredient->getQuantity() * $scaleFactor;
+
+                $displayValue = (float)round($scaledQuantity, 2);
+
+                $unit = $ingredient->getUnit();
+
+                $quantityString = $displayValue.($unit ? '  '. $unit: '');
+
+                $newRecipeItem->setQuantity($quantityString);
+            }else {
+                $newRecipeItem->setQuantity(null);
+            }
+
             $newRecipeItem->setIsChecked(false);
 
             $this->em->persist($newRecipeItem);

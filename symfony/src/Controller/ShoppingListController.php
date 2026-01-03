@@ -45,8 +45,14 @@ final class ShoppingListController extends AbstractController
             $recipeItems = $recipe->getRecipeIngredients();
             $user = $this->getUser();
 
+            $formServings = $request->request->getInt('targetServings');
+            $targetServings = $formServings > 0 ? $formServings : ($recipe->getServings() ?: 1);
+            $baseServings = $recipe->getServings() ?: 1;
+
+            $ratio = $targetServings / $baseServings;
+
             foreach($recipeItems as $recipeItem) {
-                $this->shoppingListService->addIngredientToShoppingList($user, $recipeItem, $recipe);
+                $this->shoppingListService->addIngredientToShoppingList($user, $recipeItem, $recipe, $ratio);
             }
 
             $this->shoppingListService->save();
@@ -68,7 +74,16 @@ final class ShoppingListController extends AbstractController
         if ($this->isCsrfTokenValid('add_item' . $ingredient->getId(), $request->request->get('_token'))) {
             $user = $this->getUser();
 
-            $this->shoppingListService->addIngredientToShoppingList($user, $ingredient);
+            $recipe = $ingredient->getRecipe();
+
+            $formServings = $request->request->getInt('targetServings');
+            $targetServings = $formServings > 0 ? $formServings : ($recipe->getServings() ?: 1);
+            $baseServings = $recipe->getServings() ?: 1;
+
+            $ratio = $targetServings / $baseServings;
+
+
+            $this->shoppingListService->addIngredientToShoppingList($user, $ingredient, null, $ratio);
             $this->shoppingListService->save();
 
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {

@@ -73,6 +73,11 @@
                 }
             }
         })
+
+        const hiddenInputs = document.querySelectorAll('.js-servings-input');
+        hiddenInputs.forEach(input => {
+            input.value = currentServings;
+        });
     }
 
     increaseBtn.addEventListener('click', () => {

@@ -20,7 +20,7 @@ class ShoppingListItem
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $quantity = null;
 
     #[ORM\Column]
@@ -66,7 +66,7 @@ class ShoppingListItem
         return $this->quantity;
     }
 
-    public function setQuantity(string $quantity): static
+    public function setQuantity(?string $quantity): static
     {
         $this->quantity = $quantity;
 

@@ -84,6 +84,8 @@
                     <form action="{{ path('app_shopping_add', {'id': recipe.id}) }}" method="POST"
                         id="recipe-ingredients-{{ recipe.id }}" class="flex gap-2">
                         <input type="hidden" name="_token" value="{{ csrf_token('shoppingList' ~ recipe.id) }}">
+                        <input type="hidden" name="targetServings" value="{{ recipe.servings|default(1) }}"
+                            class="js-servings-input">
                         <button class="text-sm hover:cursor-pointer p-2 rounded bg-indigo-50 flex gap-2 justify-between items-center" type="submit">{{ icons.add(4) }}Dodaj</button>
                     </form>
                 {% endif %}
@@ -107,6 +109,8 @@
                             <form action="{{ path('app_shopping_add_item', {'id': ingredient.id}) }}"
                                 method="POST" >
                                 <input type="hidden" name="_token" value="{{ csrf_token('add_item' ~ ingredient.id) }}">
+                                <input type="hidden" name="targetServings" value="{{ recipe.servings|default(1) }}"
+                                    class="js-servings-input">
                                 <button type="submit" class="hover:cursor-pointer hover:text-blue-500">
                                     {{ icons.add(4) }}
                                 </button>
