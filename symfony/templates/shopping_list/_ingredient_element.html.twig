@@ -6,7 +6,11 @@
         <input type="checkbox" {{ item.isChecked ? 'checked' : ''}} id="item-{{ item.id }}"
             onchange="this.form.requestSubmit()">
         <label for="item-{{ item.id }}" class="cursor-pointer">
-            <span class="{{ item.isChecked ? 'line-through' : '' }}">{{ item.name }} ({{ item.quantity }}</span>)
+            <span class="{{ item.isChecked ? 'line-through' : '' }}">{{ item.name }}</span>
+            {% if item.quantity %}
+                ( {{ item.quantity|round(2) }}
+                <span class="text-sm font-normal"> {{ item.unit }}) </span>
+            {% endif %}
 
             <span class="ml-1 text-sm font-bold text-indiego-500 bg-indigo-50 px-2 py-0.5 rounded-full no-underline">
                 x{{ item.count }}

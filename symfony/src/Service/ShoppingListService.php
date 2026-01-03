@@ -21,40 +21,58 @@ class ShoppingListService
         float $scaleFactor = 1,
     ): void
     {
+        $unit = $ingredient->getUnit();
+
+        if($unit === '') $unit = null;
+
+
         $existingItem = $this->repository->findOneBy([
             'user' => $user,
             'name' => $ingredient->getName(),
-            'recipe' => $recipe
+            'recipe' => $recipe,
+            'unit' => $unit,
         ]);
 
+        $quantityToAdd = 0.0;
+
+        if($ingredient->getQuantity()){
+            $quantityToAdd = $ingredient->getQuantity() * $scaleFactor;
+        }
+
         if($existingItem){
-            $existingItem->increnentCount();
+            if($quantityToAdd > 0) {
+                $currentQuantity = $existingItem->getQuantity() ?? 0.0;
+
+                $newQuantity = $currentQuantity + $quantityToAdd;
+
+                $existingItem->setQuantity($newQuantity);
+
+                $existingItem->setCount(1);
+            }else {
+                // Dla produktów bez wagi (np. 2x "Sól do smaku")
+                $existingItem->increnentCount();
+            }
             $existingItem->setIsChecked(false);
         }else {
             $newRecipeItem = new ShoppingListItem();
             $newRecipeItem->setUser($user);
             $newRecipeItem->setRecipe($recipe);
             $newRecipeItem->setName($ingredient->getName());
-            if($ingredient->getQuantity()) {
-                $scaledQuantity = $ingredient->getQuantity() * $scaleFactor;
 
-                $displayValue = (float)round($scaledQuantity, 2);
-
-                $unit = $ingredient->getUnit();
-
-                $quantityString = $displayValue.($unit ? '  '. $unit: '');
-
-                $newRecipeItem->setQuantity($quantityString);
+            if($quantityToAdd > 0) {
+                $newRecipeItem->setQuantity($quantityToAdd);
+                $newRecipeItem->setUnit($unit);
             }else {
                 $newRecipeItem->setQuantity(null);
+                $newRecipeItem->setUnit($unit);
             }
-
+            $newRecipeItem->setCount(1);
             $newRecipeItem->setIsChecked(false);
 
             $this->em->persist($newRecipeItem);
 
-            $this->save();
         }
+        $this->save();
     }
 
     public function groupItemsByRecipe(iterable $shoppingListItems): array

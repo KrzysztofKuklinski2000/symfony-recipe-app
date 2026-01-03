@@ -20,8 +20,11 @@ class ShoppingListItem
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $quantity = null;
+    #[ORM\Column(nullable: true)]
+    private ?float $quantity = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $unit = null;
 
     #[ORM\Column]
     private ?bool $isChecked = false;
@@ -61,15 +64,25 @@ class ShoppingListItem
         return $this;
     }
 
-    public function getQuantity(): ?string
+    public function getQuantity(): ?float
     {
         return $this->quantity;
     }
 
-    public function setQuantity(?string $quantity): static
+    public function setQuantity(?float $quantity): static
     {
         $this->quantity = $quantity;
+        return $this;
+    }
 
+    public function getUnit(): ?string
+    {
+        return $this->unit;
+    }
+
+    public function setUnit(?string $unit): static
+    {
+        $this->unit = $unit;
         return $this;
     }
 
