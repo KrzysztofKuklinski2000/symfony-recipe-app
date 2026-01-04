@@ -26,8 +26,10 @@
                             action="{{ path('app_shopping_delete_group') }}"
                             method="POST"
                         >
-                            <input type="hidden" name="_token" value="{{ csrf_token('shoppingItem' ~ recipe.id ?? '') }}">
-                            <input type="hidden" name="recipeId" value="{{ recipe.id ?? '' }}">
+                            {% set recipeId = recipe ? recipe.id : '' %}
+
+                            <input type="hidden" name="_token" value="{{ csrf_token('shoppingItem' ~ recipeId) }}">
+                            <input type="hidden" name="recipeId" value="{{ recipeId }}">
                             <button type="submit" class="hover:cursor-pointer hover:text-red-500">
                                 {{ icons.delete(4) }}
                             </button>

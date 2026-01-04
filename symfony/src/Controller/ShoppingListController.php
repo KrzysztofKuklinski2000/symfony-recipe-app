@@ -155,7 +155,12 @@ final class ShoppingListController extends AbstractController
 
             $this->shoppingListService->deleteByRecipe($this->getUser(), $recipeId);
 
-            $this->addFlash('success', 'Usunięto grupę produktów.');
+            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+                return $this->render('shopping_list/delete_group_of_ingredients.stream.html.twig', [
+                    'recipeId' => $recipeId
+                ]);
+            }
         }
         return $this->redirectToRoute('app_shopping_list');
     }
