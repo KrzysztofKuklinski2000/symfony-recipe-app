@@ -105,6 +105,12 @@ class ShoppingListService
         $this->em->remove($item);
     }
 
+    public function deleteByRecipe(User $user, ?int $recipeId = null): void
+    {
+        $this->repository->deleteByRecipe($user, $recipeId);
+    }
+
+
     public function save(): void {
         $this->em->flush();
     }

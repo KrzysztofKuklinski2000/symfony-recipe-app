@@ -145,4 +145,18 @@ final class ShoppingListController extends AbstractController
         }
         return $this->redirectToRoute('app_shopping_list');
     }
+
+    #[Route('/shopping/delete-group/', name: 'app_shopping_delete_group', methods: ['POST'])]
+    public function deleteGroup(Request $request): Response {
+        $recipeId = $request->request->get('recipeId');
+        if ($this->isCsrfTokenValid('shoppingItem' . $recipeId, $request->request->get('_token'))){
+
+            $recipeId = $recipeId === '' ? null : (int) $recipeId;
+
+            $this->shoppingListService->deleteByRecipe($this->getUser(), $recipeId);
+
+            $this->addFlash('success', 'Usunięto grupę produktów.');
+        }
+        return $this->redirectToRoute('app_shopping_list');
+    }
 }

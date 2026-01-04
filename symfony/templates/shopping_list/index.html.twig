@@ -14,17 +14,28 @@
                     {% set items = group.items %}
                     <div class="flex gap-2">
                         {% if recipe %}
-                        <a href="{{ path('app_show', {'id': recipe.id}) }}">
-                            <span class="font-semibold">{{ recipe.title }}</span>
-                        </a>
+                            <a href="{{ path('app_show', {'id': recipe.id}) }}">
+                                <span class="font-semibold">{{ recipe.title }}</span>
+                            </a>
                         {% else %}
-                        <span class="font-semibold">Luźne produkty</span>
+                            <span class="font-semibold">Luźne produkty</span>
                         {% endif %}
                         <span id="ingredient-counter-{{recipe.id ?? 'loose' }}">({{ items|length }} składników)</span>
+
+                        <form
+                            action="{{ path('app_shopping_delete_group') }}"
+                            method="POST"
+                        >
+                            <input type="hidden" name="_token" value="{{ csrf_token('shoppingItem' ~ recipe.id ?? '') }}">
+                            <input type="hidden" name="recipeId" value="{{ recipe.id ?? '' }}">
+                            <button type="submit" class="hover:cursor-pointer hover:text-red-500">
+                                {{ icons.delete(4) }}
+                            </button>
+                        </form>
                     </div>
                     <ul class="mb-5">
                         {% for item in items %}
-                        {% include 'shopping_list/_ingredient_element.html.twig' with {'item': item} %}
+                            {% include 'shopping_list/_ingredient_element.html.twig' with {'item': item} %}
                         {% endfor %}
                     </ul>
                 </div>

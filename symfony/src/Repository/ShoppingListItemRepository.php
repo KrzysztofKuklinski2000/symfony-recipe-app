@@ -2,9 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\User;
 use App\Entity\ShoppingListItem;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<ShoppingListItem>
@@ -16,28 +17,20 @@ class ShoppingListItemRepository extends ServiceEntityRepository
         parent::__construct($registry, ShoppingListItem::class);
     }
 
-    //    /**
-    //     * @return ShoppingListItem[] Returns an array of ShoppingListItem objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function deleteByRecipe(User $user, ?int $recipeId): void {
+        $qb = $this->createQueryBuilder('s')
+            ->delete()
+            ->andWhere('s.user = :user')
+            ->setParameter('user', $user);
 
-    //    public function findOneBySomeField($value): ?ShoppingListItem
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        if($recipeId) {
+            $qb->andWhere('s.recipe = :recipeId')
+                ->setParameter('recipeId', $recipeId);
+        }else {
+            $qb->andWhere('s.recipe IS NULL');
+        }
+
+        $qb->getQuery()->execute();
+
+    }
 }
