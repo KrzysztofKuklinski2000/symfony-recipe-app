@@ -38,16 +38,18 @@ class RecipeRepository extends ServiceEntityRepository
         ?User $user,
         ?Category $category,
         ?string $phrase,
+        ?string $defficultyValue = null,
+        array $tagValues = [],
         int $page = 1,
         int $limit = 12,
         ): array{
         $query =  $this->createQueryBuilder('r')
-                    ->leftJoin('r.favoritedBy', 'f')
-                    ->addSelect('COUNT(f) AS HIDDEN totalFavorites')
-                    ->groupBy('r.id')
-                    ->orderBy('totalFavorites', 'DESC')
-                    ->setFirstResult(($page - 1) * $limit)
-                    ->setMaxResults($limit + 1);
+            ->leftJoin('r.favoritedBy', 'f')
+            ->addSelect('COUNT(f) AS HIDDEN totalFavorites')
+            ->groupBy('r.id')
+            ->orderBy('totalFavorites', 'DESC')
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit + 1);
 
         if($user) {
             $query->andWhere('r.author != :user');
@@ -65,6 +67,23 @@ class RecipeRepository extends ServiceEntityRepository
                 ->setParameter('phrase', "%".$phrase."%");
         }
 
+        if($defficultyValue) {
+            $query->andWhere('r.difficulty = :difficulty')
+                ->setParameter('difficulty', $defficultyValue);
+        }
+
+        if(!empty($tagValues)) {
+            $orX = $query->expr()->orX();
+
+            foreach ($tagValues as $key => $value) {
+                $searchTerm = '%'.$value.'%';
+
+                $orX->add($query->expr()->like('LOWER(r.dietaryTags)', ":tag_$key"));
+                $query->setParameter("tag_$key", strtolower($searchTerm));
+            }
+
+            $query->andWhere($orX);
+        }
         return $query->getQuery()->getResult();
     }
 }

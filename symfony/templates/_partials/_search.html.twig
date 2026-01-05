@@ -1,27 +1,84 @@
 {% import "_macros/icons.html.twig" as icons %}
 
 {% set activeCategory = currentCategory|default(null) %}
+{% set phraseVal = currentPhrase %}
+{% set difficultyVal = currentDifficulty %}
+{% set tagsVal = currentTags %}
 
 {% if activeCategory %}
     {% set searchAction = path('app_home_category', {'slug': activeCategory.slug}) %}
     {% set placeholder = 'Szukaj w ' ~ activeCategory.name ~ '...' %}
-
 {% else %}
     {% set searchAction = path('app_home') %}
-    {% set placeholder = 'Szukaj przepisów ' %}
+    {% set placeholder = 'Szukaj przepisów...' %}
 {% endif %}
 
-<div class="w-lg bg-white mx-auto rounded-xl flex items-center justify-center">
-    <form action="{{ searchAction }}" method="GET" class="w-full flex justify-center items-center">
-        <input
-            type="search"
-            name="phrase"
-            class="w-4/5 p-4 outline-0 font-semibold text-gray-600"
-            placeholder="{{ placeholder }}"
-        >
+<div class="w-full max-w-3xl mx-auto mb-8">
+    <form action="{{ searchAction }}" method="GET" class="flex flex-col gap-4">
+        <div class="w-full bg-white rounded-xl flex items-center justify-center shadow-sm border border-gray-100">
+            <input
+                type="search"
+                name="phrase"
+                value="{{ phraseVal }}"
+                class="w-4/5 p-4 outline-none font-semibold text-gray-600 rounded-l-xl"
+                placeholder="{{ placeholder }}"
+            >
+            <button
+                type="submit"
+                class="w-1/5 p-4 flex items-center justify-center cursor-pointer border-l border-gray-100 rounded-r-xl hover:bg-gray-50 text-gray-500"
+            >
+                {{ icons.search() }}
+            </button>
+        </div>
 
-        <button type="submit" class="w-1/5 p-4 flex items-center justify-center cursor-pointer border-l border-l-gray-200 rounded-xl hover:bg-gray-50">
-            {{ icons.search() }}
-        </button>
+        <details class="group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+            {{ difficultyVal or tagsVal is not empty ? 'open' : '' }}>
+            <summary
+                class="p-3 text-sm font-semibold text-gray-500 cursor-pointer hover:bg-gray-50 list-none flex justify-between items-center select-none">
+                <span>Opcje filtrowania (Trudność, Dieta)</span>
+                <span class="transition group-open:rotate-180">▼</span>
+            </summary>
+
+            <div class="p-4 border-t border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                {# 1. Wybór Trudności #}
+                <div>
+                    <h3 class="font-bold text-gray-700 mb-2 text-sm">Poziom trudności</h3>
+                    <select name="difficulty" class="w-full p-2 border rounded bg-gray-50 text-sm">
+                        <option value="">Wszystkie poziomy</option>
+                        {# Tu mamy pewność, że difficulties istnieje #}
+                        {% for diff in difficulties %}
+                        <option value="{{ diff.value }}" {{ difficultyVal == diff.value ? 'selected' : '' }}>
+                            {{ diff.value|capitalize }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                {# 2. Checkboxy Tagów #}
+                <div class="md:col-span-2">
+                    <h3 class="font-bold text-gray-700 mb-2 text-sm">Tagi dietetyczne</h3>
+                    <div class="flex flex-wrap gap-3">
+                        {% for tag in tags %}
+                        <label
+                            class="inline-flex items-center gap-2 cursor-pointer bg-gray-50 px-3 py-1 rounded border border-gray-200 hover:bg-gray-100 transition">
+                            <input type="checkbox" name="tags[]" value="{{ tag.value }}"
+                                {{ tag.value in tagsVal ? 'checked' : '' }}
+                                class="rounded text-orange-500 focus:ring-orange-500 border-gray-300">
+                            <span class="text-sm text-gray-600">{{ tag.value|capitalize }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="md:col-span-3 flex justify-end">
+                    <button type="submit"
+                        class="bg-gray-800 text-white text-sm font-bold py-2 px-6 rounded hover:bg-gray-700">
+                        Filtruj wyniki
+                    </button>
+                </div>
+            </div>
+        </details>
+
     </form>
 </div>

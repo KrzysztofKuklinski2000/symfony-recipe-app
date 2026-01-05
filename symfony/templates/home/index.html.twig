@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block body %}
+{% include "_partials/_search.html.twig" %}
 <div class="flex items-center justify-between p-4">
     <h1 class="text-2xl font-bold flex gap-2 items-center">
         {{ icons.list() }}
@@ -42,10 +43,10 @@
 </div>
 
 {% include "_partials/_load_more_btn.html.twig" with {
-    'hasNextPage': hasNextPage,
-    'page': page,
-    'category': currentCategory|default(null),
-    'phrase': app.request.query.get('phrase')
-} %}
+        'hasNextPage': hasNextPage,
+        'page': page,
+        'category': currentCategory|default(null),
+    }
+%}
 
 {% endblock %}

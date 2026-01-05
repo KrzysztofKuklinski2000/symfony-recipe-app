@@ -5,7 +5,10 @@ namespace App\Controller;
 use App\Entity\Recipe;
 use App\Entity\Comment;
 use App\Entity\Category;
+use App\Enum\DietaryTag;
+use App\Enum\Difficulty;
 use App\Form\CommentType;
+use Symfony\UX\Turbo\TurboBundle;
 use App\Repository\RecipeRepository;
 use App\Repository\CategoryRepository;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,7 +16,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\UX\Turbo\TurboBundle;
 
 final class HomeController extends AbstractController
 {
@@ -31,7 +33,19 @@ final class HomeController extends AbstractController
         $page = $request->query->get('page', 1);
         $phrase = $request->query->get('phrase') ?? null;
 
-        $recipes = $recipeRepository->findPublicRecipesExcludingUser($this->getUser(), $category, $phrase, $page, $limit);
+        $difficultyValue = $request->query->get('difficulty');
+        $tagValues = $request->query->all('tags');
+
+
+
+        $recipes = $recipeRepository->findPublicRecipesExcludingUser(
+            $this->getUser(),
+            $category,
+            $phrase,
+            $difficultyValue,
+            $tagValues,
+            $page,
+            $limit);
 
         $hasNextPage = count($recipes) > $limit;
 
@@ -48,6 +62,8 @@ final class HomeController extends AbstractController
                 'hasNextPage' => $hasNextPage,
                 'category' => $category,
                 'phrase' => $phrase,
+                'difficulty' => $difficultyValue,
+                'tags' => $tagValues,
             ]);
         }
 
@@ -57,6 +73,13 @@ final class HomeController extends AbstractController
             'categories' => $categories,
             'hasNextPage' => $hasNextPage,
             'page' => $page,
+
+            'currentPhrase' => $phrase,
+            'currentDifficulty' => $difficultyValue,
+            'currentTags' => $tagValues,
+
+            'difficulties' => Difficulty::cases(),
+            'tags' => DietaryTag::cases(),
         ]);
     }
 
