@@ -11,17 +11,17 @@ class FileUploader {
     public function __construct(private string $targetDirectory, private SluggerInterface $slugger) {}
 
 
-    public function upload(UploadedFile $file, string $subDirectory): string {
+    public function upload(UploadedFile $file, string $subDirectory, ?string $oldFilename = null): string {
         $orginalFileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($orginalFileName);
         $newFilename = $safeFilename. '-'.uniqid().'.'.$file->guessExtension();
 
         $fullPath = $this->getTargetDirectory().'/'.$subDirectory;
 
-        try {
-            $file->move($fullPath, $newFilename);
-        }catch(FileException $e) {
-            //TODO: handle exception if something goes wrong
+        $file->move($fullPath, $newFilename);
+
+        if($oldFilename) {
+            $this->remove($oldFilename, $subDirectory);
         }
 
         return $newFilename;

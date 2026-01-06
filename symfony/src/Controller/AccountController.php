@@ -17,11 +17,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[IsGranted('IS_EMAIL_VERIFIED')]
 final class AccountController extends AbstractController
 {
+    public function __construct(
+        private readonly FileUploader $fileUploader,
+        private readonly EntityManagerInterface $em
+    ){}
+
     #[Route('/edit', name: 'app_account_edit', methods: ['POST', 'GET'])]
-    public function edit(Request $request, EntityManagerInterface $em, FileUploader $fileUploader): Response
+    public function edit(Request $request): Response
     {
-        /** @var User $user*/
+
         $user = $this->getUser();
+        assert($user instanceof User);
 
         $form  = $this->createForm(AccountType::class, $user);
         $form->handleRequest($request);
@@ -30,17 +36,21 @@ final class AccountController extends AbstractController
             $imageFile = $form->get('imageFile')->getData();
 
             if ($imageFile) {
-                $oldFilename = $user->getImageFilename();
+                try{
+                    $imageFilename = $this->fileUploader->upload(
+                        $imageFile,
+                        'users',
+                        $user->getImageFilename()
+                    );
 
-                $imageFilename = $fileUploader->upload($imageFile, 'users');
-                $user->setImageFilename($imageFilename);
-
-                if($oldFilename) {
-                    $fileUploader->remove($oldFilename, 'users');
+                    $user->setImageFilename($imageFilename);
+                }catch(FileException $e) {
+                    $this->addFlash('error', 'Wystąpił błąd podczas przesyłania pliku.');
+                    return $this->redirectToRoute('app_account_edit');
                 }
             }
 
-            $em->flush();
+            $this->em->flush();
             $this->addFlash('success', 'Konto zostało zaktualizowane!');
             return $this->redirectToRoute('app_account_edit');
         }
