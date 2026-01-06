@@ -23,6 +23,7 @@ class RecipeIngredientType extends AbstractType
             ->add('quantity', NumberType::class, [
                 'label' => 'Ilość',
                 'html5' => true,
+                'required' => false,
                 'attr' => [
                     'step' => 'any'
                 ]
