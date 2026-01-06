@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Entity\Comment;
 use App\Entity\CommentVote;
 use App\Security\Voter\CommentVoter;
@@ -17,19 +18,22 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[IsGranted('IS_EMAIL_VERIFIED')]
 final class CommentVoteController extends AbstractController
 {
+    public function __construct(
+        private readonly CommentVoteRepository $commentVoteRepository,
+        private readonly EntityManagerInterface $em
+    ){}
+
+
     #[Route('/comment/like/{id}', name: 'app_comment_like', methods: ['POST'])]
     public function vote(
         Comment $comment,
-        EntityManagerInterface $em,
         Request $request,
-        CommentVoteRepository $commentVoteRepository): Response {
+    ): Response {
 
         $this->denyAccessUnlessGranted(CommentVoter::VOTE, $comment);
 
-        /** @var User $user*/
-        /** @var CommentVote $vote*/
-        /** @var CommentVote $existingVote)*/
         $user = $this->getUser();
+        assert($user instanceof User);
 
         $vote = (int) $request->request->get('vote');
         $token = $request->request->get('_token');
@@ -40,7 +44,7 @@ final class CommentVoteController extends AbstractController
         }
 
 
-        $existingVote = $commentVoteRepository->findOneBy([
+        $existingVote = $this->commentVoteRepository->findOneBy([
             'author' => $user,
             'comment' => $comment
         ]);
@@ -48,7 +52,7 @@ final class CommentVoteController extends AbstractController
 
         if($existingVote) {
             if($existingVote->getValue() === $vote) {
-                $em->remove($existingVote);
+                $this->em->remove($existingVote);
             }else {
                 $existingVote->setValue($vote);
             }
@@ -57,10 +61,10 @@ final class CommentVoteController extends AbstractController
             $commentVote->setComment($comment);
             $commentVote->setAuthor($user);
             $commentVote->setValue($vote);
-            $em->persist($commentVote);
+            $this->em->persist($commentVote);
 
         }
-        $em->flush();
+        $this->em->flush();
 
         return $this->render('comment/_vote_form.html.twig', [
             'comment' => $comment,
