@@ -19,39 +19,37 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 final class HomeController extends AbstractController
 {
+    private const PER_PAGE = 1;
+    public function __construct(
+        private readonly RecipeRepository $recipeRepository,
+        private readonly CategoryRepository $categoryRepository
+    ){}
+
     #[Route('/', name: 'app_home')]
     #[Route('/category/{slug}', name: 'app_home_category')]
     public function index(
-        RecipeRepository $recipeRepository,
-        CategoryRepository $categoryRepository,
         #[MapEntity(mapping: ['slug' => 'slug'])]
         ?Category $category = null,
         Request $request
-    ): Response
-    {
-        $limit = 4;
-        $page = $request->query->get('page', 1);
+    ): Response {
+        $page = (int) $request->query->get('page', 1);
         $phrase = $request->query->get('phrase') ?? null;
-
         $difficultyValue = $request->query->get('difficulty');
         $tagValues = $request->query->all('tags');
 
-
-
-        $recipes = $recipeRepository->findPublicRecipesExcludingUser(
+        $recipes = $this->recipeRepository->findPublicRecipesExcludingUser(
             $this->getUser(),
             $category,
             $phrase,
             $difficultyValue,
             $tagValues,
             $page,
-            $limit);
+            self::PER_PAGE
+        );
 
-        $hasNextPage = count($recipes) > $limit;
+        $hasNextPage = count($recipes) > self::PER_PAGE;
 
         if($hasNextPage) array_pop($recipes);
-
-        $categories = $categoryRepository->findAll();
 
         if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
             $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -70,7 +68,7 @@ final class HomeController extends AbstractController
         return $this->render('home/index.html.twig', [
             'recipes' => $recipes,
             'currentCategory' => $category,
-            'categories' => $categories,
+            'categories' => $this->categoryRepository->findAll(),
             'hasNextPage' => $hasNextPage,
             'page' => $page,
 
