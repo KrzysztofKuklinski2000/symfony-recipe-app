@@ -2,36 +2,34 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Entity\Recipe;
 use App\Entity\RecipeIngredient;
 use App\Entity\ShoppingListItem;
-use App\Security\Voter\ShoppingListVoter;
+use Symfony\UX\Turbo\TurboBundle;
 use App\Service\ShoppingListService;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Security\Voter\ShoppingListVoter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\UX\Turbo\TurboBundle;
 
 #[IsGranted('ROLE_USER')]
 #[IsGranted('IS_EMAIL_VERIFIED')]
 final class ShoppingListController extends AbstractController
 {
 
-    public function __construct(private ShoppingListService $shoppingListService){}
+    public function __construct(private readonly ShoppingListService $shoppingListService){}
 
     #[Route('/shopping/list', name: 'app_shopping_list')]
     public function index(): Response
     {
-        /** @var User $user*/
         $user = $this->getUser();
+        assert($user instanceof User);
 
         $shoppingListItems = $user->getShoppingListItems();
-
         $groupedItems = $this->shoppingListService->groupItemsByRecipe($shoppingListItems);
-
 
         return $this->render('shopping_list/index.html.twig', [
             'groupedItems' => $groupedItems,
@@ -45,11 +43,7 @@ final class ShoppingListController extends AbstractController
             $recipeItems = $recipe->getRecipeIngredients();
             $user = $this->getUser();
 
-            $formServings = $request->request->getInt('targetServings');
-            $targetServings = $formServings > 0 ? $formServings : ($recipe->getServings() ?: 1);
-            $baseServings = $recipe->getServings() ?: 1;
-
-            $ratio = $targetServings / $baseServings;
+            $ratio = $this->calculatePortionRatio($recipe, $request);
 
             foreach($recipeItems as $recipeItem) {
                 $this->shoppingListService->addIngredientToShoppingList($user, $recipeItem, $recipe, $ratio);
@@ -73,15 +67,11 @@ final class ShoppingListController extends AbstractController
     {
         if ($this->isCsrfTokenValid('add_item' . $ingredient->getId(), $request->request->get('_token'))) {
             $user = $this->getUser();
+            assert($user instanceof User);
 
             $recipe = $ingredient->getRecipe();
 
-            $formServings = $request->request->getInt('targetServings');
-            $targetServings = $formServings > 0 ? $formServings : ($recipe->getServings() ?: 1);
-            $baseServings = $recipe->getServings() ?: 1;
-
-            $ratio = $targetServings / $baseServings;
-
+            $ratio = $this->calculatePortionRatio($recipe, $request);
 
             $this->shoppingListService->addIngredientToShoppingList($user, $ingredient, null, $ratio);
             $this->shoppingListService->save();
@@ -131,7 +121,11 @@ final class ShoppingListController extends AbstractController
             $this->shoppingListService->deleteItem($item);
             $this->shoppingListService->save();
 
-            $remainingCount = $this->shoppingListService->countRemainingItems($this->getUser(), $recipe);
+            $user = $this->getUser();
+            assert($user instanceof User);
+
+
+            $remainingCount = $this->shoppingListService->countRemainingItems($user, $recipe);
 
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -151,9 +145,12 @@ final class ShoppingListController extends AbstractController
         $recipeId = $request->request->get('recipeId');
         if ($this->isCsrfTokenValid('shoppingItem' . $recipeId, $request->request->get('_token'))){
 
+            $user = $this->getUser();
+            assert($user instanceof User);
+
             $recipeId = $recipeId === '' ? null : (int) $recipeId;
 
-            $this->shoppingListService->deleteByRecipe($this->getUser(), $recipeId);
+            $this->shoppingListService->deleteByRecipe($user, $recipeId);
 
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -163,5 +160,15 @@ final class ShoppingListController extends AbstractController
             }
         }
         return $this->redirectToRoute('app_shopping_list');
+    }
+
+    private function calculatePortionRatio(Recipe $recipe, Request $request): float {
+
+        $formServings = $request->request->getInt('targetServings');
+        $baseServings = $recipe->getServings() ?: 1;
+
+        $targetServings = $formServings > 0 ? $formServings : $baseServings;
+
+        return $targetServings / $baseServings;
     }
 }
