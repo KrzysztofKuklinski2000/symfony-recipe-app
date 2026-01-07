@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Entity\Recipe;
+use Symfony\UX\Turbo\TurboBundle;
 use App\Security\Voter\RecipeVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,16 +12,18 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\UX\Turbo\TurboBundle;
 
 #[Route('/favorite')]
 #[IsGranted('ROLE_USER')]
 final class FavoriteController extends AbstractController
 {
+    public function __construct(private readonly EntityManagerInterface $em){}
+
     #[Route('/', name: 'app_favorite_index')]
     public function index(): Response {
-        /** @var User $currentUser*/
         $currentUser = $this->getUser();
+        assert($currentUser instanceof User);
+
         $recipes = $currentUser->getFavorites();
 
 
@@ -30,16 +34,17 @@ final class FavoriteController extends AbstractController
 
     #[Route('/add/{id}', name: 'app_favorite_add', methods: ['POST'])]
     #[IsGranted('IS_EMAIL_VERIFIED')]
-    public function add(Recipe $recipe, EntityManagerInterface $em, Request $request): Response
+    public function add(Recipe $recipe, Request $request): Response
     {
         $this->denyAccessUnlessGranted(RecipeVoter::FAVORITE, $recipe);
 
         if ($this->isCsrfTokenValid('favorite' . $recipe->getId(), $request->request->get('_token'))) {
-            /** @var User $currentUser*/
-            $currentUser = $this->getUser();
 
-            $currentUser->addFavorite($recipe);
-            $em->flush();
+            $user = $this->getUser();
+            assert($user instanceof User);
+
+            $user->addFavorite($recipe);
+            $this->em->flush();
         }
 
         if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
@@ -61,15 +66,17 @@ final class FavoriteController extends AbstractController
 
     #[Route('/remove/{id}', name: 'app_favorite_remove', methods: ['POST'])]
     #[IsGranted('IS_EMAIL_VERIFIED')]
-    public function remove(Recipe $recipe, EntityManagerInterface $em, Request $request): Response
+    public function remove(Recipe $recipe, Request $request): Response
     {
         $this->denyAccessUnlessGranted(RecipeVoter::FAVORITE, $recipe);
 
         if ($this->isCsrfTokenValid('unfavorite' . $recipe->getId(), $request->request->get('_token'))) {
-            /** @var User $currentUser*/
-            $currentUser = $this->getUser();
-            $currentUser->removeFavorite($recipe);
-            $em->flush();
+
+            $user = $this->getUser();
+            assert($user instanceof User);
+
+            $user->removeFavorite($recipe);
+            $this->em->flush();
 
             $isOnFavoritePage = $request->request->get('remove_from_list');
 
