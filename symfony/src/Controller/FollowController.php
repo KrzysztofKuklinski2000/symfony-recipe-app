@@ -16,15 +16,19 @@ use Symfony\UX\Turbo\TurboBundle;
 #[IsGranted('IS_EMAIL_VERIFIED')]
 final class FollowController extends AbstractController
 {
+    public function __construct(private readonly EntityManagerInterface $em){}
+
     #[Route('/{id}', name: 'app_follow', methods: ['POST'])]
-    public function follow(User $userToFollow, EntityManagerInterface $em, Request $request): Response {
+    public function follow(User $userToFollow, Request $request): Response {
 
         if($this->isCsrfTokenValid('follow'.$userToFollow->getId(), $request->request->get('_token'))) {
-            /** @var User $currentUser*/
-            $currentUser = $this->getUser();
+            $user = $this->getUser();
+            assert($user instanceof User);
 
-            $currentUser->addFollowing($userToFollow);
-            $em->flush();
+            if($user !== $userToFollow){
+                $user->addFollowing($userToFollow);
+                $this->em->flush();
+            }
 
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -40,13 +44,14 @@ final class FollowController extends AbstractController
     }
 
     #[Route('/unfollow/{id}', name: 'app_unfollow', methods: ['POST'])]
-    public function unfollow(User $userToUnfollow, EntityManagerInterface $em, Request $request): Response{
-        /** @var User $currentUser*/
-        $currentUser = $this->getUser();
+    public function unfollow(User $userToUnfollow, Request $request): Response{
 
         if ($this->isCsrfTokenValid('unfollow' . $userToUnfollow->getId(), $request->request->get('_token'))){
-            $currentUser->removeFollowing($userToUnfollow);
-            $em->flush();
+            $user = $this->getUser();
+            assert($user instanceof User);
+
+            $user->removeFollowing($userToUnfollow);
+            $this->em->flush();
 
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
