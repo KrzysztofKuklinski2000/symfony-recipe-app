@@ -46,10 +46,9 @@
                     <h3 class="font-bold text-gray-700 mb-2 text-sm">Poziom trudności</h3>
                     <select name="difficulty" class="w-full p-2 border rounded bg-gray-50 text-sm">
                         <option value="">Wszystkie poziomy</option>
-                        {# Tu mamy pewność, że difficulties istnieje #}
                         {% for diff in difficulties %}
                         <option value="{{ diff.value }}" {{ difficultyVal == diff.value ? 'selected' : '' }}>
-                            {{ diff.value|capitalize }}
+                            {{ diff.getLabel()|capitalize }}
                         </option>
                         {% endfor %}
                     </select>
@@ -65,7 +64,7 @@
                             <input type="checkbox" name="tags[]" value="{{ tag.value }}"
                                 {{ tag.value in tagsVal ? 'checked' : '' }}
                                 class="rounded text-orange-500 focus:ring-orange-500 border-gray-300">
-                            <span class="text-sm text-gray-600">{{ tag.value|capitalize }}</span>
+                            <span class="text-sm text-gray-600">{{ tag.getLabel()|capitalize }}</span>
                         </label>
                         {% endfor %}
                     </div>
