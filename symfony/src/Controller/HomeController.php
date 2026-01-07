@@ -19,7 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 final class HomeController extends AbstractController
 {
-    private const PER_PAGE = 1;
+    private const PER_PAGE = 4;
     public function __construct(
         private readonly RecipeRepository $recipeRepository,
         private readonly CategoryRepository $categoryRepository

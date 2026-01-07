@@ -7,14 +7,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\DataTransformerInterface;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 class CategoriesToCollectionTransformer implements DataTransformerInterface {
     public function __construct(
         private EntityManagerInterface $em,
-    )
-    {
-    }
+    ){}
 
     public function transform(mixed $categories): string {
 
@@ -33,22 +30,28 @@ class CategoriesToCollectionTransformer implements DataTransformerInterface {
 
         if(!$categories) return $collection;
 
-        $names = explode(',', $categories);
+        $names = array_filter(array_map('trim', explode(',', $categories)));
+        $names = array_unique($names);
+
+        if(empty($names)) return $collection;
+
+        $existingCategories = $this->em->getRepository(Category::class)->findBy(['name' => $names]);
+
+        $existingCategoriesMap = [];
+        foreach($existingCategories as $existingCategory) {
+            $existingCategoriesMap[strtolower($existingCategory->getName())] = $existingCategory;
+        }
 
         foreach($names as $name) {
-            $name = trim($name);
+            $lowerName = strtolower($name);
 
-            if(!$name) continue;
-            //Szukamy w tabeli category kategorii o nazwie $name
-            $category = $this->em->getRepository(Category::class)->findOneBy(['name' => $name]);
-
-            if(!$category) {
+            if(isset($existingCategoriesMap[$lowerName])) {
+                $category = $existingCategoriesMap[$lowerName];
+            } else {
                 $category = new Category();
                 $category->setName($name);
-                // $category->setSlug($this->slugger->slug($name)->lower());
             }
 
-            //Dodajemy tylko unikaty
             if(!$collection->contains($category)) {
                 $collection->add($category);
             }
