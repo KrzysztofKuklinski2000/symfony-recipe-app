@@ -3,7 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Recipe;
-use App\Form\Type\CategoryTagsType;
+use App\Form\CategoryTagsType;
 use App\Enum\Difficulty;
 use App\Enum\DietaryTag;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;

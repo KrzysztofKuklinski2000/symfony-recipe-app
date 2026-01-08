@@ -20,10 +20,6 @@ use App\Form\DataTransformer\CategoriesToCollectionTransformer;
 
 class RecipeType extends AbstractType
 {
-    public function __construct(private CategoriesToCollectionTransformer $transformer )
-    {
-
-    }
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -31,7 +27,8 @@ class RecipeType extends AbstractType
                 'label' => 'Tytuł przepisu'
             ])
             ->add('instructions', TextareaType::class, [
-                'label' => 'Instrukcje przygotowania'
+                'label' => 'Instrukcje przygotowania',
+                'attr' => ['rows' => 10]
             ])
             ->add('preparationTime', IntegerType::class, [
                 'label' => 'Czas przygotowania'
@@ -56,7 +53,7 @@ class RecipeType extends AbstractType
                 'allow_delete' => true,
                 'by_reference' => false,
             ])
-            ->add('categories', TextType::class, [
+            ->add('categories', CategoryTagsType::class, [
                 'label' => 'Kategorie (oddziel przecinkami):',
                 'attr' => [
                     'placeholder' => 'np. Śniadanie, Zdrowe, Włoskie',
@@ -86,7 +83,6 @@ class RecipeType extends AbstractType
                     'min' => 1,
                 ],
             ]);
-        $builder->get('categories')->addModelTransformer($this->transformer);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

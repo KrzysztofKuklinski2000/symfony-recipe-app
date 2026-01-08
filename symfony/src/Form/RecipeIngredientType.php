@@ -32,7 +32,6 @@ class RecipeIngredientType extends AbstractType
                 'label' => 'Jednostka (np. kg, ml, łyżki)',
                 'required' => false,
             ]);
-        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
