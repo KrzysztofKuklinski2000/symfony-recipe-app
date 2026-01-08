@@ -4,13 +4,11 @@
     {% set currentQueryParams = app.request.query.all %}
     {% set nextQueryParams = currentQueryParams|merge({'page': page + 1}) %}
     {% set routeName = category ? 'app_home_category' : 'app_home' %}
-    {% set finalParams = category ? nextParams|merge({'slug': category.slug}) : nextQueryParams %}
+    {% set finalParams = nextQueryParams %}
 
 
     {% if category %}
         {% set finalParams = nextQueryParams|merge({'slug': category.slug}) %}
-    {% else %}
-        {% set finalParams = nextQueryParams %}
     {% endif %}
 
     <div class="flex justify-center mt-8">
