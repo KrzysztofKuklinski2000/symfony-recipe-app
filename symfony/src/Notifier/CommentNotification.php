@@ -10,11 +10,11 @@ use Symfony\Component\Notifier\Message\EmailMessage;
 use Symfony\Component\Notifier\Recipient\EmailRecipientInterface;
 use Symfony\Component\Mime\Address;
 
-class CommentNotification extends Notification implements EmailNotificationInterface {
+final class CommentNotification extends Notification implements EmailNotificationInterface {
 
     public function __construct(
-        private Comment $comment,
-        private Recipe $recipe,
+        private readonly Comment $comment,
+        private readonly Recipe $recipe,
     )
     {
         parent::__construct('Nowy komentarz do przepisu: '.$this->recipe->getTitle());
@@ -29,7 +29,6 @@ class CommentNotification extends Notification implements EmailNotificationInter
             ->context([
                 'recipe' => $this->recipe,
                 'comment' => $this->comment,
-                'commenter' => $this->comment->getAuthor()
             ]);
         return new EmailMessage($email);
     }

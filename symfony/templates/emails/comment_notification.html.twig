@@ -1,7 +1,7 @@
 <h1>Hej {{ recipe.author.username ? recipe.author.username : recipe.author.email }}</h1>
 
 <p>
-    Użytkownik <strong>{{ commenter.username }}</strong> dodał komentarz do twojego przepisu
+    Użytkownik <strong>{{ comment.author }}</strong> dodał komentarz do twojego przepisu
     "<a href="{{ url('app_show', {'id': recipe.id}) }}">{{ recipe.title }}</a>"
 </p>
 
