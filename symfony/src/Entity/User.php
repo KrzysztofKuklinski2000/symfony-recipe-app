@@ -418,7 +418,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->shoppingListItems;
     }
 
-    public function addshoppingListItems(ShoppingListItem $shoppingListItem): static
+    public function addshoppingListItem(ShoppingListItem $shoppingListItem): static
     {
         if (!$this->shoppingListItems->contains($shoppingListItem)) {
             $this->shoppingListItems->add($shoppingListItem);
@@ -428,10 +428,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeshoppingListItems(ShoppingListItem $shoppingListItem): static
+    public function removeshoppingListItem(ShoppingListItem $shoppingListItem): static
     {
         if ($this->shoppingListItems->removeElement($shoppingListItem)) {
-            // set the owning side to null (unless already changed)
             if ($shoppingListItem->getUser() === $this) {
                 $shoppingListItem->setUser(null);
             }

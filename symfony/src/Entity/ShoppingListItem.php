@@ -120,7 +120,7 @@ class ShoppingListItem
         return $this;
     }
 
-    public function increnentCount(): void {
+    public function incrementCount(): void {
         $this->count++;
     }
 }
