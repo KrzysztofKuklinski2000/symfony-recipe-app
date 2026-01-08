@@ -9,8 +9,18 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class LogoutSubscriber implements EventSubscriberInterface
 {
+    private const RESTRICTED_PATHS = [
+        '/account',
+        '/comment',
+        '/recipe',
+        '/favorite',
+        '/profile/following',
+        '/shopping',
+        '/admin'
+    ];
+
     public function __construct(
-        private UrlGeneratorInterface $urlGenerator
+        private readonly UrlGeneratorInterface $urlGenerator
     ) {}
 
     public static function getSubscribedEvents(): array
@@ -31,20 +41,13 @@ class LogoutSubscriber implements EventSubscriberInterface
         if($referer && parse_url($referer, PHP_URL_HOST) === $request->getHost()) {
             $refererPath = parse_url($referer, PHP_URL_PATH);
 
-            $privatePath = [
-                '/account',
-                '/comment',
-                '/recipe',
-                '/favorite',
-                '/profile/following',
-            ];
-
-            foreach ($privatePath as $path) {
+            foreach (self::RESTRICTED_PATHS as $path) {
                 if (str_starts_with($refererPath, $path)) {
                     $event->setResponse(new RedirectResponse($defaultLogoutUrl));
                     return;
                 }
             }
+
             $event->setResponse(new RedirectResponse($referer));
             return;
         }
