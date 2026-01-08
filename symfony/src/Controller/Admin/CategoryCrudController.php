@@ -3,15 +3,12 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Category;
-use App\Controller\Admin\RecipeCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
 
@@ -23,7 +20,7 @@ class CategoryCrudController extends AbstractCrudController
     }
 
     public function configureActions(Actions $actions): Actions {
-        return $actions->disable(Action::NEW)->add(Crud::PAGE_INDEX, Action::DETAIL);;
+        return $actions->disable(Action::NEW)->add(Crud::PAGE_INDEX, Action::DETAIL);
     }
 
     public function configureFields(string $pageName): iterable
@@ -31,8 +28,8 @@ class CategoryCrudController extends AbstractCrudController
         yield TextField::new('name', 'Nazwa');
         yield TextField::new('slug', 'Slug')->onlyOnIndex();
         yield AssociationField::new('recipes', 'Przepisy')
-        ->hideOnForm()
-        ->onlyOnIndex();
+            ->hideOnForm()
+            ->onlyOnIndex();
 
         yield CollectionField::new('recipes', 'Lista Przepisów')
             ->onlyOnDetail()

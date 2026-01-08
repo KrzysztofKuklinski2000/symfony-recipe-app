@@ -10,7 +10,6 @@ use App\Repository\UserRepository;
 use App\Repository\RecipeRepository;
 use App\Repository\CommentRepository;
 use App\Repository\CategoryRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -63,7 +62,7 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('Moja przepisy');
+            ->setTitle('Moje przepisy');
     }
 
     public function configureMenuItems(): iterable
