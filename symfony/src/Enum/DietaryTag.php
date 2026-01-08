@@ -17,9 +17,9 @@ enum DietaryTag: string {
             self::VEGAN => 'Wegańskie',
             self::GLUTEN_FREE => 'Bez glutenu',
             self::LACTOSE_FREE => 'Bez laktozy',
-            self::KETO => 'Kato',
-            self::LOW_CARB => 'Małe weglowodanów',
-            self::PESCATARIAN => 'Peskatarianizm'
+            self::KETO => 'Keto',
+            self::LOW_CARB => 'Niskowęglowodanowe',
+            self::PESCATARIAN => 'Peskatariańskie'
         };
     }
 }
