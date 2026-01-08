@@ -38,7 +38,7 @@ class RecipeRepository extends ServiceEntityRepository
         ?User $user,
         ?Category $category,
         ?string $phrase,
-        ?string $defficultyValue = null,
+        ?string $difficultyValue = null,
         array $tagValues = [],
         int $page = 1,
         int $limit = 12,
@@ -67,9 +67,9 @@ class RecipeRepository extends ServiceEntityRepository
                 ->setParameter('phrase', "%".$phrase."%");
         }
 
-        if($defficultyValue) {
+        if($difficultyValue) {
             $query->andWhere('r.difficulty = :difficulty')
-                ->setParameter('difficulty', $defficultyValue);
+                ->setParameter('difficulty', $difficultyValue);
         }
 
         if(!empty($tagValues)) {
