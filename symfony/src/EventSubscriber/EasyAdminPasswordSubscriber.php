@@ -3,15 +3,15 @@
 namespace App\EventSubscriber;
 
 use App\Entity\User;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Event\BeforeEntityUpdatedEvent;
 use EasyCorp\Bundle\EasyAdminBundle\Event\BeforeEntityPersistedEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 
 class EasyAdminPasswordSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private UserPasswordHasherInterface $passwordHasher)
+    public function __construct(private readonly UserPasswordHasherInterface $passwordHasher)
     {}
 
     public static function getSubscribedEvents(): array {
