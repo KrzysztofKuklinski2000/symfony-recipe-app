@@ -8,17 +8,24 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class FileUploader {
 
-    public function __construct(private string $targetDirectory, private SluggerInterface $slugger) {}
+    public function __construct(
+        private readonly string $targetDirectory,
+        private readonly SluggerInterface $slugger
+    ) {}
 
 
     public function upload(UploadedFile $file, string $subDirectory, ?string $oldFilename = null): string {
-        $orginalFileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $originalFileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($orginalFileName);
         $newFilename = $safeFilename. '-'.uniqid().'.'.$file->guessExtension();
 
         $fullPath = $this->getTargetDirectory().'/'.$subDirectory;
 
-        $file->move($fullPath, $newFilename);
+        try {
+            $file->move($fullPath, $newFilename);
+        }catch(FileException $e){
+            throw $e;
+        }
 
         if($oldFilename) {
             $this->remove($oldFilename, $subDirectory);
@@ -27,7 +34,7 @@ class FileUploader {
         return $newFilename;
     }
 
-    public function remove(string $filename, string $subDirectory): void {
+    public function remove(?string $filename, string $subDirectory): void {
         if(!$filename) return;
 
         $fullPath = $this->getTargetDirectory().'/'.$subDirectory.'/'.$filename;
