@@ -11,7 +11,10 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ShoppingListService
 {
-    public function __construct(private EntityManagerInterface $em, private ShoppingListItemRepository $repository){}
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly ShoppingListItemRepository $repository
+    ){}
 
 
     public function addIngredientToShoppingList(
@@ -21,10 +24,7 @@ class ShoppingListService
         float $scaleFactor = 1,
     ): void
     {
-        $unit = $ingredient->getUnit();
-
-        if($unit === '') $unit = null;
-
+        $unit = $ingredient->getUnit() === '' ? null : $ingredient->getUnit();
 
         $existingItem = $this->repository->findOneBy([
             'user' => $user,
@@ -50,29 +50,28 @@ class ShoppingListService
                 $existingItem->setCount(1);
             }else {
                 // Dla produktów bez wagi (np. 2x "Sól do smaku")
-                $existingItem->increnentCount();
+                $existingItem->incrementCount();
             }
             $existingItem->setIsChecked(false);
-        }else {
-            $newRecipeItem = new ShoppingListItem();
-            $newRecipeItem->setUser($user);
-            $newRecipeItem->setRecipe($recipe);
-            $newRecipeItem->setName($ingredient->getName());
-
-            if($quantityToAdd > 0) {
-                $newRecipeItem->setQuantity($quantityToAdd);
-                $newRecipeItem->setUnit($unit);
-            }else {
-                $newRecipeItem->setQuantity(null);
-                $newRecipeItem->setUnit($unit);
-            }
-            $newRecipeItem->setCount(1);
-            $newRecipeItem->setIsChecked(false);
-
-            $this->em->persist($newRecipeItem);
-
+            return;
         }
-        $this->save();
+
+        $newRecipeItem = new ShoppingListItem();
+        $newRecipeItem->setUser($user);
+        $newRecipeItem->setRecipe($recipe);
+        $newRecipeItem->setName($ingredient->getName());
+        $newRecipeItem->setCount(1);
+        $newRecipeItem->setIsChecked(false);
+        $newRecipeItem->setUnit($unit);
+
+        if($quantityToAdd > 0) {
+            $newRecipeItem->setQuantity($quantityToAdd);
+        }else {
+            $newRecipeItem->setQuantity(null);
+        }
+
+
+        $this->em->persist($newRecipeItem);
     }
 
     public function groupItemsByRecipe(iterable $shoppingListItems): array
