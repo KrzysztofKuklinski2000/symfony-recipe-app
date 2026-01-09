@@ -1,58 +1,76 @@
 {% import "_macros/icons.html.twig" as icons %}
-<div class="flex flex-col shadow-xl" id="recipes_{{recipe.id}}">
-    <a href="{{ path('app_show', {'id': recipe.id}) }}">
-        {% if recipe.imageFilename %}
-        <img class="w-full h-64 object-cover" src="{{ asset('/uploads/recipes/'~ recipe.imageFilename) }}"
-            alt="{{ recipe.title  }} obrazek">
-        {% else %}
-        <img class="w-full h-64 object-cover" src="{{ asset('/uploads/recipes/default.png') }}"
-            alt="{{ recipe.title  }} obrazek">
-        {% endif %}
+
+<div class="flex flex-col bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-100 group h-full"
+    id="recipes_{{ recipe.id }}">
+
+    {# --- IMAGE --- #}
+    <a href="{{ path('app_show', {'id': recipe.id}) }}" class="relative block overflow-hidden aspect-4/3">
+        {% set imageUrl = recipe.imageFilename
+            ? asset('/uploads/recipes/' ~ recipe.imageFilename)
+            : asset('/uploads/recipes/default.png')
+        %}
+        <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            src="{{ imageUrl }}" alt="{{ recipe.title }}">
+
+        {# Overlay over time (always visible) #}
+        <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-md font-medium flex items-center gap-1">
+            <span>⏱️</span> {{ recipe.preparationTime }}h
+        </div>
     </a>
 
+    {# --- CONTENT --- #}
+    <div class="p-4 flex flex-col grow">
 
-    <div class="p-2 bg-[#222831] text-white">
-        <div class="flex justify-between">
-            <div class="flex justify-between items-center gap-2">
-                <h3 class="font-bold text-lg">{{ recipe.title|title }}</h3>
-                <div class="flex gap-2">
-                    {% if is_granted('RECIPE_EDIT', recipe) %}
-                        <a href="{{ path('app_recipe_edit', {'id': recipe.id}) }}"
-                            class=" bg-indigo-50 p-1 rounded shadow hover:bg-indigo-100 transition flex flex-col
-                            justify-center items-center text-indigo-600 font-semibold">
-                            {{ icons.edit(4) }}</a>
-                    {% endif %}
+        <div class="flex justify-between items-start mb-2">
+            <h3 class="font-bold text-lg text-gray-800 leading-tight line-clamp-2">
+                <a href="{{ path('app_show', {'id': recipe.id}) }}" class="hover:text-blue-600 transition-colors">
+                    {{ recipe.title|title }}
+                </a>
+            </h3>
+
+            {# Favorites (always visible if logged in) #}
+            {% if is_granted('IS_EMAIL_VERIFIED') %}
+                <div id="favorite-btn-{{ recipe.id }}" class="ml-2">
+                    {% include "favorite/_btn.html.twig" with {
+                            "recipe": recipe,
+                            "is_favorite_page": is_favorite_page ?? false
+                        } %}
+                </div>
+            {% endif %}
+        </div>
+
+        {# Autor #}
+        <div class="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
+            <a href="{{ path('app_profile_show', {'id': recipe.author.id}) }}"
+                class="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors group/author">
+                <span class="text-gray-400 group-hover/author:text-blue-500">{{ icons.user() }}</span>
+                <span class="truncate max-w-[120px]">
+                    {{ recipe.author.username|default(recipe.author.email) }}
+                </span>
+            </a>
+
+            {# Owner Actions (Edit/Delete) #}
+            {% if is_granted('RECIPE_EDIT', recipe) %}
+                <div class="flex items-center gap-1 transition-opacity duration-200">
+                    <a href="{{ path('app_recipe_edit', {'id': recipe.id}) }}"
+                        class="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Edytuj">
+                        {{ icons.edit(4) }}
+                    </a>
+
                     {% if is_granted('RECIPE_DELETE', recipe) %}
                         <form action="{{ path('app_recipe_delete', {'id': recipe.id}) }}" method="post"
-                            onsubmit="return confirm('Czy na pewno chcesz usunąć ten przepis?');">
+                            onsubmit="return confirm('Czy na pewno chcesz usunąć ten przepis?');" class="inline-block">
                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ recipe.id) }}">
-                            <button type="submit" class="bg-indigo-50 p-1 rounded shadow hover:bg-indigo-100  hover: cursor-pointer transition flex flex-col justify-center items-center text-indigo-600 font-semibold
-                            ">{{ icons.delete(4) }}
+                            <button type="submit"
+                                class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Usuń">
+                                {{ icons.delete(4) }}
                             </button>
                         </form>
                     {% endif %}
                 </div>
-            </div>
-            <div id="favorite-btn-{{ recipe.id }}">
-                {% if is_granted('IS_EMAIL_VERIFIED') %}
-                {% include "favorite/_btn.html.twig" with {
-                    "recipe": recipe,
-                    "is_favorite_page": is_favorite_page ?? false
-                }
-                %}
-                {% endif %}
-            </div>
+            {% endif %}
         </div>
-        <p class="text-sm">Czas przygotowania: {{ recipe.preparationTime }} godzin</p>
-        <p class="flex gap-2 items-center">
-            <a class="flex gap-2 items-center hover:font-bold underline"
-                href="{{ path('app_profile_show', {'id': recipe.author.id}) }}">
-                {{icons.user()}}
-                {% include "_partials/_username.html.twig" with {
-                    "user": recipe.author
-                } %}
-            </a>
-        </p>
-
     </div>
 </div>
