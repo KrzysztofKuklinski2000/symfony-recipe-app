@@ -1,29 +1,43 @@
 {% import '_macros/icons.html.twig' as icons %}
 <turbo-frame id="comment_vote_frame_{{ comment.id }}">
-    {% if not app.user or is_granted('COMMENT_VOTE', comment) and is_granted('IS_EMAIL_VERIFIED') %}
+    {% set canVote = not app.user or (is_granted('COMMENT_VOTE', comment) and is_granted('IS_EMAIL_VERIFIED')) %}
+
+    {% if canVote %}
         {% set userVote = app.user ? app.user.getVoteForComment(comment) : null %}
         {% set score = comment.getVoteScore() %}
-        <div class="flex gap-4 text-[#222831]">
-            <form action="{{ path('app_comment_like', {'id': comment.id}) }}" method="post"
-                {% if not app.user %}data-turbo-frame="_top" {% endif %}>
+
+        {# --- VOTE BUTTONS ---#}
+        <div class="flex items-center gap-4 text-[#222831]">
+
+            {# --- LIKE BUTTON ---#}
+            <form action="{{ path('app_comment_like', {'id': comment.id}) }}"
+                method="post"
+                {% if not app.user %}data-turbo-frame="_top" {% endif %}
+            >
                 <input type="hidden" name="_token" value="{{ csrf_token('vote' ~ comment.id) }}">
                 <input type="hidden" name='vote' value='1'>
-                <button type="submit" class="cursor-pointer flex gap-1 items-center
-                    {% if userVote and userVote.value == 1%}
-                        text-green-500
-                    {% endif %} ">
+
+                <button type="submit"
+                    class="cursor-pointer flex gap-1 items-center
+                    {{ userVote and userVote.value == 1 ? 'text-green-600' : '' }}"
+                    aria-label="Polub komentarz"
+                >
                     {{ icons.like() }} <span class="text-sm">({{ score.like }})</span>
                 </button>
             </form>
 
-            <form action="{{ path('app_comment_like', {'id': comment.id}) }}" method="post"
-                {% if not app.user %}data-turbo-frame="_top" {% endif %}>
+            {# --- DISLIKE BUTTON ---#}
+            <form action="{{ path('app_comment_like', {'id': comment.id}) }}"
+                method="post"
+                {% if not app.user %}data-turbo-frame="_top" {% endif %}
+            >
                 <input type="hidden" name="_token" value="{{ csrf_token('vote' ~ comment.id) }}">
                 <input type="hidden" name='vote' value='-1'>
+
                 <button type="submit" class="cursor-pointer flex gap-1 items-center
-                    {% if userVote and userVote.value == -1%}
-                        text-red-500
-                    {% endif %}">
+                    {{ userVote and userVote.value == -1 ? 'text-red-600' : '' }}"
+                    aria-label="Nie lubię komentarza"
+                >
                     {{ icons.unlike() }} <span class="text-sm">({{ score.dislike }})</span>
                 </button>
             </form>
