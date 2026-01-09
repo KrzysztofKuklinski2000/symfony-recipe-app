@@ -5,143 +5,182 @@
 {% block title %}Przepis: {{ recipe.title|upper }}{% endblock %}
 
 {% block body %}
-    <div class="flex justify-between items-center px-8 py-4">
-        <div class="flex gap-2 items-center">
-            <h1 class="font-bold text-2xl text-center">
-                {{ recipe.title|upper }}
-            </h1>
+<div class="container mx-auto px-4 py-8 max-w-5xl">
+
+    {# --- HEADER --- #}
+    <div
+        class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 border-b border-gray-100 pb-6">
+        <h1 class="font-extrabold text-3xl md:text-4xl text-gray-900 leading-tight">
+            {{ recipe.title }}
+        </h1>
+
+        <div class="flex items-center gap-4">
+            {# Likes Counter #}
+            <div class="flex items-center gap-1 text-gray-500 bg-gray-100 px-3 py-1 rounded-full text-sm font-medium"
+                title="Liczba polubień">
+                <span class="text-red-500">{{ icons.favorite(4) }}</span>
+                <span id="favorite-count-{{ recipe.id }}">{{ recipe.favoritedBy|length }}</span>
+            </div>
+
+            {# Favorite Action Button #}
             {% if is_granted('IS_EMAIL_VERIFIED') %}
-                {% include "favorite/_btn.html.twig" with {
-                    "recipe": recipe
-                    }
+            {% include "favorite/_btn.html.twig" with { "recipe": recipe } %}
+            {% endif %}
+        </div>
+    </div>
+
+    {# --- MAIN IMAGE & INFO --- #}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-12">
+        <div>
+            {% set imageUrl = recipe.imageFilename
+                    ? asset('/uploads/recipes/' ~ recipe.imageFilename)
+                    : asset('/uploads/recipes/default.png')
                 %}
-            {% endif %}
-        </div>
-        <div class="flex gap-2 items-center">
-            <p class="text-amber-500">{{ icons.unfavorite(6)}}</p>
-            <p id="favorite-count-{{ recipe.id }}">{{ recipe.favoritedBy|length }}</p>
-        </div>
-    </div>
+            <img class="w-full h-80 lg:h-96 object-cover rounded-2xl shadow-lg" src="{{ imageUrl }}"
+                alt="{{ recipe.title }} - zdjęcie potrawy">
 
-    <div class="w-full md:w-1/2 mx-auto">
-        {% if recipe.imageFilename %}
-            <img class="w-full mx-auto md:max-w-[500px] h-64 object-cover"
-                src="{{ asset('/uploads/recipes/'~ recipe.imageFilename) }}"
-                alt="{{ recipe.title  }} obrazek">
-        {% else %}
-            <img class="w-full mx-auto md:max-w-[500px] h-64 object-cover" src="{{ asset('/uploads/recipes/default.png') }}"
-                alt="{{ recipe.title  }} obrazek">
-        {% endif %}
-        <div class="flex justify-center gap-4 mt-2">
-            <a class="flex items-center gap-2 hover:font-bold underline"
-                href="{{ path('app_profile_show', {'id': recipe.author.id}) }}">
-                {{icons.user()}} {{ recipe.author.email }}
-            </a>
-            {% if recipe.difficulty %}
-                <span>📊 {{ recipe.difficulty.getLabel() }}</span>
-            {% endif %}
-            <span >⏱️ {{ recipe.preparationTime }} godz</span>
-        </div>
-    </div>
+            <div class="flex flex-wrap gap-4 mt-6 text-sm font-medium text-gray-600 justify-center lg:justify-start">
+                <a class="flex items-center gap-2 hover:text-blue-600 transition-colors"
+                    href="{{ path('app_profile_show', {'id': recipe.author.id}) }}">
+                    {{ icons.user(4) }} {{ recipe.author.username|default(recipe.author.email) }}
+                </a>
 
-    <div class="flex flex-col md:justify-around p-4 md:flex-row">
-        <div class="p-4 md:max-w-2/3">
-            {% include "category/_tags.html.twig" with {"categories": recipe.categories} %}
-            <div>
-               {% if recipe.dietaryTags %}
-                    <h2 class="font-semibold text-xl py-2">Tagi: </h2>
-                    <ul class="flex flex-col gap-2 md:flex-row md:gap-4 text-gray-300 text-sm font-semibold">
-                        {% for tag in recipe.dietaryTags %}
-                            <li>
-                                #{{ tag.getLabel()|capitalize }}
-                            </li>
-                        {% endfor %}
-                    </ul>
-               {% endif %}
-            </div>
-            <div>
-                <h2 class="font-semibold text-xl py-2">Instrukcje: </h2>
-                {{ recipe.instructions|nl2br }}
+                {% if recipe.difficulty %}
+                <span class="flex items-center gap-1 px-3 py-1 bg-yellow-50 text-yellow-700 rounded-lg">
+                    📊 {{ recipe.difficulty.getLabel() }}
+                </span>
+                {% endif %}
+
+                <span class="flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-lg">
+                    ⏱️ {{ recipe.preparationTime }} godz
+                </span>
             </div>
         </div>
 
-        <div class="p-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <h2 class="font-semibold text-xl py-2">Składniki </h2>
-                    {% if recipe.servings %}
-                        <div class="flex items-center gap-2">
-                            <button class="hover:cursor-pointer" id="btn-decrease">-</button>
-                                <p id="servings-display" data-base-servings="{{ recipe.servings }}">
-                                    ({{ recipe.servings }} porcji )
-                                </p>
-                            <button class="hover:cursor-pointer" id="btn-increase">+</button>
-                        </div>
-                    {% endif %}
+        {# --- INGREDIENTS --- #}
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+                <h2 class="font-bold text-2xl text-gray-800">Składniki</h2>
+
+                {# Servings Control #}
+                {% if recipe.servings %}
+                <div class="flex items-center bg-gray-50 rounded-lg p-1 border border-gray-200">
+                    <button id="btn-decrease"
+                        class="w-8 h-8 flex items-center justify-center hover:bg-white hover:shadow-sm rounded transition font-bold text-gray-600">-</button>
+                    <span id="servings-display"
+                        class="px-3 font-semibold text-gray-800 text-sm min-w-20 text-center"
+                        data-base-servings="{{ recipe.servings }}">
+                        {{ recipe.servings }} porcji
+                    </span>
+                    <button id="btn-increase"
+                        class="w-8 h-8 flex items-center justify-center hover:bg-white hover:shadow-sm rounded transition font-bold text-gray-600">+</button>
                 </div>
-
-                {% if is_granted('IS_EMAIL_VERIFIED') %}
-                    <form action="{{ path('app_shopping_add', {'id': recipe.id}) }}" method="POST"
-                        id="recipe-ingredients-{{ recipe.id }}" class="flex gap-2">
-                        <input type="hidden" name="_token" value="{{ csrf_token('shoppingList' ~ recipe.id) }}">
-                        <input type="hidden" name="targetServings" value="{{ recipe.servings|default(1) }}"
-                            class="js-servings-input">
-                        <button class="text-sm hover:cursor-pointer p-2 rounded bg-indigo-50 flex gap-2 justify-between items-center" type="submit">{{ icons.add(4) }}Dodaj</button>
-                    </form>
                 {% endif %}
             </div>
-            <ul class="space-y-2 list-disc list-inside">
+
+            {# Add All to List #}
+            {% if is_granted('IS_EMAIL_VERIFIED') %}
+            <form action="{{ path('app_shopping_add', {'id': recipe.id}) }}" method="POST" class="mb-6">
+                <input type="hidden" name="_token" value="{{ csrf_token('shoppingList' ~ recipe.id) }}">
+                <input type="hidden" name="targetServings" value="{{ recipe.servings|default(1) }}"
+                    class="js-servings-input">
+                <button type="submit"
+                    class="w-full flex items-center justify-center gap-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2 rounded-lg font-semibold transition text-sm cursor-pointer">
+                    {{ icons.add(4) }} Dodaj wszystko do listy
+                </button>
+            </form>
+            {% endif %}
+
+            {# Ingredient List #}
+            <ul class="space-y-3">
                 {% for ingredient in recipe.recipeIngredients %}
-                    <li class="flex gap-2" id="add-ingriedient-{{ ingredient.id }}">
-                        <span>
-                            {{ ingredient.name|capitalize }}
-                            ( <strong
-                                class="ingredient-amount"
+                <li class="flex justify-between items-center group p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                    id="add-ingriedient-{{ ingredient.id }}">
+                    <span class="text-gray-700">
+                        {{ ingredient.name|capitalize }}
+                        <span class="text-gray-500 text-sm ml-1">
+                            (<strong class="ingredient-amount text-gray-900"
                                 data-original-amount="{{ ingredient.quantity }}"
-                                data-unit="{{ ingredient.unit|default('')|lower }}"
-                            >
+                                data-unit="{{ ingredient.unit|default('')|lower }}">
                                 {{ ingredient.quantity }}
                             </strong>
-                            <span class="js-unit">{{ ingredient.unit }}</span>
-                            )
+                            <span class="js-unit">{{ ingredient.unit }}</span>)
                         </span>
-                        {% if is_granted('IS_EMAIL_VERIFIED') %}
-                            <form action="{{ path('app_shopping_add_item', {'id': ingredient.id}) }}"
-                                method="POST" >
-                                <input type="hidden" name="_token" value="{{ csrf_token('add_item' ~ ingredient.id) }}">
-                                <input type="hidden" name="targetServings" value="{{ recipe.servings|default(1) }}"
-                                    class="js-servings-input">
-                                <button type="submit" class="hover:cursor-pointer hover:text-blue-500">
-                                    {{ icons.add(4) }}
-                                </button>
-                            </form>
-                        {% endif %}
-                    </li>
+                    </span>
+
+                    {# Add Single Item #}
+                    {% if is_granted('IS_EMAIL_VERIFIED') %}
+                    <form action="{{ path('app_shopping_add_item', {'id': ingredient.id}) }}" method="POST">
+                        <input type="hidden" name="_token" value="{{ csrf_token('add_item' ~ ingredient.id) }}">
+                        <input type="hidden" name="targetServings" value="{{ recipe.servings|default(1) }}"
+                            class="js-servings-input">
+                        <button type="submit"
+                            class="text-gray-300 cursor-pointer hover:text-blue-600 p-1 group-hover:opacity-100
+                            transition-all"
+                            title="Dodaj ten składnik">
+                            {{ icons.add() }}
+                        </button>
+                    </form>
+                    {% endif %}
+                </li>
                 {% endfor %}
             </ul>
         </div>
-
     </div>
-    <div class="p-4 md:max-w-2/3">
-    {% if is_granted('IS_EMAIL_VERIFIED') %}
-        {% include "comment/_form.html.twig" with {
-            "commentForm": commentForm,
-        }%}
-    {% else %}
-        <div class="p-4 bg-gray-100 text-gray-500 rounded text-center">
-            Musisz potwierdzić email, aby dodawać komentarze.
+
+    {# --- INSTRUCTIONS --- #}
+    <div class="mb-12">
+        <h2 class="font-bold text-2xl text-gray-800 mb-4 border-b border-gray-100 pb-2">Przygotowanie</h2>
+
+        <div
+            class="prose max-w-none text-gray-700 leading-relaxed whitespace-pre-line bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            {{ recipe.instructions }}
         </div>
-    {% endif %}
+
+        <div class="mt-6">
+            {% include "category/_tags.html.twig" with {"categories": recipe.categories} %}
+
+            {% if recipe.dietaryTags %}
+            <div class="mt-4">
+                <h3 class="font-bold text-sm text-gray-500 uppercase tracking-wide mb-2">Tagi dietetyczne</h3>
+                <div class="flex flex-wrap gap-2">
+                    {% for tag in recipe.dietaryTags %}
+                    <span
+                        class="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium border border-green-100">
+                        {{ tag.getLabel()|capitalize }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
     </div>
 
-    <div class="p-4 md:max-w-2/3">
-        {% include "comment/_list.html.twig" with {"recipe": recipe}%}
+    {# --- COMMENTS SECTION --- #}
+    <div class="max-w-3xl mx-auto">
+        <div class="mb-8">
+            {% if is_granted('IS_EMAIL_VERIFIED') %}
+            {% include "comment/_form.html.twig" with { "commentForm": commentForm } %}
+            {% else %}
+            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center shadow-sm">
+                <p class="text-yellow-800 font-medium mb-2">Chcesz dodać komentarz?</p>
+                <p class="text-sm text-yellow-700 mb-4">Musisz potwierdzić swój adres email, aby uczestniczyć w
+                    dyskusji.</p>
+                <a href="{{ path('app_resend_verify_email') }}"
+                    class="text-yellow-900 underline hover:no-underline font-semibold text-sm">
+                    Wyślij link aktywacyjny ponownie
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        {% include "comment/_list.html.twig" with {"recipe": recipe} %}
     </div>
 
+</div>
 {% endblock %}
 
 {% block javascripts %}
-    {{ parent() }}
-
-    <script src="{{ asset('js/recipe-scale.js') }}" defer></script>
+{{ parent() }}
+<script src="{{ asset('js/recipe-scale.js') }}" defer></script>
 {% endblock %}

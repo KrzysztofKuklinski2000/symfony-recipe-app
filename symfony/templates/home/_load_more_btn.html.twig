@@ -1,22 +1,23 @@
 <turbo-frame id="load-more-button">
     {% if hasNextPage %}
 
-    {% set currentQueryParams = app.request.query.all %}
-    {% set nextQueryParams = currentQueryParams|merge({'page': page + 1}) %}
-    {% set routeName = category ? 'app_home_category' : 'app_home' %}
-    {% set finalParams = nextQueryParams %}
+        {% set currentQueryParams = app.request.query.all %}
+        {% set nextQueryParams = currentQueryParams|merge({'page': page + 1}) %}
+        {% set routeName = category ? 'app_home_category' : 'app_home' %}
+        {% set finalParams = nextQueryParams %}
 
 
-    {% if category %}
-        {% set finalParams = nextQueryParams|merge({'slug': category.slug}) %}
-    {% endif %}
+        {% if category %}
+            {% set finalParams = nextQueryParams|merge({'slug': category.slug}) %}
+        {% endif %}
 
-    <div class="flex justify-center mt-8">
-        <a href="{{ path(routeName, finalParams) }}"
-            class="bg-gray-200 text-gray-700 font-bold py-2 px-6 rounded-full hover:bg-gray-300 transition"
-            data-turbo-stream="true">
-            Załaduj więcej
-        </a>
-    </div>
+        <div class="flex justify-center mt-12 mb-8">
+            <a href="{{ path(routeName, finalParams) }}"
+                class="bg-gray-100 text-gray-700 font-bold py-3 px-8 rounded-full hover:bg-gray-200 hover:text-gray-900
+                transition-all shadow-sm"
+                data-turbo-stream="true">
+                Załaduj więcej
+            </a>
+        </div>
     {% endif %}
 </turbo-frame>
