@@ -1,14 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="turbo-cache-control" content="no-cache">
-    <title>{% block title %}Welcome!{% endblock %}</title>
+
+    <title>{% block title %}Książka Kucharska{% endblock %}</title>
+
+    {# Favicon: Kucharz emoji #}
     <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🍳</text></svg>">
+
     {% block stylesheets %}
-        <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
     {% endblock %}
 
     {% block javascripts %}
@@ -16,18 +21,42 @@
     {% endblock %}
 </head>
 
-<body class="bg-[#222831]">
+<body class="bg-[#222831] text-gray-800 antialiased min-h-screen flex flex-col font-sans">
+
+    {# --- VERIFICATION BANNER --- #}
     {% if app.user and not app.user.isVerified %}
-        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 text-center" role="alert">
-            <p class="font-bold">Twoje konto nie jest jeszcze aktywne.</p>
-            <p>Sprawdź swoją skrzynkę pocztową (i folder spam), aby potwierdzić adres email.
-                Niektóre funkcje są zablokowane.</p>
+    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 text-center sticky top-0 z-50 shadow-md">
+        <div class="flex items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                class="w-5 h-5 text-yellow-600">
+                <path fill-rule="evenodd"
+                    d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
+                    clip-rule="evenodd" />
+            </svg>
+            <p class="font-bold">Twoje konto nie jest aktywne.</p>
         </div>
+        <p class="text-sm mt-1">Sprawdź skrzynkę pocztową (również SPAM), aby odblokować pełny dostęp.</p>
+    </div>
     {% endif %}
+
+    {# --- NAV --- #}
     {% include "_partials/nav/_main.html.twig" %}
-    <main class="md:m-10 bg-white md:shadow-xl md:rounded-2xl">
+
+    {# --- MAIN CONTENT --- #}
+    <main
+        class="grow w-full max-w-7xl mx-auto md:my-8 bg-white md:shadow-2xl md:rounded-3xl overflow-hidden min-h-[60vh]">
+
+        <div class="empty:hidden">
+            {% include "_partials/_flash_messages.html.twig" %}
+        </div>
+
         {% block body %}{% endblock %}
     </main>
+
+    {# --- FOOTER --- #}
+    <footer class="text-center text-gray-400 py-6 text-sm mt-auto">
+        <p>&copy; {{ 'now'|date('Y') }} Przepisy. Smacznego!</p>
+    </footer>
 </body>
 
 </html>
