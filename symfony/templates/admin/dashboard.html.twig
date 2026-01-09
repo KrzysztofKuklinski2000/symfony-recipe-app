@@ -1,140 +1,131 @@
-{# templates/admin/dashboard.html.twig #}
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
 {% block content_title %}Statystyki Serwisu{% endblock %}
 
-{% block main %}
-<div class="container-fluid">
-    <div class="row">
-
-        <div class="col-md-3">
-            <div class="card mb-4 shadow-sm border-start border-4 border-primary">
-                <div class="card-body text-center">
-                    <h3 class="text-primary"><i class="fas fa-users"></i></h3>
-                    <div class="fs-4 fw-bold">{{ users_count }}</div>
-                    <div class="text-muted small">Użytkowników</div>
-                </div>
-            </div>
+{# --- STATISTICS CARD MACRO --- #}
+{% macro stat_card(color, icon, count, label) %}
+<div class="col-md-6 col-lg-3">
+    <div class="card mb-4 shadow-sm border-start border-4 border-{{ color }}">
+        <div class="card-body text-center">
+            <h3 class="text-{{ color }}"><i class="{{ icon }}"></i></h3>
+            <div class="fs-4 fw-bold">{{ count }}</div>
+            <div class="text-muted small">{{ label }}</div>
         </div>
-
-        <div class="col-md-3">
-            <div class="card mb-4 shadow-sm border-start border-4 border-success">
-                <div class="card-body text-center">
-                    <h3 class="text-success"><i class="fas fa-utensils"></i></h3>
-                    <div class="fs-4 fw-bold">{{ recipes_count }}</div>
-                    <div class="text-muted small">Przepisów</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card mb-4 shadow-sm border-start border-4 border-info">
-                <div class="card-body text-center">
-                    <h3 class="text-info"><i class="fas fa-tags"></i></h3>
-                    <div class="fs-4 fw-bold">{{ categories_count }}</div>
-                    <div class="text-muted small">Kategorii</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card mb-4 shadow-sm border-start border-4 border-warning">
-                <div class="card-body text-center">
-                    <h3 class="text-warning"><i class="fas fa-comments"></i></h3>
-                    <div class="fs-4 fw-bold">{{ comments_count }}</div>
-                    <div class="text-muted small">Komentarzy</div>
-                </div>
-            </div>
-        </div>
-
     </div>
 </div>
-<div class="row mt-4">
+{% endmacro %}
 
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white fw-bold">
-                <i class="fas fa-comments text-warning me-2"></i> Ostatnie komentarze
-            </div>
-            <div class="card-body p-0">
-                <table class="table table-striped mb-0 table-hover">
-                    <thead class="bg-light">
-                        <tr>
-                            <th>Autor</th>
-                            <th>Treść</th>
-                            <th class="text-end">Data</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for comment in latest_comments %}
-                        <tr>
-                            <td>
-                                <small class="fw-bold d-block text-truncate" style="max-width: 100px;">
-                                    {{ comment.author }}
-                                </small>
-                            </td>
-                            <td>
-                                <span class="d-block text-truncate" style="max-width: 200px;">
-                                    {{ comment.content }}
-                                </span>
-                                <small class="text-muted">w: {{ comment.recipe }}</small>
-                            </td>
-                            <td class="text-end text-muted small">
-                                {{ comment.createdAt|date('d.m H:i') }}
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="3" class="text-center p-3">Brak komentarzy</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div class="card-footer bg-white text-center">
-                <a href="{{ comments_url }}"
-                    class="text-decoration-none small">
-                    Zobacz wszystkie <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-        </div>
+{% import _self as macros %}
+
+{% block main %}
+<div class="container-fluid">
+
+    {# --- TOP CARDS --- #}
+    <div class="row">
+        {{ macros.stat_card('primary', 'fas fa-users', users_count, 'Użytkowników') }}
+        {{ macros.stat_card('success', 'fas fa-utensils', recipes_count, 'Przepisów') }}
+        {{ macros.stat_card('info', 'fas fa-tags', categories_count, 'Kategorii') }}
+        {{ macros.stat_card('warning', 'fas fa-comments', comments_count, 'Komentarzy') }}
     </div>
 
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white fw-bold">
-                <i class="fas fa-user-plus text-primary me-2"></i> Nowi Użytkownicy
-            </div>
-            <div class="card-body p-0">
-                <table class="table table-striped mb-0 table-hover">
-                    <thead class="bg-light">
-                        <tr>
-                            <th>Email</th>
-                            <th>Nazwa</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in latest_users %}
-                        <tr>
-                            <td>{{ user.email }}</td>
-                            <td>{{ user.username ?? 'Brak nazwy' }}</td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="3" class="text-center p-3">Brak użytkowników</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div class="card-footer bg-white text-center">
-                <a href="{{ users_url }}"
-                    class="text-decoration-none small">
-                    Zarządzaj użytkownikami <i class="fas fa-arrow-right"></i>
-                </a>
+    {# --- BOTTOM TABLES --- #}
+    <div class="row mt-4">
+
+        {# --- LATEST COMMENTS --- #}
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white fw-bold py-3">
+                    <i class="fas fa-comments text-warning me-2"></i> Ostatnie komentarze
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped mb-0 table-hover align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Autor</th>
+                                <th>Treść</th>
+                                <th class="text-end">Data</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for comment in latest_comments %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="fw-bold text-truncate" style="max-width: 120px;">
+                                            {{ comment.author }}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="d-block text-truncate" style="max-width: 200px;">
+                                        {{ comment.content }}
+                                    </span>
+                                    <small class="text-muted" style="font-size: 0.75rem;">
+                                        w: {{ comment.recipe }}
+                                    </small>
+                                </td>
+                                <td class="text-end text-muted small">
+                                    {{ comment.createdAt|date('d.m H:i') }}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center p-4 text-muted">Brak komentarzy</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer bg-white text-center">
+                    <a href="{{ comments_url }}" class="text-decoration-none small fw-bold">
+                        Zobacz wszystkie <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
 
+        {# --- NEW USERS --- #}
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white fw-bold py-3">
+                    <i class="fas fa-user-plus text-primary me-2"></i> Nowi Użytkownicy
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped mb-0 table-hover align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Email</th>
+                                <th>Nazwa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in latest_users %}
+                            <tr>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    {% if user.username %}
+                                    {{ user.username }}
+                                    {% else %}
+                                    <span class="badge bg-light text-dark border">Brak nazwy</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="2" class="text-center p-4 text-muted">Brak użytkowników</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer bg-white text-center">
+                    <a href="{{ users_url }}" class="text-decoration-none small fw-bold">
+                        Zarządzaj użytkownikami <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 {% endblock %}
