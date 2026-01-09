@@ -2,15 +2,24 @@
 
 {% import '_macros/icons.html.twig' as icons%}
 
-{% block title %}Edytuj dane użytkownika{% endblock %}
+{% block title %}Edytuj profil{% endblock %}
 
 {% block body %}
-    <div class="w-4/5 mx-auto mt-8 p-6">
+    <div class="max-w-xl mx-auto mt-8 p-6">
+
         {% include "_partials/_flash_messages.html.twig" %}
-        <h1 class="text-xl font-bold text-center text-gray-700">Edytujesz dane użytkownika </h1>
+
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-2xl font-bold text-gray-800">Edycja profilu</h1>
+            <a href="{{ path('app_profile_show', {'id': user.id}) }}"
+                class="text-gray-400 hover:text-gray-600 transition" title="Anuluj">
+                {{ icons.close() }}
+            </a>
+        </div>
 
         {{ form_start(form, {'attr': {'class': 'space-y-4'}} )}}
 
+        {# --- USERNAME ---#}
         {{ form_row(form.username, {
             'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'},
             'attr': {
@@ -19,31 +28,49 @@
             })
         }}
 
-        {{ form_row(form.imageFile, {
-            'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'},
-            'attr': {
-                'class': 'w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 hover:cursor-pointer',
-                }
-            })
-        }}
-
-        {% if user.imageFilename %}
-            <div class="my-4 p-4 border-gray-700 rounded-lg bg-gray-50">
-                <p class="block text-sm font-medium text-gray-700 mb-2">Obecny obrazek:</p>
-                <img src="{{ asset('/uploads/users/'~ user.imageFilename) }}" alt="obrazek użytkownika"
-                    class="w-64 h-64 shadow-md rounded-lg object-cover">
+        {# --- IMAGE UPLOAD ---#}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+            <div class="md:col-span-2">
+                {{ form_row(form.imageFile, {
+                    'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'},
+                    'attr': {
+                        'class': 'block w-full text-sm text-gray-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100 cursor-pointer'
+                    }
+                }) }}
+                <p class="text-xs text-gray-500 mt-1">Dozwolone formaty: JPG, PNG. Maksymalny rozmiar: 1MB.</p>
             </div>
-        {% endif %}
 
-        <button type="submit"
-            class="flex gap-1 mt-5 bg-green-500 p-2 text-white rounded font-bold hover:cursor-pointer hover:bg-green-600 ">
-            {{ icons.edit() }}<span>Zapisz</span>
-        </button>
+            {# --- CURRENT IMAGE PREVIEW --- #}
+            {% if user.imageFilename %}
+            <div class="flex flex-col items-center">
+                <span class="text-xs text-gray-500 mb-2">Obecne zdjęcie</span>
+                <img src="{{ asset('/uploads/users/' ~ user.imageFilename) }}" alt="Twój avatar"
+                    class="w-24 h-24 rounded-full object-cover shadow-md border-2 border-white ring-2 ring-gray-100">
+            </div>
+            {% endif %}
+        </div>
+
+        <hr class="border-gray-100 my-6">
+
+        {# --- ACTIONS --- #}
+        <div class="flex gap-3 justify-end">
+            <a href="{{ path('app_profile_show', {'id': user.id}) }}"
+                class="px-5 py-2.5 rounded-lg text-gray-700 bg-gray-100 hover:bg-gray-200 font-medium transition">
+                Anuluj
+            </a>
+
+            <button type="submit"
+                class="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition shadow-md shadow-blue-200 cursor-pointer">
+                {{ icons.edit() }} Zapisz zmiany
+            </button>
+        </div>
 
         {{ form_end(form) }}
-
-        <a href="{{ path('app_profile_show', {'id': user.id}) }}"
-            class="text-gray-700 italic font-medium hover:underline hover:cursor-pointer">Powrót do listy</a>
     </div>
 {% endblock %}
 

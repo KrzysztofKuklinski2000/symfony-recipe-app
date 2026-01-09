@@ -1,6 +1,7 @@
 {% import "_macros/icons.html.twig" as icons %}
 <nav class="w-full h-32 flex items-center justify-center relative">
    <div class="w-4/5 h-16 bg-white rounded-xl shadow-xl flex gap-8 items-center justify-around">
+    {# --- DESKTOP MENU --- #}
     <ul class="hidden md:flex gap-4 h-full ">
         <li>
             <a href="{{ path('app_home') }}"
@@ -32,10 +33,12 @@
         </li>
      </ul>
 
+    {# --- MOBILE HAMBURGER --- #}
     <div class="block md:hidden cursor-pointer" id="mobile-menu-button">
         {{ icons.menu() }}
     </div>
 
+    {# --- USER ACTION (DESKTOP) --- #}
      <div class="hidden md:flex gap-4 h-full items-center">
         {% if app.user %}
             <a class="flex gap-2 items-center font-semibold p-2 border-b-4 border-transparent hover:border-[#222831] cursor-pointer"
@@ -55,8 +58,8 @@
             {% endif %}
         {% else %}
             <a
-                class="flex gap-2 items-center font-semibold p-2 border-b-4 border-transparent hover:border-[#222831]
-                cursor-pointer" href="{{ path('app_login') }}">
+            class="flex gap-2 items-center font-semibold p-2 border-b-4 border-transparent hover:border-[#222831]
+            cursor-pointer" href="{{ path('app_login') }}">
                 {{ icons.user() }} Zaloguj się
             </a>
             <a
@@ -67,6 +70,8 @@
          {% endif %}
      </div>
    </div>
+
+    {# --- MOBILE MENU DROPDOWN --- #}
    <div id="mobile-menu" class="hidden md:hidden absolute top-32 left-0 w-full bg-white shadow-lg p-4 z-50">
         <ul class="flex flex-col gap-4">
             <li>
@@ -104,11 +109,12 @@
                     Mój profil
                 </a>
             {% else %}
-            <a href="{{ path('app_login') }}" class="flex items-center gap-2 font-semibold p-2">{{ icons.user() }}
-                Zaloguj się</a>
-            <a href="{{ path('app_register') }}"
-                class="flex items-center gap-2 font-semibold p-2">{{ icons.register() }} Zarejestruj się</a>
+                <a href="{{ path('app_login') }}" class="flex items-center gap-2 font-semibold p-2">{{ icons.user() }}
+                    Zaloguj się</a>
+                <a href="{{ path('app_register') }}"
+                    class="flex items-center gap-2 font-semibold p-2">{{ icons.register() }} Zarejestruj się</a>
             {% endif %}
         </div>
    </div>
+
 </nav>
