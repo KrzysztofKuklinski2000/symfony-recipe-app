@@ -1,7 +1,7 @@
 {% import '_macros/icons.html.twig' as icons %}
 <div id="favorite-btn-{{ recipe.id }}">
     {% if app.user and app.user.hasFavorited(recipe) %}
-        {# Użytkownik jest zalogowany i ma w ulubionych #}
+        {# STATUS: FAVORITED (DELETE) #}
         <form
             action="{{ path('app_favorite_remove', {'id': recipe.id }) }}"
             method="POST"
@@ -9,18 +9,33 @@
             data-turbo-method="post"
         >
             <input type="hidden" name="_token" value="{{ csrf_token('unfavorite' ~ recipe.id) }}">
+
             {% if is_favorite_page|default(false) %}
                 <input type="hidden" name="remove_from_list" value="1">
             {% endif %}
-            <button type="submit" class="bg-white text-[#222831] font-semibold shadow p-2 rounded cursor-pointer">
+
+            <button
+                type="submit"
+                class="bg-white text-[#222831] font-semibold shadow p-2 rounded cursor-pointer"
+                aria-label="Usuń z ulubionych"
+                title="Usuń z ulubionych"
+            >
                 {{ icons.unfavorite() }}
             </button>
         </form>
     {% elseif not app.user or is_granted('RECIPE_FAVORITE', recipe) %}
-        {# Użytkownik nie jest zalogowany lub nie jest właścicielem przepisu #}
-        <form action="{{ path('app_favorite_add', {'id': recipe.id }) }}" method="POST" data-turbo-stream="true">
+        {# STATUS: NOT IN FAVORITES (ADD) #}
+        <form action="{{ path('app_favorite_add', {'id': recipe.id }) }}"
+            method="POST"
+            data-turbo-stream="true"
+        >
             <input type="hidden" name="_token" value="{{ csrf_token('favorite' ~ recipe.id) }}">
-            <button type="submit" class="bg-white text-[#222831] font-semibold shadow p-2 rounded cursor-pointer">
+
+            <button type="submit"
+                class="bg-white text-[#222831] font-semibold shadow p-2 rounded cursor-pointer"
+                aria-label="Dodaj do ulubionych"
+                title="Dodaj do ulubionych"
+            >
                 {{ icons.favorite() }}
             </button>
         </form>
