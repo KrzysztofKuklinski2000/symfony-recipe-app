@@ -1,25 +1,44 @@
 {% import "_macros/icons.html.twig" as icons %}
-<li id="ingredient-{{ item.id }}" class="py-1 flex gap-2 items-center {{ item.isChecked ? 'opacity-50' : '' }}">
-    <form action="{{ path('app_shopping_toggle', {'id':item.id}) }}" method="POST"
-        class="flex items-center gap-2">
+
+<li id="ingredient-{{ item.id }}"
+    class="group flex items-center justify-between py-3 px-2 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors {{ item.isChecked ? 'opacity-50 grayscale' : '' }}">
+
+    <form action="{{ path('app_shopping_toggle', {'id': item.id}) }}" method="POST"
+        class="grow flex items-center gap-3 cursor-pointer" data-turbo-stream="true">
+
         <input type="hidden" name="_token" value="{{ csrf_token('shoppingItem' ~ item.id) }}">
-        <input type="checkbox" {{ item.isChecked ? 'checked' : ''}} id="item-{{ item.id }}"
-            onchange="this.form.requestSubmit()">
-        <label for="item-{{ item.id }}" class="cursor-pointer">
-            <span class="{{ item.isChecked ? 'line-through' : '' }}">{{ item.name }}</span>
+
+        <label class="relative flex items-center cursor-pointer">
+            <input type="checkbox" {{ item.isChecked ? 'checked' : '' }} onchange="this.form.requestSubmit()"
+                class="peer h-5 w-5 cursor-pointer appearance-none rounded border border-gray-300 shadow-sm transition-all checked:border-blue-500 checked:bg-blue-500 hover:border-blue-400 focus:ring-2 focus:ring-blue-200">
+        </label>
+
+        <div class="grow select-none">
+            <span class="text-gray-800 font-medium {{ item.isChecked ? 'line-through decoration-gray-400' : '' }}">
+                {{ item.name }}
+            </span>
+
             {% if item.quantity %}
-                ( {{ item.quantity|round(2) }}
-                <span class="text-sm font-normal"> {{ item.unit }}) </span>
+            <span class="text-sm text-gray-500 ml-1">
+                {{ item.quantity|round(2) }} {{ item.unit }}
+            </span>
             {% endif %}
 
-            <span class="ml-1 text-sm font-bold text-indiego-500 bg-indigo-50 px-2 py-0.5 rounded-full no-underline">
+            {% if item.count > 1 %}
+            <span
+                class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-indigo-50 text-indigo-600">
                 x{{ item.count }}
             </span>
-        </label>
+            {% endif %}
+        </div>
     </form>
-    <form action="{{ path('app_shopping_delete', {'id': item.id}) }}" method="POST">
+
+    <form action="{{ path('app_shopping_delete', {'id': item.id}) }}" method="POST" data-turbo-stream="true">
         <input type="hidden" name="_token" value="{{ csrf_token('shoppingItem' ~ item.id) }}">
-        <button type="submit" class="hover:cursor-pointer hover:text-red-500">
+
+        <button type="submit"
+            class="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer"
+            title="Usuń z listy">
             {{ icons.delete(4) }}
         </button>
     </form>

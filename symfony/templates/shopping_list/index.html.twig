@@ -1,47 +1,99 @@
+{# templates/shopping_list/index.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% import "_macros/icons.html.twig" as icons %}
 
-{% block title %}Lista zakupów!{% endblock %}
+{% block title %}Lista zakupów{% endblock %}
 
 {% block body %}
-    <div class="p-4">
-        <h1 class="font-bold text-2xl">Lista zakupów</h1>
-        <div class="mt-5">
-            {% for group in groupedItems %}
-                <div id="ingredient-group-{{ group.recipe.id ?? 'loose' }}">
-                    {% set recipe = group.recipe %}
-                    {% set items = group.items %}
-                    <div class="flex gap-2">
-                        {% if recipe %}
-                            <a href="{{ path('app_show', {'id': recipe.id}) }}">
-                                <span class="font-semibold">{{ recipe.title }}</span>
-                            </a>
-                        {% else %}
-                            <span class="font-semibold">Luźne produkty</span>
-                        {% endif %}
-                        <span id="ingredient-counter-{{recipe.id ?? 'loose' }}">({{ items|length }} składników)</span>
+<div class="container mx-auto px-4 py-8 max-w-4xl">
 
-                        <form
-                            action="{{ path('app_shopping_delete_group') }}"
-                            method="POST"
-                        >
-                            {% set recipeId = recipe ? recipe.id : '' %}
-
-                            <input type="hidden" name="_token" value="{{ csrf_token('shoppingItem' ~ recipeId) }}">
-                            <input type="hidden" name="recipeId" value="{{ recipeId }}">
-                            <button type="submit" class="hover:cursor-pointer hover:text-red-500">
-                                {{ icons.delete(4) }}
-                            </button>
-                        </form>
-                    </div>
-                    <ul class="mb-5">
-                        {% for item in items %}
-                            {% include 'shopping_list/_ingredient_element.html.twig' with {'item': item} %}
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endfor %}
-        </div>
+    {# --- HEADER --- #}
+    <div class="flex items-center gap-3 mb-8 border-b border-gray-100 pb-4">
+        <span class="text-blue-600 bg-blue-50 p-2 rounded-xl">
+            {{ icons.shoppingList(8) }}
+        </span>
+        <h1 class="font-bold text-3xl text-gray-800">Lista zakupów</h1>
     </div>
+
+    {% if groupedItems is empty %}
+        {# --- EMPTY STATE --- #}
+        <div
+            class="flex flex-col items-center justify-center py-20 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+            <div class="text-gray-300 mb-4">{{ icons.shoppingList(16) }}</div>
+            <h2 class="text-xl font-bold text-gray-700 mb-2">Twój koszyk jest pusty</h2>
+            <p class="text-gray-500 max-w-sm mb-6">Przeglądaj przepisy i dodawaj składniki, aby stworzyć listę zakupów.</p>
+            <a href="{{ path('app_home') }}"
+                class="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition shadow-md">
+                Przeglądaj przepisy
+            </a>
+        </div>
+    {% else %}
+
+    {# --- CONTENT --- #}
+    <div class="grid gap-6">
+        {% for group in groupedItems %}
+        <div id="ingredient-group-{{ group.recipe.id ?? 'loose' }}"
+            class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+
+            {# Group Header #}
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    {% if group.recipe %}
+                    <div class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-gray-200">
+                        {% set imageUrl = group.recipe.imageFilename
+                                            ? asset('/uploads/recipes/' ~ group.recipe.imageFilename)
+                                            : asset('/uploads/recipes/default.png')
+                                        %}
+                        <img src="{{ imageUrl }}" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <a href="{{ path('app_show', {'id': group.recipe.id}) }}"
+                            class="font-bold text-gray-800 hover:text-blue-600 transition block">
+                            {{ group.recipe.title }}
+                        </a>
+                        <span class="text-xs text-gray-500 font-medium" id="ingredient-counter-{{ group.recipe.id }}">
+                            {{ group.items|length }} pozycji
+                        </span>
+                    </div>
+                    {% else %}
+                    <div class="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-500">
+                        {{ icons.list(5) }}
+                    </div>
+                    <div>
+                        <span class="font-bold text-gray-800 block">Luźne produkty</span>
+                        <span class="text-xs text-gray-500 font-medium" id="ingredient-counter-loose">
+                            {{ group.items|length }} pozycji
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {# Delete Group Button #}
+                <form action="{{ path('app_shopping_delete_group') }}" method="POST"
+                    onsubmit="return confirm('Usunąć całą grupę produktów?');">
+
+                    {% set recipeId = group.recipe ? group.recipe.id : '' %}
+                    <input type="hidden" name="_token" value="{{ csrf_token('shoppingItem' ~ recipeId) }}">
+                    <input type="hidden" name="recipeId" value="{{ recipeId }}">
+
+                    <button type="submit"
+                        class="p-2 cursor-pointer text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                        title="Usuń całą grupę">
+                        {{ icons.delete() }}
+                    </button>
+                </form>
+            </div>
+
+            {# Items List #}
+            <ul class="p-2">
+                {% for item in group.items %}
+                    {% include 'shopping_list/_ingredient_element.html.twig' with {'item': item} %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
 {% endblock %}
