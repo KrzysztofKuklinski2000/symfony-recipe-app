@@ -1,74 +1,114 @@
+{# templates/profile/user_profile.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% import '_macros/icons.html.twig' as icons %}
 
-{% block title %}Profil {{user.email}}{% endblock %}
+{% block title %}Profil {{ user.username|default(user.email) }}{% endblock %}
 
 {% block body %}
-    <div class="flex flex-col items-center justify-center pt-4">
-        {% if user.imageFilename %}
-            <img class="w-32 h-32 rounded-full object-cover shadow cursor-pointer"
-                src="{{ asset('/uploads/users/'~ user.imageFilename) }}" alt="Zdjęcie użytkownika">
-        {% else %}
-            <img class="w-32 h-32 rounded-full object-cover shadow cursor-pointer"
-                src="{{ asset('/uploads/users/default.jpg') }}" alt="Zdjęcie użytkownika">
-        {% endif %}
+<div class="container mx-auto px-4 py-10 max-w-5xl">
 
-        <div class="flex gap-2 items-center p-1 mt-2">
-            <h1 class="font-bold text-2xl">
-                {% include "_partials/_username.html.twig" with {
-                    "user": user
-                } %}
-            </h1>
+    {# --- HEADER PROFILU --- #}
+    <div
+        class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-12 flex flex-col md:flex-row items-center md:items-start gap-8">
 
-            <div>
-                {% if app.user and app.user == user and is_granted('IS_EMAIL_VERIFIED')%}
-                    <a href="{{ path('app_account_edit') }}"
-                        class="bg-[#222831] text-white p-2 font-semibold shadow rounded cursor-pointer">
-                            Edytuj profil
-                    </a>
-                {% endif %}
-            </div>
-
-            <div id="follow-button">
-                {% include "follow/_btn.html.twig" with {
-                    "user": user
-                } %}
-            </div>
+        {# --- AVATAR --- #}
+        <div class="shrink-0">
+            {% set avatarUrl = user.imageFilename
+                    ? asset('/uploads/users/' ~ user.imageFilename)
+                    : asset('/uploads/users/default.jpg')
+                %}
+            <img class="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover shadow-md border-4 border-white ring-1 ring-gray-100"
+                src="{{ avatarUrl }}" alt="Zdjęcie użytkownika">
         </div>
+        {# --- INFO & STATS --- #}
+        <div class="grow flex flex-col items-center md:items-start text-center md:text-left w-full">
 
-        <div class="flex gap-4 text-[#222831]">
-            <span>
-                <strong>
-                    {{ user.following.count }}
-                </strong> Obserwowanych
-            </span>
+            <div class="flex flex-col md:flex-row items-center gap-4 mb-4 w-full">
+                <h1 class="font-bold text-3xl text-gray-900">
+                    {{ user.username|default(user.email) }}
+                </h1>
 
-            <span>
-                <strong id="followers-counter">
-                    {{ user.followers.count }}
-                </strong> Obserwujących
-            </span>
+                <div class="flex gap-2">
+                    {# --- EDIT BUTTON --- #}
+                    {% if app.user and app.user == user and is_granted('IS_EMAIL_VERIFIED') %}
+                    <a href="{{ path('app_account_edit') }}"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors text-sm">
+                        {{ icons.edit(4) }} Edytuj profil
+                    </a>
+                    {% endif %}
+
+                    {# --- FOLLOW BUTTON --- #}
+                    <div id="follow-button">
+                        {% include "follow/_btn.html.twig" with { "user": user } %}
+                    </div>
+                </div>
+            </div>
+
+            {# --- STATS --- #}
+            <div class="flex gap-8 border-t border-b border-gray-50 py-4 md:border-0 md:py-0 mb-6 md:mb-0">
+                <div class="text-center md:text-left">
+                    <span class="block font-bold text-xl text-gray-900">{{ user.recipes.count }}</span>
+                    <span class="text-sm text-gray-500">Przepisy</span>
+                </div>
+                <div class="text-center md:text-left">
+                    <span class="block font-bold text-xl text-gray-900">{{ user.following.count }}</span>
+                    <span class="text-sm text-gray-500">Obserwuje</span>
+                </div>
+                <div class="text-center md:text-left">
+                    <span class="block font-bold text-xl text-gray-900"
+                        id="followers-counter">{{ user.followers.count }}</span>
+                    <span class="text-sm text-gray-500">Obserwujących</span>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="mt-16">
-        <h1 class="font-bold text-2xl px-4 pt-4">
-        Przepisy użytkownika
-        {% include "_partials/_username.html.twig" with {
-                "user": user
-            } %}:
-        </h1>
+    {# --- LIST OF RECIPES --- #}
+    <div>
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="font-bold text-2xl text-gray-800">Przepisy użytkownika</h2>
 
-        <div class="flex gap-4 justify-center items-center">
-            {% if app.user and app.user == user and is_granted('IS_EMAIL_VERIFIED')%}
-                <a href="{{ path('app_recipe_new') }}" class="bg-indigo-50 p-8 rounded ml-4 shadow hover:bg-indigo-100 transition flex flex-col justify-center items-center text-indigo-600 font-semibold">
-                    {{ icons.add() }}
+            {# Add button (only visible to the owner at the top of the section) #}
+            {% if app.user and app.user == user and is_granted('IS_EMAIL_VERIFIED') %}
+                <a href="{{ path('app_recipe_new') }}"
+                    class="hidden md:inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold transition shadow-sm text-sm">
+                    {{ icons.add(4) }} Dodaj nowy przepis
                 </a>
             {% endif %}
-            {% include "recipe/_list.html.twig" with {
-                "recipes": user.recipes
-            } %}
         </div>
+
+        {% if user.recipes is empty %}
+        <div class="text-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+            <div class="text-gray-400 mb-4">{{ icons.list(12) }}</div>
+            <p class="text-gray-500 font-medium">Ten użytkownik nie dodał jeszcze żadnych przepisów.</p>
+
+            {% if app.user and app.user == user %}
+                <a href="{{ path('app_recipe_new') }}"
+                    class="inline-block mt-4 text-blue-600 hover:underline font-semibold">
+                    Dodaj swój pierwszy przepis!
+                </a>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {# "Add" tab as first grid item (owner only) #}
+            {% if app.user and app.user == user and is_granted('IS_EMAIL_VERIFIED') %}
+                <a href="{{ path('app_recipe_new') }}"
+                    class="flex flex-col items-center justify-center h-full min-h-[300px] bg-blue-50 border-2 border-dashed border-blue-200 rounded-2xl hover:bg-blue-100 hover:border-blue-300 transition-all group cursor-pointer text-blue-600">
+                    <div class="bg-white p-4 rounded-full shadow-sm mb-4 group-hover:scale-110 transition-transform">
+                        {{ icons.add(8) }}
+                    </div>
+                    <span class="font-bold text-lg">Dodaj nowy przepis</span>
+                </a>
+            {% endif %}
+
+            {# List of recipes #}
+            {% for recipe in user.recipes %}
+                {% include "recipe/_card.html.twig" with { "recipe": recipe } %}
+            {% endfor %}
+        </div>
+        {% endif %}
     </div>
+</div>
 {% endblock %}

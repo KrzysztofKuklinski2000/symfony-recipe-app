@@ -1,25 +1,54 @@
+{# templates/profile/following_feed.html.twig #}
 {% extends "base.html.twig" %}
 
 {% import '_macros/icons.html.twig' as icons %}
 
-{% block title %}Obserwujacy{% endblock %}
+{% block title %}Obserwowani użytkownicy{% endblock %}
 
 {% block body %}
-    <h1 class="font-bold text-2xl px-4 pt-4">Obserwujesz: </h1>
-    <div class="flex gap-2 items-center p-4">
-        {% for user in users %}
-            <a class="flex items-center gap-2 hover:font-bold underline"
-                href="{{ path('app_profile_show', {'id': user.id}) }}">
-                {{icons.user()}} {{ user.email }}
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+
+    {# --- LISTA OBSERWOWANYCH --- #}
+    <section class="mb-12">
+        <h1 class="font-bold text-2xl mb-6 flex items-center gap-2 text-gray-800">
+            {{ icons.followers(6) }} Obserwujesz
+        </h1>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {% for user in users %}
+            <a href="{{ path('app_profile_show', {'id': user.id}) }}"
+                class="flex flex-col items-center p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all group">
+
+                {% set avatarUrl = user.imageFilename
+                            ? asset('/uploads/users/' ~ user.imageFilename)
+                            : asset('/uploads/users/default.jpg')
+                        %}
+                <img src="{{ avatarUrl }}" alt="Avatar"
+                    class="w-16 h-16 rounded-full object-cover mb-3 border-2 border-white shadow-sm group-hover:scale-105 transition-transform">
+
+                <span class="font-semibold text-gray-800 text-sm text-center truncate w-full">
+                    {{ user.username|default(user.email) }}
+                </span>
             </a>
-        {% else %}
-            <p class="text-gray-600 italic">Nie obserwujesz żadnych użytkowników</p>
-        {% endfor %}
-    </div>
+            {% else %}
+            <div
+                class="col-span-full py-8 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200 text-gray-500">
+                Nie obserwujesz jeszcze nikogo.
+            </div>
+            {% endfor %}
+        </div>
+    </section>
 
-    <h1 class="font-bold text-2xl px-4 pt-4">Przepisy Obserwujacych: </h1>
-    {% include "recipe/_list.html.twig" with {
-        "recipes": recipes
-    } %}
+    {# --- FEED PRZEPISÓW --- #}
+    <section>
+        <h1 class="font-bold text-2xl mb-6 flex items-center gap-2 text-gray-800">
+            {{ icons.list(6) }} Najnowsze przepisy obserwowanych
+        </h1>
 
+        {% include "recipe/_list.html.twig" with {
+                "recipes": recipes
+            } %}
+    </section>
+
+</div>
 {% endblock %}
