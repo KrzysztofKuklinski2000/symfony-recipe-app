@@ -1,17 +1,30 @@
-{% if app.user and app.user != user and is_granted('IS_EMAIL_VERIFIED')%}
+{% import '_macros/icons.html.twig' as icons %}
+
+{% if app.user and app.user != user and is_granted('IS_EMAIL_VERIFIED') %}
+<div class="inline-block">
     {% if app.user.isFollowing(user) %}
-        <form action="{{ path('app_unfollow', {'id': user.id }) }}" method="POST">
-            <input type="hidden" name="_token" value="{{ csrf_token('unfollow' ~ user.id) }}">
-            <button type="submit" class="bg-[#222831] text-white p-1 font-semibold shadow rounded cursor-pointer">
-                Przestań obserwować
-            </button>
-        </form>
+    {# --- STATUS: YOU ARE FOLLOWING (STOP) --- #}
+    <form action="{{ path('app_unfollow', {'id': user.id }) }}" method="POST">
+        <input type="hidden" name="_token" value="{{ csrf_token('unfollow' ~ user.id) }}">
+
+        <button type="submit"
+            class="flex items-center gap-2 bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-semibold shadow-sm hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors text-sm cursor-pointer">
+            {{ icons.close(4) }}
+            <span>Przestań obserwować</span>
+        </button>
+    </form>
     {% else %}
-        <form action="{{ path('app_follow', {'id': user.id }) }}" method="POST">
-            <input type="hidden" name="_token" value="{{ csrf_token('follow' ~ user.id) }}">
-            <button type="submit" class="bg-[#222831] text-white p-1 font-semibold shadow rounded cursor-pointer">
-                Obserwuj
-            </button>
-        </form>
+    {# --- STATUS: UNFOLLOWING (FOLLOW) --- #}
+    <form action="{{ path('app_follow', {'id': user.id }) }}" method="POST">
+        <input type="hidden" name="_token" value="{{ csrf_token('follow' ~ user.id) }}">
+
+        <button type="submit"
+            class="flex items-center gap-2 bg-[#222831] text-white px-4 py-2 rounded-lg font-semibold shadow-md
+            hover:bg-black transition-colors text-sm cursor-pointer">
+            {{ icons.add(4) }}
+            <span>Obserwuj</span>
+        </button>
+    </form>
     {% endif %}
+</div>
 {% endif %}
