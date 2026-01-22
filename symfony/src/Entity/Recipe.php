@@ -78,6 +78,9 @@ class Recipe
     #[ORM\Column(nullable: true)]
     private ?int $servings = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $kcal = null;
+
     public function __construct()
     {
         $this->recipeIngredients = new ArrayCollection();
@@ -338,6 +341,18 @@ class Recipe
     public function setServings(?int $servings): static
     {
         $this->servings = $servings;
+
+        return $this;
+    }
+
+    public function getKcal(): ?int
+    {
+        return $this->kcal;
+    }
+
+    public function setKcal(?int $kcal): static
+    {
+        $this->kcal = $kcal;
 
         return $this;
     }
