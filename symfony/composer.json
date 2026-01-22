@@ -19,6 +19,7 @@
         "symfony/flex": "^2",
         "symfony/form": "7.3.*",
         "symfony/framework-bundle": "7.3.*",
+        "symfony/http-client": "7.3.*",
         "symfony/mailer": "7.3.*",
         "symfony/mime": "7.3.*",
         "symfony/notifier": "7.3.*",
