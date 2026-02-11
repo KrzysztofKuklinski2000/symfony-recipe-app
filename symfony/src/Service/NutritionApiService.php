@@ -29,17 +29,19 @@ class NutritionApiService {
                 ],
             ]);
 
-            $items = $response->toArray();
-
+            $data = $response->toArray();
             $totalCalories = 0;
 
-            foreach($items ?? [] as $item) {
-                $totalCalories += $item['calories'];
+            foreach($data['items'] ?? [] as $item) {
+                if (isset($item['calories'])) {
+                    $totalCalories += $item['calories'];
+                }
             }
 
             return (int) round($totalCalories);
         }catch(\Exception $e) {
-            return null;
+            dump($e->getMessage());
+            die;
         }
     }
 }
