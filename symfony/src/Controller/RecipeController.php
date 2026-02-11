@@ -79,7 +79,7 @@ final class RecipeController extends AbstractController
                 $this->addFlash('danger', 'Nie udało się zaktualizować zdjęcia.');
                 return $this->redirectToRoute('app_recipe_edit', ['id' => $recipe->getId()]);
             }
-
+            $recipe->setUpdatedAt(new \DateTimeImmutable());
             $this->em->flush();
 
             $this->addFlash('success', 'Uaktualniono przepis!');

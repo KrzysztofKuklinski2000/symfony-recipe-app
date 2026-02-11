@@ -81,6 +81,9 @@ class Recipe
     #[ORM\Column(nullable: true)]
     private ?int $kcal = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
+
     public function __construct()
     {
         $this->recipeIngredients = new ArrayCollection();
@@ -353,6 +356,18 @@ class Recipe
     public function setKcal(?int $kcal): static
     {
         $this->kcal = $kcal;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
