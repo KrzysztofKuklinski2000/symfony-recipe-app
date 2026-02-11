@@ -1,20 +1,24 @@
 <?php
+
 namespace App\EventListener;
 
 use App\Entity\Recipe;
-use Doctrine\ORM\Events;
 use App\Service\NutritionApiService;
-use Doctrine\ORM\Event\PreUpdateEventArgs;
-use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
+use Doctrine\ORM\Event\PrePersistEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Events;
 
 #[AsEntityListener(event: Events::prePersist, method: 'prePersist', entity: Recipe::class)]
 #[AsEntityListener(event: Events::preUpdate, method: 'preUpdate', entity: Recipe::class)]
-class RecipeListener {
+class RecipeListener
+{
+    public function __construct(
+        private NutritionApiService $nutritionApi
+    ) {}
 
-    public function __construct(private NutritionApiService $nutritionApi){}
-
-    public function prePersist(Recipe $recipe, PrePersistEventArgs $event): void {
+    public function prePersist(Recipe $recipe, PrePersistEventArgs $event): void
+    {
         $this->calculateCalories($recipe);
     }
 
@@ -23,40 +27,43 @@ class RecipeListener {
         $this->calculateCalories($recipe);
     }
 
-    private function calculateCalories(Recipe $recipe): void {
+    private function calculateCalories(Recipe $recipe): void
+    {
+        try {
+            $ingredients = $recipe->getRecipeIngredients();
 
-        $ingredients = $recipe->getRecipeIngredients();
-
-        if($ingredients->isEmpty()) {
-            $recipe->setKcal(0);
-            return;
-        }
-
-        $query = [];
-
-        foreach($ingredients as $ingredient) {
-            $name = $ingredient->getName();
-            $quantity = $ingredient->getQuantity();
-            $unit = $ingredient->getUnit();
-
-            if(!$name) {
-                continue;
+            if ($ingredients->isEmpty()) {
+                $recipe->setKcal(null);
+                return;
             }
 
-            $part = trim(sprintf('%s %s %s', $quantity, $unit, $name));
-            $query[] = $part;
-        }
+            $query = [];
 
-        if(empty($query)) {
+            foreach ($ingredients as $ingredient) {
+                $name = $ingredient->getName();
+                $quantity = $ingredient->getQuantity();
+                $unit = $ingredient->getUnit();
+
+                if (!$name) {
+                    continue;
+                }
+
+                $query[] = trim(sprintf('%s%s %s', $quantity ?? '', $unit ?? '', $name));
+            }
+
+            if (empty($query)) {
+                return;
+            }
+
+            $queryString = implode(', ', $query);
+
+            $totalKcal = $this->nutritionApi->calculateTotalCalories($queryString);
+
+            if ($totalKcal !== null) {
+                $recipe->setKcal($totalKcal);
+            }
+        } catch (\Throwable $e) {
             return;
-        }
-
-        $queryString = implode(', ', $query);
-
-        $totalCalories = $this->nutritionApi->calculateTotalCalories($queryString);
-
-        if($totalCalories !== null) {
-            $recipe->setKcal($totalCalories);
         }
     }
 }

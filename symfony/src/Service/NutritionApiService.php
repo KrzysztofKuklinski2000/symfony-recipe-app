@@ -30,6 +30,7 @@ class NutritionApiService {
             ]);
 
             $data = $response->toArray();
+
             $totalCalories = 0;
 
             foreach($data['items'] ?? [] as $item) {
@@ -40,8 +41,7 @@ class NutritionApiService {
 
             return (int) round($totalCalories);
         }catch(\Exception $e) {
-            dump($e->getMessage());
-            die;
+            return null;
         }
     }
 }
