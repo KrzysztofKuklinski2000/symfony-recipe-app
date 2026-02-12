@@ -4,6 +4,7 @@ namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Stichoza\GoogleTranslate\GoogleTranslate;
 
 class NutritionApiService {
     private const API_URL = 'https://api.calorieninjas.com/v1/nutrition';
@@ -20,9 +21,12 @@ class NutritionApiService {
         }
 
         try {
+            $translator = new GoogleTranslate('en');
+            $englishQuery = $translator->translate($query);
+
             $response = $this->client->request('GET', self::API_URL, [
                 'query' => [
-                    'query' => $query,
+                    'query' => $englishQuery,
                 ],
                 'headers' => [
                     'X-Api-Key' => $this->apiKey
