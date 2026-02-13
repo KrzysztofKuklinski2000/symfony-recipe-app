@@ -9,7 +9,7 @@ services:
     volumes:
       - .:/var/www/html
       - /var/www/html/symfony/var/cache
-      - /var/www/html/symfony/var/log
+      # - /var/www/html/symfony/var/log
       - /var/www/html/symfony/vendor
     depends_on:
       - db

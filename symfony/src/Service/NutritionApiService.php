@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 
 class NutritionApiService {
     private const API_URL = 'https://api.calorieninjas.com/v1/nutrition';
@@ -15,10 +16,11 @@ class NutritionApiService {
     private const LANGUAGE = 'en';
 
     public function __construct(
+        #[Autowire(service: 'monolog.logger.nutrition')]
+        private LoggerInterface $logger,
         private HttpClientInterface $client,
         #[Autowire('%app.calorie_ninjas_key%')]
         private string $apiKey,
-        private LoggerInterface $logger,
     ){}
 
     public function calculateTotalCalories(string $query): ?int {
@@ -27,7 +29,7 @@ class NutritionApiService {
         }
 
         $queryToSend = $this->translateQuery($query);
-        return $this->fatchCaloriesFromApi($queryToSend);
+        return $this->fetchCaloriesFromApi($queryToSend);
     }
 
     private function translateQuery(string $query): string {
@@ -44,7 +46,7 @@ class NutritionApiService {
         }
     }
 
-    private function fatchCaloriesFromApi(string $query): ?int {
+    private function fetchCaloriesFromApi(string $query): ?int {
         try {
             $response = $this->client->request('GET', self::API_URL, [
                 'query' => [
@@ -57,7 +59,6 @@ class NutritionApiService {
             ]);
 
             $data = $response->toArray();
-            dd($data);
             $totalCalories = 0;
 
             foreach ($data['items'] ?? [] as $item) {
