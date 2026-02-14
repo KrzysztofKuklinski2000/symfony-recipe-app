@@ -114,10 +114,10 @@
                         <span class="text-gray-500 text-sm ml-1">
                             (<strong class="ingredient-amount text-gray-900"
                                 data-original-amount="{{ ingredient.quantity }}"
-                                data-unit="{{ ingredient.unit|default('')|lower }}">
+                                data-unit="{{ ingredient.unit ? ingredient.unit.value : '' }}">
                                 {{ ingredient.quantity }}
                             </strong>
-                            <span class="js-unit">{{ ingredient.unit }}</span>)
+                            <span class="js-unit">{{ ingredient.unit ? ingredient.unit.value : '' }}</span>)
                         </span>
                     </span>
 

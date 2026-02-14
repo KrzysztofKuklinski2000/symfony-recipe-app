@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\Unit;
 use App\Repository\RecipeIngredientRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -23,8 +24,8 @@ class RecipeIngredient
     #[ORM\JoinColumn(nullable: false)]
     private ?Recipe $recipe = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $unit = null;
+    #[ORM\Column(length: 20, nullable: true, enumType: Unit::class)]
+    private ?Unit $unit = null;
 
     public function getId(): ?int
     {
@@ -68,15 +69,15 @@ class RecipeIngredient
     }
 
     public function __toString(): string {
-        return $this->name . ' ' . $this->quantity . ($this->unit ? ' ' . $this->unit : '');
+        return $this->name . ' ' . $this->quantity . ($this->unit ? ' ' . $this->unit->value: '');
     }
 
-    public function getUnit(): ?string
+    public function getUnit(): ?Unit
     {
         return $this->unit;
     }
 
-    public function setUnit(?string $unit): static
+    public function setUnit(?Unit $unit): static
     {
         $this->unit = $unit;
 

@@ -20,7 +20,7 @@
 
             {% if item.quantity %}
             <span class="text-sm text-gray-500 ml-1">
-                {{ item.quantity|round(2) }} {{ item.unit }}
+                {{ item.quantity|round(2) }} {{ item.unit.value }}
             </span>
             {% endif %}
 

@@ -3,11 +3,13 @@
 namespace App\Form;
 
 use App\Entity\RecipeIngredient;
+use App\Enum\Unit;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class RecipeIngredientType extends AbstractType
 {
@@ -28,8 +30,11 @@ class RecipeIngredientType extends AbstractType
                     'step' => 'any'
                 ]
             ])
-            ->add('unit', TextType::class, [
+            ->add('unit', EnumType::class, [
                 'label' => 'Jednostka (np. kg, ml, łyżki)',
+                'class' => Unit::class,
+                'placeholder' => '--- Wybierz jednostkę (opcjonalnie) ---',
+                'choice_label' => fn(Unit $unit) => $unit->getLabel(),
                 'required' => false,
             ]);
     }

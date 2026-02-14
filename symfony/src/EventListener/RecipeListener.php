@@ -50,7 +50,14 @@ class RecipeListener
                     continue;
                 }
 
-                $query[] = trim(sprintf('%s%s %s', $quantity ?? '', $unit ?? '', $name));
+                $unitString = $unit ? $unit->value : '';
+                $unitString = match ($unitString) {
+                    'ml' => 'g',
+                    'l' => 'kg',
+                    default => $unitString,
+                };
+
+                $query[] = trim(sprintf('%s%s %s', $quantity ?? '', $unitString ?? '', $name));
             }
 
             if (empty($query)) {

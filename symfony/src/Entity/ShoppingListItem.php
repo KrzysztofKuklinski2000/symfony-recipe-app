@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\Unit;
 use App\Repository\ShoppingListItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -23,8 +24,8 @@ class ShoppingListItem
     #[ORM\Column(nullable: true)]
     private ?float $quantity = null;
 
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $unit = null;
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?Unit $unit = null;
 
     #[ORM\Column]
     private ?bool $isChecked = false;
@@ -75,12 +76,12 @@ class ShoppingListItem
         return $this;
     }
 
-    public function getUnit(): ?string
+    public function getUnit(): ?Unit
     {
         return $this->unit;
     }
 
-    public function setUnit(?string $unit): static
+    public function setUnit(?Unit $unit): static
     {
         $this->unit = $unit;
         return $this;
