@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class RecipeIngredientType extends AbstractType
 {
@@ -36,6 +37,19 @@ class RecipeIngredientType extends AbstractType
                 'placeholder' => '--- Wybierz jednostkę (opcjonalnie) ---',
                 'choice_label' => fn(Unit $unit) => $unit->getLabel(),
                 'required' => false,
+            ])
+            ->add('nutritionFactor', ChoiceType::class, [
+                'label' => 'Zużycie (Kalorie)',
+                'choices' => [
+                    'Całość (100%)' => 1.0,
+                    'Marynata (zjadamy połowę) (~50%)' => 0.5,
+                    'Płytkie smażenie (~20%)' => 0.2,
+                    'Głębokie smażenie (frytki) (~10%)' => 0.1,
+                    'Tylko do smaku/wywar (np. liść laurowy) (~0%)' => 0.0,
+                ],
+                'expanded' => false,
+                'multiple' => false,
+                'help' => 'Wybierz mniej, jeśli składnik nie jest zjadany w całości (np. olej do smażenia).',
             ]);
     }
 

@@ -27,6 +27,9 @@ class RecipeIngredient
     #[ORM\Column(length: 20, nullable: true, enumType: Unit::class)]
     private ?Unit $unit = null;
 
+    #[ORM\Column(options:['default' => 1.0])]
+    private float $nutritionFactor = 1.0;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -80,6 +83,18 @@ class RecipeIngredient
     public function setUnit(?Unit $unit): static
     {
         $this->unit = $unit;
+
+        return $this;
+    }
+
+    public function getNutritionFactor(): ?float
+    {
+        return $this->nutritionFactor;
+    }
+
+    public function setNutritionFactor(float $nutritionFactor): static
+    {
+        $this->nutritionFactor = $nutritionFactor;
 
         return $this;
     }

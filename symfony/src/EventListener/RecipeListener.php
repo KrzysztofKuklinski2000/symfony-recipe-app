@@ -45,10 +45,15 @@ class RecipeListener
                 $name = $ingredient->getName();
                 $quantity = $ingredient->getQuantity();
                 $unit = $ingredient->getUnit();
+                $factor = $ingredient->getNutritionFactor();
 
                 if (!$name) {
                     continue;
                 }
+
+                if($factor <= 0.01) continue;
+
+                $quantity = $quantity * $factor;
 
                 $unitString = $unit ? $unit->value : '';
                 $unitString = match ($unitString) {

@@ -23,7 +23,7 @@ document.addEventListener('turbo:load', () => {
     const addDeleteButton = (item) => {
         let deleteButton = document.createElement('button');
         deleteButton.type = 'button';
-        deleteButton.className = 'p-2 bg-red-500 text-white rounded hover:bg-red-600 hover:cursor-pointer';
+        deleteButton.className = 'mt-2 p-2 bg-red-500 text-white rounded hover:bg-red-600 hover:cursor-pointer';
         deleteButton.innerHTML = deleteIcon;
 
         deleteButton.addEventListener('click', () => {
