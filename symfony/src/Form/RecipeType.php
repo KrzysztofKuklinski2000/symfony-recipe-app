@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -82,7 +83,12 @@ class RecipeType extends AbstractType
                 'attr' => [
                     'min' => 1,
                 ],
-            ]);
+            ])
+            ->add('calculateNutrition', CheckboxType::class, [
+            'label' => 'Obliczaj kalorie automatycznie',
+            'help' => 'Odznacz, jeśli chcesz usunąć kalorie lub wpisać je ręcznie (w przyszłości).',
+            'required' => false,
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -31,6 +31,11 @@ class RecipeListener
 
     private function calculateCalories(Recipe $recipe): void
     {
+        if(!$recipe->isCalculateNutrition()) {
+            $recipe->setKcal(null);
+            return;
+        }
+
         try {
             $ingredients = $recipe->getRecipeIngredients();
 

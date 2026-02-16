@@ -70,6 +70,8 @@
             </div>
         </div>
 
+
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div>
                 {{ form_row(form.imageFile, {
@@ -102,6 +104,22 @@
             font-medium text-sm cursor-pointer">
             {{ icons.add(4) }} Dodaj składnik
         </button>
+    </div>
+    <div class="mb-6">
+        <div class="flex items-start">
+            <div class="flex items-center h-5">
+                {{ form_widget(form.calculateNutrition, {
+                'attr': {'class': 'w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer'}
+            }) }}
+            </div>
+            <div class="ml-3 text-sm">
+                <label for="{{ form.calculateNutrition.vars.id }}" class="font-medium text-gray-700 cursor-pointer">
+                    {{ form.calculateNutrition.vars.label }}
+                </label>
+                <p class="text-gray-500">{{ form.calculateNutrition.vars.help }}</p>
+            </div>
+        </div>
+        {{ form_errors(form.calculateNutrition) }}
     </div>
 
     {# Prototype #}
@@ -174,6 +192,7 @@
         ℹ️ <strong>Wskazówka:</strong> Dla olejów do smażenia lub marynat wybierz odpowiednią opcję w polu "Zużycie",
         aby poprawnie obliczyć kalorie.
     </p>
+
 </fieldset>
 
 {# --- ACTIONS --- #}

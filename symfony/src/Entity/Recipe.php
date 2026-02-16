@@ -84,6 +84,8 @@ class Recipe
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    private ?bool $calculateNutrition = null;
+
     public function __construct()
     {
         $this->recipeIngredients = new ArrayCollection();
@@ -371,4 +373,27 @@ class Recipe
 
         return $this;
     }
+
+    public function setCalculateNutrition(bool $calculateNutrition): static
+    {
+        $this->calculateNutrition = $calculateNutrition;
+
+        return $this;
+    }
+
+    public function isCalculateNutrition(): ?bool
+    {
+       if($this->calculateNutrition !== null) {
+           return $this->calculateNutrition;
+       }
+
+       // Dla nowego przepisu ustawiamy domyślną wartość żeby obliczał kalorie
+       if($this->id === null) {
+           return true;
+       }
+
+       // kiedu mamu ustawione kalorie (edytujemy przepis)
+       return $this->kcal !== null;
+    }
+
 }
