@@ -4,7 +4,7 @@
 {% if count == 0 %}
     <span><span class="badge badge-secondary">Brak elementów</span>
 {% else %}
-    <ul style="padding-left: 20px; margin: 0;">>
+    <ul style="padding-left: 20px; margin: 0;">
         {% for item in field.value|slice(0, limit) %}
             <li>{{ item }}</li>
         {% endfor %}

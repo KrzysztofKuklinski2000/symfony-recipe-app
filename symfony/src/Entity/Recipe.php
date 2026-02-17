@@ -27,7 +27,7 @@ class Recipe
     private ?int $preparationTime = null;
 
     #[ORM\ManyToOne(inversedBy: 'recipes')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $author = null;
 
     #[ORM\Column(length: 255, nullable: true)]
