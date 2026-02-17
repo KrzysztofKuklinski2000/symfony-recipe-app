@@ -48,6 +48,7 @@ class RecipeRepository extends ServiceEntityRepository
             ->addSelect('COUNT(f) AS HIDDEN totalFavorites')
             ->groupBy('r.id')
             ->orderBy('totalFavorites', 'DESC')
+            ->addOrderBy('r.id', 'DESC')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit + 1);
 
