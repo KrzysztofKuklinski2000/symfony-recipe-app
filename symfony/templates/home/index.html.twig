@@ -54,21 +54,7 @@
         </div>
     </div>
 
-    <turbo-frame id="recipes-list" target="_top" data-turbo-action="advance"
->
-
-    {# --- RECIPE LIST --- #}
-    <div>
-        {% include "recipe/_list.html.twig" with { "recipes": recipes } %}
-    </div>
-
-    {# --- LOAD MORE --- #}
-    {% include "home/_load_more_btn.html.twig" with {
-        'hasNextPage': hasNextPage,
-        'page': page,
-        'category': currentCategory|default(null),
-    } %}
-    </turbo-frame>
+    {% include "home/recipes_list.html.twig" %}
 
 </div>
 {% endblock %}

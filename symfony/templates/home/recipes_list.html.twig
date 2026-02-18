@@ -1,0 +1,19 @@
+<turbo-frame id="recipes-list" target="_top" data-turbo-action="advance">
+    {# --- RECIPE LIST --- #}
+    <div>
+        {% include "recipe/_list.html.twig" with { "recipes": recipes } %}
+    </div>
+
+    {% if recipes is empty %}
+        <div class="text-center py-12 text-gray-500">
+            Nie znaleziono przepisów.
+        </div>
+    {% endif %}
+
+    {# --- LOAD MORE --- #}
+    {% include "home/_load_more_btn.html.twig" with {
+            'hasNextPage': hasNextPage,
+            'page': page,
+            'category': currentCategory|default(null),
+    } %}
+</turbo-frame>

@@ -65,6 +65,15 @@ final class HomeController extends AbstractController
             ]);
         }
 
+        if($request->headers->get('Turbo-Frame') === 'recipes-list') {
+            return $this->render('home/recipes_list.html.twig', [
+                'recipes' => $recipes,
+                'page' => $page,
+                'hasNextPage' => $hasNextPage,
+                'currentCategory' => $category,
+            ]);
+        }
+
         return $this->render('home/index.html.twig', [
             'recipes' => $recipes,
             'currentCategory' => $category,
