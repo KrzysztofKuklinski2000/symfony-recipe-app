@@ -14,7 +14,7 @@
 {% endif %}
 
 <div class="w-full max-w-3xl mx-auto mb-8">
-    <form action="{{ searchAction }}" method="GET" class="flex flex-col gap-4">
+    <form action="{{ searchAction }}" method="GET" class="flex flex-col gap-4" data-turbo-frame="recipes-list">
         {# --- SEARCH BAR --- #}
         <div class="w-full bg-white rounded-xl flex items-center justify-center shadow-sm border border-gray-100">
             <input
