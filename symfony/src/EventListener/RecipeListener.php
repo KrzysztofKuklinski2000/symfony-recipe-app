@@ -49,8 +49,23 @@ class RecipeListener
             foreach ($ingredients as $ingredient) {
                 $name = $ingredient->getName();
                 $quantity = $ingredient->getQuantity();
-                $unit = $ingredient->getUnit();
+                $unit = $ingredient->getUnit()->value ?? '';
                 $factor = $ingredient->getNutritionFactor();
+
+                if ($unit === 'kg') {
+                    $quantity = $quantity * 1000;
+                    $unit = 'g';
+                }
+
+                if ($unit === 'l') {
+                    $quantity = $quantity * 1000;
+                    $unit = 'g';
+                }
+
+                if($unit === 'ml') {
+                    $unit = 'g';
+                }
+
 
                 if (!$name) {
                     continue;
@@ -60,14 +75,9 @@ class RecipeListener
 
                 $quantity = $quantity * $factor;
 
-                $unitString = $unit ? $unit->value : '';
-                $unitString = match ($unitString) {
-                    'ml' => 'g',
-                    'l' => 'kg',
-                    default => $unitString,
-                };
+                $finalQuantity = round($quantity, 2);
 
-                $query[] = trim(sprintf('%s%s %s', $quantity ?? '', $unitString ?? '', $name));
+                $query[] = trim(sprintf('%s%s %s', $finalQuantity  ?? '', $unit ?? '', $name));
             }
 
             if (empty($query)) {
@@ -75,7 +85,6 @@ class RecipeListener
             }
 
             $queryString = implode(', ', $query);
-
             $totalKcal = $this->nutritionApi->calculateTotalCalories($queryString);
 
             if ($totalKcal !== null) {
