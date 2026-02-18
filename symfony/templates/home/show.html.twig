@@ -98,7 +98,8 @@
                 <input type="hidden" name="targetServings" value="{{ recipe.servings|default(1) }}"
                     class="js-servings-input">
                 <button type="submit"
-                    class="w-full flex items-center justify-center gap-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2 rounded-lg font-semibold transition text-sm cursor-pointer">
+                    id="recipe-ingredients-{{ recipe.id }}"
+                    class="w-full flex items-center justify-center gap-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2 rounded-lg font-semibold transition text-sm cursor-pointer relative">
                     {{ icons.add(4) }} Dodaj wszystko do listy
                 </button>
             </form>
@@ -107,7 +108,7 @@
             {# Ingredient List #}
             <ul class="space-y-3">
                 {% for ingredient in recipe.recipeIngredients %}
-                <li class="flex justify-between items-center group p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                <li class="flex justify-between items-center group p-2 hover:bg-gray-50 rounded-lg transition-colors relative"
                     id="add-ingriedient-{{ ingredient.id }}">
                     <span class="text-gray-700">
                         {{ ingredient.name|capitalize }}
