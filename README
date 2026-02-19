@@ -1,69 +1,74 @@
 # Aplikacja z Przepisami (Symfony Recipe App)
 
-[EN] A modern web application built with Symfony and Tailwind CSS, allowing users to register, share recipes, and interact with other users' content through follow and favorite systems.
+[EN] A modern web application built with Symfony, Tailwind CSS, and Hotwire (Turbo), allowing users to register, share recipes, manage shopping lists, and interact with other users' content.
 
-[PL] Nowoczesna aplikacja internetowa zbudowana na Symfony i Tailwind CSS, pozwalająca użytkownikom na rejestrację, dzielenie się przepisami oraz interakcję z treściami innych użytkowników poprzez systemy obserwowania i ulubionych.
+[PL] Nowoczesna aplikacja internetowa zbudowana na Symfony, Tailwind CSS oraz Hotwire (Turbo), pozwalająca użytkownikom na rejestrację, dzielenie się przepisami, zarządzanie listą zakupów oraz interakcję z treściami innych użytkowników.
 ---
 
 ## Funkcjonalności (Features)
 
 ### 🇬🇧 English
 
-* **Authentication:** Full user registration (`/register`) and login (`/login`) system.
+* **Authentication & Security:**
+    * Full user registration (`/register`) and login (`/login`) system.
+    * **Email Verification:** Required for advanced features (like using the shopping list).
+    * Object-level security (custom `RecipeVoter`, `ShoppingListVoter`).
+    * All sensitive actions are protected by **CSRF tokens**.
+* **Dynamic Search & Filtering (Hotwire):**
+    * Live AJAX search and filtering (by category, difficulty, dietary tags) without page reloads, powered by **Turbo Frames** and **Stimulus** (`autosubmit`).
+    * Seamless pagination ("Load more" button) using **Turbo Streams**.
 * **Recipe Management (Private Dashboard):**
-    * Authenticated users have a private dashboard (`/recipe`) to manage their *own* recipes.
-    * Full **CRUD** (Create, Read, Update, Delete) functionality for recipes.
-    * **Image Uploads:** Users can upload images for their recipes (`FileUploader` service).
-    * **Dynamic Collections:** Add/Remove recipe ingredients dynamically using JavaScript prototypes.
-* **Account Management:**
-    * Users can edit their own profile (`/account/edit`).
-    * Profile features include updating `username` and uploading a profile picture (`imageFilename`).
-* **Public Site:**
-    * Homepage (`/`) displays all public recipes.
-    * Public recipe view page (`/{id}`).
-    * Public user profiles (`/profile/{id}`).
+    * Private dashboard to manage *own* recipes with full **CRUD** functionality.
+    * **Image Uploads:** Upload images for recipes (`FileUploader` service).
+    * **Dynamic Collections:** Add/Remove recipe ingredients dynamically using JavaScript.
+* **Nutrition API Integration:**
+    * Automatic calorie calculation using an external Nutrition API via Doctrine Event Listeners (`prePersist`, `preUpdate`).
+    * Smart unit normalization (e.g., converting kg/l to grams) for accurate NLP parsing by the API.
+* **Shopping List:**
+    * Users can add entire recipes or individual ingredients to a personalized shopping list.
+    * Dynamic UI updates (e.g., success checkmarks) without page reloads using **Turbo Streams**.
+    * Items are grouped by recipe for better readability.
 * **Social Features:**
-    * **Follow System:** Users can follow and unfollow other users.
-    * **Favorite System:** Users can add/remove any recipe (except their own) to a "favorites" list.
-    * **Feeds:** Dedicated pages for logged-in users to view recipes from users they follow (`/profile`) and their own favorites list (`/favorites`).
-* **Security:**
-    * All private routes secured with `#[IsGranted]`.
-    * Object-level security (e.g., "can only edit own recipe") is handled by a custom `RecipeVoter`.
-    * All sensitive actions (`POST` requests like delete, follow, favorite) are protected by **CSRF tokens**.
+    * **Comments System:** Users can leave comments on recipes.
+    * **Follow System:** Follow and unfollow other users.
+    * **Favorite System:** Add any public recipe to a "favorites" list.
+    * **Feeds:** View recipes from followed users (`/profile`) and your favorites list (`/favorites`).
 * **Frontend:**
-    * Styled with **Tailwind CSS** (using `TailwindBundle`).
+    * Styled with **Tailwind CSS** (`TailwindBundle`).
     * Responsive design (dashboard, forms, grid layouts).
-    * Reusable UI components built with **Twig Macros** (icons) and **Partials** (navigation, recipe grid).
+    * Reusable UI components (Twig Macros for icons, Partials).
 
 ---
 
 ### 🇵🇱 Polski
 
-* **Uwierzytelnianie:** Pełny system rejestracji (`/register`) i logowania (`/login`).
+* **Uwierzytelnianie i Bezpieczeństwo:**
+    * Pełny system rejestracji (`/register`) i logowania (`/login`).
+    * **Weryfikacja Email:** Wymagana do korzystania z zaawansowanych funkcji (np. lista zakupów).
+    * Bezpieczeństwo na poziomie obiektów (np. `RecipeVoter`, `ShoppingListVoter`).
+    * Ochrona przed atakami dzięki **tokenom CSRF**.
+* **Dynamiczne Wyszukiwanie i Filtrowanie (Hotwire):**
+    * Wyszukiwanie i filtrowanie (kategorie, trudność, dieta) na żywo w tle (AJAX) bez przeładowania strony, dzięki **Turbo Frames**.
+    * Płynna paginacja (przycisk "Załaduj więcej") napędzana przez **Turbo Streams**.
 * **Zarządzanie Przepisami (Prywatny Dashboard):**
-    * Zalogowani użytkownicy posiadają prywatny dashboard (`/recipe`) do zarządzania *własnymi* przepisami.
-    * Pełna funkcjonalność **CRUD** (Tworzenie, Czytanie, Aktualizacja, Usuwanie) dla przepisów.
-    * **Przesyłanie Obrazów:** Użytkownicy mogą przesyłać zdjęcia do swoich przepisów (serwis `FileUploader`).
-    * **Dynamiczne Kolekcje:** Dynamiczne dodawanie/usuwanie składników przepisu przy użyciu prototypów JavaScript.
-* **Zarządzanie Kontem:**
-    * Użytkownicy mogą edytować własny profil (`/account/edit`).
-    * Funkcje profilu obejmują aktualizację `username` i przesyłanie zdjęcia profilowego (`imageFilename`).
-* **Strona Publiczna:**
-    * Strona główna (`/`) wyświetla wszystkie publiczne przepisy.
-    * Publiczna strona przepisu (`//{id}`).
-    * Publiczne profile użytkowników (`/profile/{id}`).
+    * Prywatny panel do zarządzania *własnymi* przepisami (pełny **CRUD**).
+    * **Przesyłanie Obrazów:** Dodawanie zdjęć do przepisów.
+    * **Dynamiczne Kolekcje:** Dodawanie/usuwanie składników w formularzu przy użyciu JavaScript.
+* **Integracja z API Dietetycznym (Kalkulator Kalorii):**
+    * Automatyczne wyliczanie kalorii przepisu przez zewnętrzne API przy użyciu Doctrine Event Listeners (`prePersist`, `preUpdate`).
+    * Inteligentna normalizacja jednostek (np. konwersja kg/l na gramy), aby zapewnić precyzyjne działanie parsera NLP po stronie API.
+* **Lista Zakupów:**
+    * Dodawanie całych przepisów (z przelicznikiem porcji) lub pojedynczych składników do prywatnej listy zakupów.
+    * Dynamiczne aktualizacje interfejsu (np. zielone ptaszki po dodaniu) przy użyciu **Turbo Streams** bez przeładowywania strony.
+    * Grupowanie składników według przepisów.
 * **Funkcje Społecznościowe:**
-    * **System Obserwowania:** Użytkownicy mogą obserwować i przestać obserwować innych.
-    * **System Ulubionych:** Użytkownicy mogą dodawać/usuwać dowolne przepisy (poza własnymi) do listy "ulubionych".
-    * **Strumienie:** Dedykowane strony dla zalogowanych użytkowników do przeglądania przepisów obserwowanych osób (`/profile/`) oraz własnej listy ulubionych (`/favorites`).
-* **Bezpieczeństwo:**
-    * Wszystkie prywatne trasy są zabezpieczone przez `#[IsGranted]`.
-    * Bezpieczeństwo na poziomie obiektów (np. "można edytować tylko własny przepis") jest obsługiwane przez `RecipeVoter`.
-    * Wszystkie wrażliwe akcje (żądania `POST` jak usuwanie, obserwowanie, ulubione) są chronione **tokenami CSRF**.
+    * **System Komentarzy:** Możliwość komentowania przepisów innych użytkowników.
+    * **System Obserwowania:** Obserwowanie i odobserwowywanie twórców.
+    * **System Ulubionych:** Zapisywanie przepisów na własnej liście ulubionych.
+    * **Strumienie:** Dedykowane widoki z przepisami obserwowanych osób oraz ulubionymi.
 * **Frontend:**
-    * Stylowanie za pomocą **Tailwind CSS** (poprzez `TailwindBundle`).
-    * Responsywny design (dashboard, formularze, siatki).
-    * Komponenty UI wielokrotnego użytku zbudowane przy użyciu **Makr Twig** (ikony) i **Plików Częściowych** (nawigacja, siatka przepisów).
+    * Stylowanie za pomocą **Tailwind CSS**.
+    * Responsywny design i komponenty UI wielokrotnego użytku (Makra Twig, pliki częściowe).
 
 ## Uruchomienie Projektu (Project Setup)
 
@@ -71,13 +76,16 @@ Projekt jest w pełni skonteneryzowany przy użyciu Docker & Docker Compose.
 
 1.  **Sklonuj repozytorium:**
     ```bash
-    git clone https://github.com/KrzysztofKuklinski2000/symfony-recipe-app.git
+    git clone [https://github.com/KrzysztofKuklinski2000/symfony-recipe-app.git](https://github.com/KrzysztofKuklinski2000/symfony-recipe-app.git)
     ```
 
-2.  **Skonfiguruj plik `.env`:**
+2.  **Skonfiguruj pliki `.env`:**
     * Przejdź do folderu `symfony/`.
     * Skopiuj `.env` do `.env.local`: `cp .env .env.local`
-    * Edytuj `symfony/.env` i upewnij się, że zmienna `DATABASE_URL` pasuje do danych z `docker-compose.yml` (np. `DATABASE_URL="mysql://root:password@mysql_db:3306/book_recpies?serverVersion=8.0&charset=utf8mb4"`).
+    * Edytuj `symfony/.env.local` i ustaw wymagane zmienne środowiskowe, m.in.:
+        * `DATABASE_URL` (np. `mysql://root:password@mysql_db:3306/book_recpies?serverVersion=8.0&charset=utf8mb4`)
+        * Zmienne dla poczty e-mail (Mailer).
+        * Klucze API dla kalkulatora kalorii (jeśli wymagane).
 
 3.  **Uruchom kontenery Docker:**
     ```bash
@@ -86,25 +94,24 @@ Projekt jest w pełni skonteneryzowany przy użyciu Docker & Docker Compose.
 
 4.  **Zainstaluj zależności i uruchom migracje:**
     * Wejdź do kontenera PHP: `docker exec -it symfony_app bash`
-    * Będąc w kontenerze, przejdź do folderu aplikacji: `cd symfony`
-    * Zainstaluj zależności Composera: `composer install`
+    * Przejdź do folderu aplikacji: `cd symfony`
+    * Zainstaluj pakiety PHP: `composer install`
     * Uruchom migracje bazy danych: `php bin/console doctrine:migrations:migrate`
 
 5.  **Uruchom kompilator Tailwind:**
-    * W tym samym terminalu (wewnątrz kontenera, w `symfony/`):
+    * Wewnątrz kontenera (w folderze `symfony/`):
     ```bash
     php bin/console tailwind:build --watch
     ```
 
 6.  **Gotowe!**
-    * Twoja aplikacja jest dostępna pod adresem: [http://localhost:8080](http://localhost:8080)
-    * phpMyAdmin jest dostępny pod adresem: [http://localhost:8081](http://localhost:8081)
+    * Aplikacja: [http://localhost:8080](http://localhost:8080)
+    * phpMyAdmin: [http://localhost:8081](http://localhost:8081)
 
 ## Główne Technologie (Tech Stack)
 
-* **Backend:** Symfony 7
-* **Frontend:** Tailwind CSS (przez `TailwindBundle`)
-* **Baza Danych:** MySQL 8
-* **Środowisko:** Docker / Docker Compose (Obraz PHP 8.2-Apache)
-* **ORM:** Doctrine
-* **Szablony:** Twig
+* **Backend:** Symfony 7, PHP 8.2
+* **Frontend:** Tailwind CSS, Symfony UX (Hotwire Turbo)
+* **Baza Danych:** MySQL 8, Doctrine ORM
+* **Zewnętrzne API:** Nutrition API (Calorie/NLP processing)
+* **Środowisko:** Docker / Docker Compose
