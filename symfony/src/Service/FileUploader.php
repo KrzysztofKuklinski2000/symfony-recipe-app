@@ -6,28 +6,24 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-class FileUploader {
+readonly class FileUploader {
 
     public function __construct(
-        private readonly string $targetDirectory,
-        private readonly SluggerInterface $slugger
+        private string           $targetDirectory,
+        private SluggerInterface $slugger
     ) {}
-
 
     public function upload(UploadedFile $file, string $subDirectory, ?string $oldFilename = null): string {
         $originalFileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($originalFileName);
-        $newFilename = $safeFilename. '-'.uniqid().'.'.$file->guessExtension();
 
-        $fullPath = $this->getTargetDirectory().'/'.$subDirectory;
+        $newFilename = $safeFilename . '-' . bin2hex(random_bytes(6)) . '.' . $file->guessExtension();
 
-        try {
-            $file->move($fullPath, $newFilename);
-        }catch(FileException $e){
-            throw $e;
-        }
+        $fullPath = $this->getTargetDirectory() . '/' . $subDirectory;
 
-        if($oldFilename) {
+        $file->move($fullPath, $newFilename);
+
+        if ($oldFilename) {
             $this->remove($oldFilename, $subDirectory);
         }
 
@@ -35,11 +31,11 @@ class FileUploader {
     }
 
     public function remove(?string $filename, string $subDirectory): void {
-        if(!$filename) return;
+        if (!$filename) return;
 
-        $fullPath = $this->getTargetDirectory().'/'.$subDirectory.'/'.$filename;
+        $fullPath = $this->getTargetDirectory() . '/' . $subDirectory . '/' . $filename;
 
-        if(file_exists($fullPath)) {
+        if (file_exists($fullPath)) {
             unlink($fullPath);
         }
     }

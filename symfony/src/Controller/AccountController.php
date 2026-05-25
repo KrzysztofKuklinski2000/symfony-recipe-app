@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Entity\User;
@@ -12,16 +13,17 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
-
 #[Route('/account')]
 #[IsGranted('ROLE_USER')]
 #[IsGranted('IS_EMAIL_VERIFIED')]
 final class AccountController extends AbstractController
 {
     public function __construct(
-        private readonly FileUploader $fileUploader,
+        private readonly FileUploader           $fileUploader,
         private readonly EntityManagerInterface $em
-    ){}
+    )
+    {
+    }
 
     #[Route('/edit', name: 'app_account_edit', methods: ['POST', 'GET'])]
     public function edit(Request $request): Response
@@ -30,14 +32,14 @@ final class AccountController extends AbstractController
         $user = $this->getUser();
         assert($user instanceof User);
 
-        $form  = $this->createForm(AccountType::class, $user);
+        $form = $this->createForm(AccountType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $imageFile = $form->get('imageFile')->getData();
 
             if ($imageFile) {
-                try{
+                try {
                     $imageFilename = $this->fileUploader->upload(
                         $imageFile,
                         'users',
@@ -45,7 +47,7 @@ final class AccountController extends AbstractController
                     );
 
                     $user->setImageFilename($imageFilename);
-                }catch(FileException $e) {
+                } catch (FileException $e) {
                     $this->addFlash('error', 'Wystąpił błąd podczas przesyłania pliku.');
                     return $this->redirectToRoute('app_account_edit');
                 }
