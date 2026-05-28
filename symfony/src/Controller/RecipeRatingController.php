@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Recipe;
 use App\Entity\RecipeRating;
 use App\Entity\User;
+use App\Service\RecipeRatingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,7 +16,7 @@ use Symfony\UX\Turbo\TurboBundle;
 
 final class RecipeRatingController extends AbstractController
 {
-    public function __construct(private readonly EntityManagerInterface $em) {
+    public function __construct(private readonly RecipeRatingService $ratingService) {
 
     }
 
@@ -37,23 +38,7 @@ final class RecipeRatingController extends AbstractController
             return $this->redirectToRoute('app_show', ['id' => $recipe->getId()]);
         }
 
-        $ratingRepository = $this->em->getRepository(RecipeRating::class);
-        $existingRating = $ratingRepository->findOneBy([
-            'recipe' => $recipe,
-            'author' => $user
-        ]);
-
-        if ($existingRating) {
-            $existingRating->setScore($score);
-        } else {
-            $newRating = new RecipeRating();
-            $newRating->setRecipe($recipe);
-            $newRating->setAuthor($user);
-            $newRating->setScore($score);
-            $this->em->persist($newRating);
-        }
-
-        $this->em->flush();
+        $this->ratingService->rateRecipe($recipe, $user, $score);
 
         if(TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
             $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
