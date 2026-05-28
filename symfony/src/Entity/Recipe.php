@@ -86,6 +86,12 @@ class Recipe
 
     private ?bool $calculateNutrition = null;
 
+    /**
+     * @var Collection<int, RecipeRating>
+     */
+    #[ORM\OneToMany(targetEntity: RecipeRating::class, mappedBy: 'recipe', orphanRemoval: true)]
+    private Collection $ratings;
+
     public function __construct()
     {
         $this->recipeIngredients = new ArrayCollection();
@@ -93,6 +99,7 @@ class Recipe
         $this->comments = new ArrayCollection();
         $this->categories = new ArrayCollection();
         $this->shoppingListItems = new ArrayCollection();
+        $this->ratings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -394,6 +401,53 @@ class Recipe
 
        // kiedu mamu ustawione kalorie (edytujemy przepis)
        return $this->kcal !== null;
+    }
+
+    /**
+     * @return Collection<int, RecipeRating>
+     */
+    public function getRatings(): Collection
+    {
+        return $this->ratings;
+    }
+
+    public function addRating(RecipeRating $rating): static
+    {
+        if (!$this->ratings->contains($rating)) {
+            $this->ratings->add($rating);
+            $rating->setRecipe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRating(RecipeRating $rating): static
+    {
+        if ($this->ratings->removeElement($rating)) {
+            // set the owning side to null (unless already changed)
+            if ($rating->getRecipe() === $this) {
+                $rating->setRecipe(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAverageRating(): float {
+        if($this->ratings->isEmpty()) {
+            return 0.0;
+        }
+
+        $totalRating = 0;
+        foreach($this->ratings as $rating) {
+            $totalRating += $rating->getRating();
+        }
+
+        return round($totalRating/$this->ratings->count(), 1);
+    }
+
+    public function getRatingCount(): ?int {
+        return $this->ratings->count();
     }
 
 }
