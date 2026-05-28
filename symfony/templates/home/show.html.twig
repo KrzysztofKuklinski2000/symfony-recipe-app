@@ -67,6 +67,9 @@
                         </span>
                     {% endif %}
                 {% endif %}
+                <div class="mt-4 mb-6">
+                    {% include 'recipe_rating/_rating.html.twig' with {'recipe': recipe} %}
+                </div>
             </div>
         </div>
 

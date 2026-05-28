@@ -440,7 +440,7 @@ class Recipe
 
         $totalRating = 0;
         foreach($this->ratings as $rating) {
-            $totalRating += $rating->getRating();
+            $totalRating += $rating->getScore();
         }
 
         return round($totalRating/$this->ratings->count(), 1);

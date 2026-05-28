@@ -1,0 +1,5 @@
+<turbo-stream action="replace" target="recipe-rating-{{ recipe.id }}">
+    <template>
+        {% include 'recipe_rating/_rating.html.twig' with {'recipe': recipe} %}
+    </template>
+</turbo-stream>
