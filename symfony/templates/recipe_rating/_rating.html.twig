@@ -5,10 +5,11 @@
     </div>
 
     {% if app.user and app.user != recipe.author %}
+        {% set userRating = recipe.userRating(app.user) %}
+
         <form action="{{ path('app_recipe_rate', {'id': recipe.id}) }}" method="POST" class="flex items-center">
             <input type="hidden" name="_token" value="{{ csrf_token('rate' ~ recipe.id) }}">
             <div class="flex flex-row-reverse justify-end gap-1 group">
-
                 {% for i in [5, 4, 3, 2, 1] %}
                     <button type="submit" name="score" value="{{ i }}"
                             class="peer focus:outline-none transition-transform hover:scale-125
@@ -21,6 +22,15 @@
                 {% endfor %}
             </div>
         </form>
+
+        {% if userRating %}
+            <form action="{{ path('app_recipe_rate_cancel', {'id': recipe.id}) }}" method="POST" class="inline">
+                <input type="hidden" name="_token" value="{{ csrf_token('cancel_rate' ~ recipe.id) }}">
+                <button type="submit" class="text-xs text-red-500 hover:text-red-700 underline cursor-pointer ml-1">
+                    Anuluj ocenę
+                </button>
+            </form>
+        {% endif %}
     {% else %}
         <div class="flex items-center gap-1">
             {% for i in 1..5 %}

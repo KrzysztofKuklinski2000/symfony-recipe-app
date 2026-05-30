@@ -450,4 +450,18 @@ class Recipe
         return $this->ratings->count();
     }
 
+    public function getUserRating(?User $user): ?RecipeRating
+    {
+        if (!$user) {
+            return null;
+        }
+
+        foreach ($this->ratings as $rating) {
+            if ($rating->getAuthor() === $user) {
+                return $rating;
+            }
+        }
+
+        return null;
+    }
 }

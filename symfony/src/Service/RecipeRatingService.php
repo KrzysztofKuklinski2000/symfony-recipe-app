@@ -33,4 +33,18 @@ class RecipeRatingService
 
         $this->em->flush();
     }
+
+    public function cancelRecipeRating(Recipe $recipe, User $user): void
+    {
+        $ratingRepository = $this->em->getRepository(RecipeRating::class);
+        $existingRating = $ratingRepository->findOneBy([
+            'recipe' => $recipe,
+            'author' => $user
+        ]);
+
+        if ($existingRating) {
+            $this->em->remove($existingRating);
+            $this->em->flush();
+        }
+    }
 }
