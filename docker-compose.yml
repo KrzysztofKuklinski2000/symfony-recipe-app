@@ -9,6 +9,7 @@ services:
       - ./symfony/var/cache:/var/www/html/symfony/var/cache
     depends_on:
       - db
+    user: "${UID}:${GID}"
 
   db:
     image: mysql:8.0
