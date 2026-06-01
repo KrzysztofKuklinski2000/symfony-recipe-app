@@ -45,5 +45,18 @@ services:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
+  worker:
+    build: .
+    container_name: symfony_worker
+    restart: always
+    working_dir: /var/www/html/symfony
+    command: php bin/console messenger:consume async -vv
+    depends_on:
+      - db
+    volumes:
+      - ./symfony:/var/www/html/symfony
+      - ./symfony/var/cache:/var/www/html/symfony/var/cache
+    user: "${UID}:${GID}"
+
 volumes:
   db_data:
