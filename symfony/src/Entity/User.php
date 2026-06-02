@@ -89,6 +89,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     private ?string $plainPassword = null;
 
+    /**
+     * @var Collection<int, MealPlanItem>
+     */
+    #[ORM\OneToMany(targetEntity: MealPlanItem::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $mealPlanItems;
+
     public function __construct()
     {
         $this->recipes = new ArrayCollection();
@@ -99,6 +105,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->comments = new ArrayCollection();
         $this->commentVotes = new ArrayCollection();
         $this->shoppingListItems = new ArrayCollection();
+        $this->mealPlanItems = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -454,5 +461,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __toString(): string {
         return $this->username ? $this->username : $this->email;
+    }
+
+    /**
+     * @return Collection<int, MealPlanItem>
+     */
+    public function getMealPlanItems(): Collection
+    {
+        return $this->mealPlanItems;
+    }
+
+    public function addMealPlanItem(MealPlanItem $mealPlanItem): static
+    {
+        if (!$this->mealPlanItems->contains($mealPlanItem)) {
+            $this->mealPlanItems->add($mealPlanItem);
+            $mealPlanItem->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMealPlanItem(MealPlanItem $mealPlanItem): static
+    {
+        if ($this->mealPlanItems->removeElement($mealPlanItem)) {
+            // set the owning side to null (unless already changed)
+            if ($mealPlanItem->getUser() === $this) {
+                $mealPlanItem->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }
