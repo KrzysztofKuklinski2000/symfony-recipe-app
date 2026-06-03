@@ -11,8 +11,25 @@ final class MealPlanController extends AbstractController
     #[Route('/meal-plan', name: 'app_meal_plan')]
     public function index(): Response
     {
+        $weekDays = [
+            'Poniedziałek',
+            'Wtorek',
+            'Środa',
+            'Czwartek',
+            'Piątek',
+            'Sobota',
+            'Niedziela'
+        ];
+
+        $mealTypes = [
+            'breakfast',
+            'lunch',
+            'dinner',
+        ];
+
         return $this->render('meal_plan/index.html.twig', [
-            'controller_name' => 'MealPlanController',
+            'weekDays' => $weekDays,
+            'mealTypes' => $mealTypes,
         ]);
     }
 }
