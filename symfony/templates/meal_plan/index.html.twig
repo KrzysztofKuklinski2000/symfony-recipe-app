@@ -4,11 +4,33 @@
 
 {% block body %}
     <section class="px-4 py-8 sm:px-6 lg:px-8">
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Planer posiłków</h1>
-            <p class="mt-2 text-gray-600">
-                Zaplanuj przepisy na konkretne dni tygodnia.
-            </p>
+        <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Planer posiłków</h1>
+                <p class="mt-2 text-gray-600">
+                    Zaplanuj przepisy na konkretne dni tygodnia.
+                </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <a
+                    href="{{ path('app_meal_plan', { week: weekOffset - 1 }) }}"
+                    class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                >
+                    Poprzedni tydzień
+                </a>
+
+                <div class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700">
+                    {{ startOfWeek|date('d.m') }} - {{ endOfWeek|date('d.m.Y') }}
+                </div>
+
+                <a
+                    href="{{ path('app_meal_plan', { week: weekOffset + 1 }) }}"
+                    class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                >
+                    Następny tydzień
+                </a>
+            </div>
         </div>
 
         <div class="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
@@ -21,7 +43,10 @@
 
                     {% for day in weekDays %}
                         <th class="min-w-40 px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                            {{ day }}
+                            <span class="block">{{ day.label }}</span>
+                            <span class="mt-1 block text-xs font-normal text-gray-500">
+                                    {{ day.date|date('d.m') }}
+                                </span>
                         </th>
                     {% endfor %}
                 </tr>
