@@ -3,7 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\MealPlanItem;
+use App\Entity\User;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\LockMode;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,28 +19,17 @@ class MealPlanItemRepository extends ServiceEntityRepository
         parent::__construct($registry, MealPlanItem::class);
     }
 
-    //    /**
-    //     * @return MealPlanItem[] Returns an array of MealPlanItem objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('m')
-    //            ->andWhere('m.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('m.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findForUserBetweenDates(User $user, DateTimeImmutable $startDate, DateTimeImmutable $endDate): array    {
 
-    //    public function findOneBySomeField($value): ?MealPlanItem
-    //    {
-    //        return $this->createQueryBuilder('m')
-    //            ->andWhere('m.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $this->createQueryBuilder('mealPlanItem')
+            ->andWhere('mealPlanItem.user = :user')
+            ->andWhere('mealPlanItem.plannedFor BETWEEN :startDate AND :endDate')
+            ->setParameter('user', $user)
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->orderBy('mealPlanItem.plannedFor', 'ASC')
+            ->addOrderBy('mealPlanItem.mealType', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

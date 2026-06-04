@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\MealPlanItem;
 use App\Entity\Recipe;
+use App\Entity\User;
+use App\Repository\MealPlanItemRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -27,7 +29,7 @@ final class MealPlanController extends AbstractController
      * @throws Exception
      */
     #[Route('/meal-plan', name: 'app_meal_plan', methods: ['GET'])]
-    public function index(Request $request): Response
+    public function index(Request $request, MealPlanItemRepository $mealPlanItemRepository): Response
     {
         $weekOffset = $request->query->getInt('week', 0);
         $startOfWeek = new DateTimeImmutable(sprintf('Monday this week %s weeks', $weekOffset));
@@ -42,13 +44,32 @@ final class MealPlanController extends AbstractController
                 'date' => $date,
             ];
         }
+        $endOfWeek = $startOfWeek->modify('+6 day');
+
+        $user = $this->getUser();
+        assert($user instanceof User);
+
+        $mealPlanItems = $mealPlanItemRepository->findForUserBetweenDates($user, $startOfWeek, $endOfWeek);
+        $plannedItems = [];
+
+        foreach ($mealPlanItems as $mealPlanItem) {
+            $dataKey = $mealPlanItem->getPlannedFor()?->format('Y-m-d');
+            $mealType = $mealPlanItem->getMealType();
+
+            if(!$dataKey || !$mealType) {
+                continue;
+            }
+
+            $plannedItems[$dataKey][$mealType][] = $mealPlanItem;
+        }
 
         return $this->render('meal_plan/index.html.twig', [
             'weekDays' => $weekDays,
             'mealTypes' => self::MEAL_TYPES,
             'weekOffset' => $weekOffset,
             'startOfWeek' => $startOfWeek,
-            'endOfWeek' => $startOfWeek->modify('+6 days'),
+            'endOfWeek' => $endOfWeek,
+            'plannedItems' => $plannedItems,
         ]);
     }
 
@@ -68,7 +89,7 @@ final class MealPlanController extends AbstractController
         $mealType = $request->request->get('mealType');
 
         if(!$plannedFor || !array_key_exists($mealType, self::MEAL_TYPES)){
-            $this->addFlash('denger', 'Wybierz poprawny dzień i typ posiłku.');
+            $this->addFlash('danger', 'Wybierz poprawny dzień i typ posiłku.');
 
             return $this->redirectToRoute('app_show', ['id' => $recipe->getId()]);
         }
@@ -82,7 +103,7 @@ final class MealPlanController extends AbstractController
             ->setRecipe($recipe)
             ->setPlannedFor(new DateTimeImmutable($plannedFor))
             ->setMealType($mealType)
-            ->setServings($request->request->getInt('servings', $recipe->getServings() ?: 1));
+            ->setServings($request->request->getInt('targetServings', $recipe->getServings() ?: 1));
 
         $em->persist($mealPlanItem);
         $em->flush();
