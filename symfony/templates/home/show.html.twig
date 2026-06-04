@@ -89,7 +89,7 @@
                         style="grid-template-rows: 0fr;"
                     >
                         <div class="min-h-0">
-                            <form action="#" method="POST" class="mt-4 grid gap-4">
+                            <form action="{{ path('app_meal_plan_add', {'id': recipe.id}) }}" method="POST" class="mt-4 grid gap-4">
                                 <input type="hidden" name="_token" value="{{ csrf_token('mealPlan' ~ recipe.id) }}">
                                 <input type="hidden" name="targetServings" value="{{ recipe.servings|default(1) }}"
                                     class="js-servings-input">
