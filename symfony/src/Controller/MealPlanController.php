@@ -112,6 +112,34 @@ final class MealPlanController extends AbstractController
         return $this->redirectToRoute('app_show', ['id' => $recipe->getId()]);
     }
 
+    #[Route('/meal-plan/remove/{id}', name: 'app_meal_plan_remove', methods: ['POST'])]
+    public function remove(MealPlanItem $mealPlanItem, Request $request, EntityManagerInterface $em): Response {
+
+        $user = $this->getUser();
+        assert($user instanceof User);
+
+        if($mealPlanItem->getUser() !== $user){
+            throw $this->createAccessDeniedException();
+        }
+
+        if(!$this->isCsrfTokenValid('removeMealPlanItem'. $mealPlanItem->getId(), $request->request->get('_token'))){
+            $this->addFlash('danger', 'Nie udalo się usunąć przepisu do planera');
+
+            return $this->redirectToRoute('app_meal_plan', [
+                'week' => $request->request->getInt('week'),
+            ]);
+        }
+
+        $em->remove($mealPlanItem);
+        $em->flush();
+
+        $this->addFlash('success', 'Usunięto posiłek z planera.');
+
+        return $this->redirectToRoute('app_meal_plan', [
+            'week' => $request->request->getInt('week'),
+        ]);
+    }
+
     private function getPolishWeekdayName(DateTimeImmutable $date): string
     {
         return match ($date->format('N')) {
