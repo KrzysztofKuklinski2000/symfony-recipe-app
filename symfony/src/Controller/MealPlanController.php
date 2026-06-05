@@ -82,7 +82,7 @@ final class MealPlanController extends AbstractController
         if(!$this->isCsrfTokenValid('mealPlan'. $recipe->getId(), $request->request->get('_token'))){
             $this->addFlash('danger', 'Nie udalo się dodać przepisu do planera');
 
-            return $this->redirectToRoute('app_show', ['id' => $recipe->getId()]);
+            return $this->redirectAfterMealPlanAction($request, $recipe);
         }
 
         $plannedFor = $request->request->get('plannedFor');
@@ -91,7 +91,7 @@ final class MealPlanController extends AbstractController
         if(!$plannedFor || !array_key_exists($mealType, self::MEAL_TYPES)){
             $this->addFlash('danger', 'Wybierz poprawny dzień i typ posiłku.');
 
-            return $this->redirectToRoute('app_show', ['id' => $recipe->getId()]);
+            return $this->redirectAfterMealPlanAction($request, $recipe);
         }
 
         $user = $this->getUser();
@@ -109,7 +109,7 @@ final class MealPlanController extends AbstractController
         $em->flush();
 
         $this->addFlash('success', 'Dodano przepis do planera.');
-        return $this->redirectToRoute('app_show', ['id' => $recipe->getId()]);
+        return $this->redirectAfterMealPlanAction($request, $recipe);
     }
 
     #[Route('/meal-plan/remove/{id}', name: 'app_meal_plan_remove', methods: ['POST'])]
@@ -138,6 +138,16 @@ final class MealPlanController extends AbstractController
         return $this->redirectToRoute('app_meal_plan', [
             'week' => $request->request->getInt('week'),
         ]);
+    }
+
+    private function redirectAfterMealPlanAction(Request $request, Recipe $recipe): Response {
+        $redirectTo = $request->request->get('redirectTo');
+
+        if(is_string($redirectTo) && str_starts_with($redirectTo, '/') && !str_starts_with($redirectTo, '//')){
+            return $this->redirect($redirectTo);
+        }
+
+        return $this->redirectToRoute('app_show', ['id' => $recipe->getId()]);
     }
 
     private function getPolishWeekdayName(DateTimeImmutable $date): string

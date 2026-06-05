@@ -59,6 +59,7 @@
                     <div class="min-h-0">
                         <form action="{{ path('app_meal_plan_add', {'id': recipe.id}) }}" method="POST" class="mt-3 grid gap-3">
                             <input type="hidden" name="_token" value="{{ csrf_token('mealPlan' ~ recipe.id) }}">
+                            <input type="hidden" name="redirectTo" value="{{ app.request.requestUri }}">
                             <input type="hidden" name="targetServings" value="{{ recipe.servings|default(1) }}">
 
                             <div>
