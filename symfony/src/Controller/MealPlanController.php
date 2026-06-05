@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\UX\Turbo\TurboBundle;
 
 #[IsGranted('ROLE_USER')]
 #[IsGranted('IS_EMAIL_VERIFIED')]
@@ -108,7 +109,16 @@ final class MealPlanController extends AbstractController
         $em->persist($mealPlanItem);
         $em->flush();
 
+        if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+            $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+            return $this->render('meal_plan/add_success.stream.html.twig', [
+                'recipe' => $recipe,
+            ]);
+        }
+
         $this->addFlash('success', 'Dodano przepis do planera.');
+
         return $this->redirectAfterMealPlanAction($request, $recipe);
     }
 

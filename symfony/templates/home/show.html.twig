@@ -75,7 +75,7 @@
                 <div class="mt-6 rounded-2xl border border-emerald-100 bg-emerald-50/70 p-5 shadow-sm">
                     <button
                         type="button"
-                        class="meal-plan-toggle flex w-full items-center justify-between text-left font-semibold text-emerald-800"
+                        class="meal-plan-toggle flex w-full items-center justify-between text-left font-semibold text-emerald-800 relative"
                         aria-expanded="false"
                         aria-controls="meal-plan-panel"
                     >
@@ -125,7 +125,8 @@
 
                                 <button
                                     type="submit"
-                                    class="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                                    class="relative flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                                    id="meal-plan-submit-{{ recipe.id }}"
                                 >
                                     {{ icons.add(4) }} Dodaj do planera
                                 </button>
