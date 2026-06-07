@@ -53,6 +53,13 @@ final class MealPlanController extends AbstractController
         $mealPlanItems = $mealPlanItemRepository->findForUserBetweenDates($user, $startOfWeek, $endOfWeek);
         $plannedItems = [];
 
+        $dailyKcal = [];
+        $itemKcal = [];
+
+        foreach ($weekDays as $day) {
+            $dailyKcal[$day['date']->format('Y-m-d')] = 0;
+        }
+
         foreach ($mealPlanItems as $mealPlanItem) {
             $dataKey = $mealPlanItem->getPlannedFor()?->format('Y-m-d');
             $mealType = $mealPlanItem->getMealType();
@@ -62,6 +69,13 @@ final class MealPlanController extends AbstractController
             }
 
             $plannedItems[$dataKey][$mealType][] = $mealPlanItem;
+
+            $calories = $this->calculateMealPlanItemKcal($mealPlanItem);
+            $itemKcal[$mealPlanItem->getId()] = $calories;
+
+            if ($calories !== null) {
+                $dailyKcal[$dataKey] += $calories;
+            }
         }
 
         return $this->render('meal_plan/index.html.twig', [
@@ -71,6 +85,8 @@ final class MealPlanController extends AbstractController
             'startOfWeek' => $startOfWeek,
             'endOfWeek' => $endOfWeek,
             'plannedItems' => $plannedItems,
+            'dailyKcal' => $dailyKcal,
+            'itemKcal' => $itemKcal,
         ]);
     }
 
@@ -158,6 +174,20 @@ final class MealPlanController extends AbstractController
         }
 
         return $this->redirectToRoute('app_show', ['id' => $recipe->getId()]);
+    }
+
+    private function calculateMealPlanItemKcal(MealPlanItem $mealPlanItem): ?int
+    {
+        $recipe = $mealPlanItem->getRecipe();
+
+        if (!$recipe || !$recipe->getKcal()) {
+            return null;
+        }
+
+        $baseServings = $recipe->getServings() ?: 1;
+        $plannedServings = $mealPlanItem->getServings() ?: 1;
+
+        return (int) round(($recipe->getKcal() / $baseServings) * $plannedServings);
     }
 
     private function getPolishWeekdayName(DateTimeImmutable $date): string
